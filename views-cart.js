@@ -1,4 +1,4 @@
-// ==================== CART VIEW - FORMULARZ ZAMÃ“WIENIA ====================
+// ==================== CART VIEW - FORMULARZ ZAMÃƒâ€œWIENIA ====================
 
 const CartView = ({ onClose, onOrder, initialData = null }) => {
   const { db, cart } = useApp();
@@ -57,30 +57,67 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
     }
   }, []);
 
-  // WALIDACJA FORMULARZA
+  // WALIDACJA FORMULARZA - zwraca ostrzeżenia ale nie blokuje
   const validateOrder = () => {
     if (activeCart.length === 0) {
       return 'Koszyk jest pusty';
     }
 
+    // Ostrzeżenia dla dowozu (nie blokują)
+    const warnings = [];
     if (!form.isTakeout) {
-      if (!form.city.trim()) return 'Podaj miasto';
-      if (!form.street.trim()) return 'Podaj ulicę';
-      if (!form.number.trim()) return 'Podaj numer domu';
-      if (!form.phone.trim()) return 'Podaj numer telefonu';
-      
-      const phoneDigits = form.phone.replace(/\D/g, '');
-      if (phoneDigits.length < 9) {
-        return 'Numer telefonu musi mieć min. 9 cyfr';
+      if (!form.city.trim()) warnings.push('Brak miasta');
+      if (!form.street.trim()) warnings.push('Brak ulicy');
+      if (!form.number.trim()) warnings.push('Brak numeru domu');
+      if (!form.phone.trim()) {
+        warnings.push('Brak telefonu');
+      } else {
+        const phoneDigits = form.phone.replace(/\D/g, '');
+        if (phoneDigits.length < 9) {
+          warnings.push('Telefon niepełny');
+        }
       }
     }
 
     if (form.isScheduled) {
-      if (!form.scheduledTime) return 'Podaj godzinę dostawy';
-      if (!form.scheduledDate) return 'Podaj datę dostawy';
+      if (!form.scheduledTime) warnings.push('Brak godziny dostawy');
+      if (!form.scheduledDate) warnings.push('Brak daty dostawy');
+    }
+
+    if (warnings.length > 0) {
+      return '⚠️ ' + warnings.join(', ');
     }
 
     return null;
+  };
+
+  const submit = () => {
+    const validationError = validateOrder();
+    
+    // Blokuj tylko pusty koszyk
+    if (activeCart.length === 0) {
+      setError('Koszyk jest pusty');
+      return;
+    }
+    
+    // Dla ostrzeżeń - ustaw błąd ale pozwól kontynuować
+    if (validationError) {
+      setError(validationError);
+    } else {
+      setError('');
+    }
+
+    const address = `${form.streetDisplay || form.street} ${form.number}`.trim();
+    const orderData = {
+      id: initialData?.id || Date.now(),
+      orderNumber: form.orderNumber || Math.floor(Math.random() * 900) + 100,
+      timestamp: initialData?.timestamp || new Date().toISOString(),
+      items: activeCart,
+      ...form,
+      address
+    };
+    
+    onOrder(orderData);
   };
 
   const handleCitySelect = (city) => {
@@ -112,36 +149,19 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
     setForm(f => ({ ...f, doorCode: f.doorCode + char }));
   };
 
-  const submit = () => {
-    const validationError = validateOrder();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    const address = `${form.streetDisplay || form.street} ${form.number}`.trim();
-    const orderData = {
-      id: initialData?.id || Date.now(),
-      orderNumber: form.orderNumber || Math.floor(Math.random() * 900) + 100,
-      timestamp: initialData?.timestamp || new Date().toISOString(),
-      items: activeCart,
-      ...form,
-      address
-    };
-    
-    setError('');
-    onOrder(orderData);
-  };
-
   return (
     <Modal
       onClose={onClose}
-      title={isEditMode ? `Edycja #${initialData.orderNumber}` : 'Nowe zamówienie'}
+      title={isEditMode ? `Edycja #${initialData.orderNumber}` : 'Nowe zamÃ³wienie'}
       footer={
         <div className="space-y-2">
           {error && (
-            <div className="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm font-semibold">
-              âš ï¸ {error}
+            <div className={`border-2 px-4 py-3 rounded-lg text-sm font-semibold ${
+              error.startsWith('⚠️')
+                ? 'bg-yellow-100 border-yellow-400 text-yellow-800'
+                : 'bg-red-100 border-red-400 text-red-700'
+            }`}>
+              Ã¢Å¡Â Ã¯Â¸Â {error}
             </div>
           )}
           <div className="flex gap-2">
@@ -157,7 +177,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
     >
       <div className="p-3 space-y-3">
         <div className="bg-white rounded-xl p-3 border-2 border-stone-200 space-y-3">
-          {/* Dowóz / Wynos */}
+          {/* DowÃ³z / Wynos */}
           <div className="flex gap-2">
             <button
               onClick={() => { setForm(f => ({ ...f, isTakeout: false })); setError(''); }}
@@ -167,7 +187,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                   : 'border-stone-200'
               }`}
             >
-              <Icon.MapPin size={16} /> Dowóz
+              <Icon.MapPin size={16} /> DowÃ³z
             </button>
             <button
               onClick={() => { setForm(f => ({ ...f, isTakeout: true })); setError(''); }}
@@ -197,7 +217,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                     value={form.city}
                     onChange={v => setForm(f => ({ ...f, city: v }))}
                     options={db.locations.cities}
-                    placeholder="Miejscowość*"
+                    placeholder="MiejscowoÅ›Ä‡*"
                     onSelect={handleCitySelect}
                   />
                 </div>
@@ -262,7 +282,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                   #
                 </button>
                 <button
-                  onClick={() => addDoorCodeChar('Â§')}
+                  onClick={() => addDoorCodeChar('Ã‚Â§')}
                   className="w-10 h-10 rounded-lg bg-stone-100 flex items-center justify-center active:scale-95"
                 >
                   <Icon.Key size={18} />
@@ -272,14 +292,14 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
               {/* Landmarki */}
               {db.locations.landmarks.length > 0 && (
                 <div className="flex flex-wrap gap-1 pt-2 border-t border-stone-100">
-                  <span className="text-xs text-stone-400 w-full mb-1">Szybki wybór:</span>
+                  <span className="text-xs text-stone-400 w-full mb-1">Szybki wybÃ³r:</span>
                   {db.locations.landmarks.map(lm => (
                     <button
                       key={lm.id}
                       onClick={() => selectLandmark(lm)}
                       className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 active:scale-95"
                     >
-                      🍝“ {lm.name}
+                      ðŸâ€œÂ {lm.name}
                     </button>
                   ))}
                 </div>
@@ -319,7 +339,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
               onChange={e => setForm(f => ({ ...f, isScheduled: e.target.checked }))}
               className="w-5 h-5"
             />
-            <span className="font-semibold">🍕 Na termin</span>
+            <span className="font-semibold">ðŸ•Â Na termin</span>
             {form.isScheduled && (
               <>
                 <input
@@ -338,9 +358,9 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
             )}
           </label>
 
-          {/* Płatność */}
+          {/* PÅ‚atnoÅ›Ä‡ */}
           <div>
-            <div className="text-xs font-bold text-stone-500 mb-2">Płatność</div>
+            <div className="text-xs font-bold text-stone-500 mb-2">PÅ‚atnoÅ›Ä‡</div>
             <div className="flex gap-2">
               {db.settings.paymentTypes.map(p => (
                 <button
