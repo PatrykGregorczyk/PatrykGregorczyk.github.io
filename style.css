@@ -655,3 +655,50 @@ textarea:focus {
   color: var(--primary-600);
   font-weight: 700;
 }
+
+/* ==================== THEMED BACKGROUNDS ==================== */
+/* Subtelne tło z gradientem dopasowanym do motywu */
+.themed-bg {
+  background: linear-gradient(135deg, 
+    #f5f5f4 0%, 
+    var(--primary-50) 50%, 
+    #f5f5f4 100%
+  );
+}
+
+/* Themed shadows - cienie z akcentem motywu */
+.themed-shadow-soft {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--primary-100);
+}
+
+.themed-shadow-medium {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--primary-200);
+}
+
+.hover\:themed-shadow-medium:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--primary-200);
+}
+
+/* Themed borders - subtelne podświetlenie */
+.themed-border {
+  border: 2px solid var(--primary-200);
+}
+
+.themed-border-subtle {
+  border: 1px solid var(--primary-100);
+}
+
+/* Themed text colors */
+.text-themed-primary { color: var(--primary-600); }
+.text-themed-secondary { color: var(--primary-500); }
+.text-themed-accent { color: var(--primary-700); }
+
+/* Themed backgrounds */
+.bg-themed-subtle { background-color: var(--primary-50); }
+.bg-themed-light { background-color: var(--primary-100); }
+.bg-themed-medium { background-color: var(--primary-200); }
+
+/* Hover effects z motywem */
+.hover\:bg-themed-light:hover { background-color: var(--primary-100); }
+.hover\:border-themed:hover { border-color: var(--primary-400); }
+

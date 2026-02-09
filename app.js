@@ -22,30 +22,38 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
     return null;
   };
 
-  // Lista dodatkÃ³w dla pizzy
+  // Lista dodatków dla pizzy i menu
   const getAddonsInfo = () => {
-    if (item.type !== 'pizza') return null;
+    let sourceData, defaultAddons, currentAddons;
     
-    const pizza = db.pizzas.find(p => p.nr === item.pizzaNr);
-    const defaultAddons = pizza?.defaultAddons || {};
-    const currentAddons = item.addons || {};
+    if (item.type === 'pizza') {
+      sourceData = db.pizzas.find(p => p.nr === item.pizzaNr);
+      defaultAddons = sourceData?.defaultAddons || {};
+      currentAddons = item.addons || {};
+    } else if (item.type === 'menu') {
+      sourceData = db.menu.find(m => m.id === item.menuId);
+      defaultAddons = sourceData?.defaultAddons || {};
+      currentAddons = item.addons || {};
+    } else {
+      return null;
+    }
     
+    const defaultList = [];
     const added = [];
     const removed = [];
     
-    // Dodane
-    Object.entries(currentAddons).forEach(([id, qty]) => {
-      const def = defaultAddons[id] || 0;
-      if (qty > def) {
+    // Lista domyślnych (bez zmian)
+    Object.entries(defaultAddons).forEach(([id, qty]) => {
+      const curr = currentAddons[id] || 0;
+      if (curr === qty) {
         const addon = db.addons.find(a => a.id === parseInt(id));
         if (addon) {
-          const diff = qty - def;
-          added.push(diff > 1 ? `${diff}x ${addon.name}` : addon.name);
+          defaultList.push(qty > 1 ? `${qty}x ${addon.name}` : addon.name);
         }
       }
     });
     
-    // UsuniÄ™te
+    // Usunięte (z domyślnych)
     Object.entries(defaultAddons).forEach(([id, qty]) => {
       const curr = currentAddons[id] || 0;
       if (curr < qty) {
@@ -57,9 +65,21 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
       }
     });
     
-    // Sosy
+    // Dodane (ponad domyślne)
+    Object.entries(currentAddons).forEach(([id, qty]) => {
+      const def = defaultAddons[id] || 0;
+      if (qty > def) {
+        const addon = db.addons.find(a => a.id === parseInt(id));
+        if (addon) {
+          const diff = qty - def;
+          added.push(diff > 1 ? `${diff}x ${addon.name}` : addon.name);
+        }
+      }
+    });
+    
+    // Sosy (tylko dla pizzy)
     const sauces = [];
-    if (item.sauces) {
+    if (item.type === 'pizza' && item.sauces) {
       Object.entries(item.sauces).forEach(([id, qty]) => {
         const sauce = db.sauces.find(s => s.id === parseInt(id));
         if (sauce && qty > 0) {
@@ -68,7 +88,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
       });
     }
     
-    return { added, removed, sauces };
+    return { defaultList, added, removed, sauces };
   };
 
   const handleQuantityChange = (delta) => {
@@ -82,7 +102,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
   const isGrayed = item.qty === 0;
 
   return (
-    <div className={`rounded-lg p-2 border transition-all cart-item-enter ${isGrayed ? 'bg-stone-100 border-stone-300 opacity-50' : 'bg-white border-stone-200 shadow-soft hover:shadow-medium'}`}>
+    <div className={`rounded-lg p-2 border transition-all cart-item-enter ${isGrayed ? 'bg-stone-100 border-stone-300 opacity-50' : 'bg-white themed-border-subtle shadow-soft hover:themed-shadow-medium'}`}>
       {/* GÅ‚Ã³wna linia */}
       <div className="flex items-start gap-2">
         {/* Lewa: OkrÄ…g z numerem */}
@@ -145,17 +165,20 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
         </div>
       </div>
 
-      {/* Lista dodatków - ciągiem, rozciągają się na szerokość */}
-      {addonsInfo && (addonsInfo.added.length > 0 || addonsInfo.removed.length > 0 || addonsInfo.sauces.length > 0) && (
+      {/* Lista dodatków - w kolejności: domyślne, usunięte, dodane, sosy */}
+      {addonsInfo && (addonsInfo.defaultList.length > 0 || addonsInfo.added.length > 0 || addonsInfo.removed.length > 0 || addonsInfo.sauces.length > 0) && (
         <div className="mt-1 pt-1 border-t border-stone-100 space-y-1">
+          {addonsInfo.defaultList.length > 0 && (
+            <div className="text-xs text-stone-600">{addonsInfo.defaultList.join(', ')}</div>
+          )}
+          {addonsInfo.removed.length > 0 && (
+            <div className="text-xs text-red-600 line-through">-{addonsInfo.removed.join(', ')}</div>
+          )}
           {addonsInfo.added.length > 0 && (
             <div className="text-xs text-emerald-600">+{addonsInfo.added.join(', ')}</div>
           )}
-          {addonsInfo.removed.length > 0 && (
-            <div className="text-xs text-rose-600">-{addonsInfo.removed.join(', ')}</div>
-          )}
           {addonsInfo.sauces.length > 0 && (
-            <div className="text-xs text-stone-500">{addonsInfo.sauces.join(', ')}</div>
+            <div className="text-xs text-stone-500">🥫 {addonsInfo.sauces.join(', ')}</div>
           )}
         </div>
       )}
@@ -377,7 +400,7 @@ const CartSidebar = ({ onOrder }) => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-themed-subtle">
       {/* Lista pozycji */}
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {cart.length === 0 ? (
@@ -568,7 +591,7 @@ const MainApp = () => {
 
 
   return (
-    <div className="h-screen flex bg-stone-100">
+    <div className="h-screen flex themed-bg">
       {/* Lewa strona - Menu */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
@@ -721,7 +744,7 @@ const MainApp = () => {
 
       {/* Prawa strona - Koszyk */}
       {showCart && (
-        <div className="shrink-0 bg-stone-50 border-l-2 border-stone-200" style={{ width: '33%' }}>
+        <div className="shrink-0 border-l-2 themed-border-subtle" style={{ width: '33%' }}>
           <CartSidebar onOrder={handleOrderClick} />
         </div>
       )}

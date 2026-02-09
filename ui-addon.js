@@ -1,10 +1,10 @@
 // ==================== ADDON CHIP ====================
-// Uniwersalny przycisk dodatku - jeden wygląd dla wszystkich trybów
+// Uniwersalny przycisk dodatku - jeden wyglÄ…d dla wszystkich trybÃ³w
 
 const AddonChip = ({
   name,
   qty = 0,
-  maxQty = 5,
+  maxQty = 20,
   isDefault = false,
   isRemoved = false,
   onAdd,
@@ -51,7 +51,7 @@ const AddonChip = ({
             isPressed ? 'bg-red-600' : 'bg-rose-500'
           } text-white font-bold`}
         >
-          ×{qty}
+          Ã—{qty}
         </button>
         <button
           onClick={qty < maxQty ? onAdd : undefined}
@@ -65,7 +65,7 @@ const AddonChip = ({
     );
   }
 
-  // ========== USUNIĘTY DOMYŁšLNY ==========
+  // ========== USUNIÄ˜TY DOMYÅÅ¡LNY ==========
   if (isRemoved) {
     return (
       <button
@@ -84,7 +84,7 @@ const AddonChip = ({
     );
   }
 
-  // ========== NIEAKTYWNY (domyślny lub dodany) ==========
+  // ========== NIEAKTYWNY (domyÅ›lny lub dodany) ==========
   return (
     <button
       onClick={onToggle}
@@ -121,12 +121,12 @@ const AutocompleteInput = ({
   const [inputValue, setInputValue] = useState(value || '');
   const containerRef = useRef(null);
 
-  // Sync z zewnętrzną wartością
+  // Sync z zewnÄ™trznÄ… wartoÅ›ciÄ…
   useEffect(() => {
     setInputValue(value || '');
   }, [value]);
 
-  // Zamknij dropdown przy kliknięciu poza komponentem
+  // Zamknij dropdown przy klikniÄ™ciu poza komponentem
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -220,7 +220,7 @@ const AutocompleteInput = ({
 };
 
 // ==================== CART ITEM ====================
-// Pozycja w koszyku z edycją
+// Pozycja w koszyku z edycjÄ…
 
 const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
   const { db, globalDiscount } = useApp();
@@ -238,7 +238,7 @@ const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
       const letter = getSizeLetter(sizeIdx, db.settings);
 
       if (item.isSplit) {
-        return `${letter} ${item.pizzaNr}/${item.splitPizzaNr} • pół/pół`;
+        return `${letter} ${item.pizzaNr}/${item.splitPizzaNr} â€¢ pÃ³Å‚/pÃ³Å‚`;
       }
 
       const pizza = db.pizzas.find(p => p.nr === item.pizzaNr);
@@ -247,7 +247,7 @@ const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
 
       let changes = [];
 
-      // Policz usunięte
+      // Policz usuniÄ™te
       Object.entries(defaultAddons).forEach(([id, qty]) => {
         const curr = currentAddons[id] || 0;
         if (curr < qty) changes.push(`-${qty - curr}`);
@@ -290,12 +290,12 @@ const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
 
           {getSubtitle() && <div className="text-xs text-stone-500 mt-0.5">{getSubtitle()}</div>}
 
-          {item.notes && <div className="text-xs text-primary-600 mt-0.5 truncate">🍝“ {item.notes}</div>}
+          {item.notes && <div className="text-xs text-primary-600 mt-0.5 truncate">ðŸâ€œÂ {item.notes}</div>}
 
           {item.discount && (
             <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-1">
-              🍝·ï¸ {item.discount.name}
-              <button onClick={handleRemoveDiscount} className="font-bold">×</button>
+              ðŸÂÂ·Ã¯Â¸Â {item.discount.name}
+              <button onClick={handleRemoveDiscount} className="font-bold">Ã—</button>
             </span>
           )}
         </div>
