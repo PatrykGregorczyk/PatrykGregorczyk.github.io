@@ -1,7 +1,7 @@
 // ==================== FORMATOWANIE ====================
 
 window.formatPrice = (price) => {
-  return (price || 0).toFixed(2).replace('.', ',') + ' zł';
+  return (price || 0).toFixed(2).replace('.', ',');
 };
 
 window.formatTime = (date) => {

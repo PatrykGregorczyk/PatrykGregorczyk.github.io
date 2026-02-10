@@ -12,17 +12,16 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
   const getSubtitle = () => {
     if (item.type === 'pizza') {
       const sizeIdx = getSizeIndex(item.size, db.settings);
-      const letter = getSizeLetter(sizeIdx, db.settings);
       const sizeLabel = db.settings.sizes[sizeIdx]?.label || '';
       if (item.isSplit) {
-        return { letter, nr: `${item.pizzaNr}/${item.splitPizzaNr}`, size: sizeLabel };
+        return { nr: `${item.pizzaNr}/${item.splitPizzaNr}`, size: sizeLabel };
       }
-      return { letter, nr: item.pizzaNr, size: sizeLabel };
+      return { nr: item.pizzaNr, size: sizeLabel };
     }
     return null;
   };
 
-  // Lista dodatkÃ³w dla pizzy i menu
+  // Lista dodatków dla pizzy i menu
   const getAddonsInfo = () => {
     let sourceData, defaultAddons, currentAddons;
     
@@ -42,7 +41,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
     const added = [];
     const removed = [];
     
-    // Lista domyÅlnych (bez zmian)
+    // Lista domyślnych (bez zmian)
     Object.entries(defaultAddons).forEach(([id, qty]) => {
       const curr = currentAddons[id] || 0;
       if (curr === qty) {
@@ -53,7 +52,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
       }
     });
     
-    // UsuniÄte (z domyÅlnych)
+    // Usunięte (z domyślnych)
     Object.entries(defaultAddons).forEach(([id, qty]) => {
       const curr = currentAddons[id] || 0;
       if (curr < qty) {
@@ -65,7 +64,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
       }
     });
     
-    // Dodane (ponad domyÅlne)
+    // Dodane (ponad domyślne)
     Object.entries(currentAddons).forEach(([id, qty]) => {
       const def = defaultAddons[id] || 0;
       if (qty > def) {
@@ -93,7 +92,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
 
   const handleQuantityChange = (delta) => {
     const newQty = item.qty + delta;
-    if (newQty < 0) return; // Nie pozwalamy na ujemne
+    if (newQty < 0) return;
     onUpdate({ ...item, qty: newQty });
   };
 
@@ -102,72 +101,71 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
   const isGrayed = item.qty === 0;
 
   return (
-    <div className={`rounded-lg p-2 border transition-all cart-item-enter ${isGrayed ? 'bg-stone-100 border-stone-300 opacity-50' : 'bg-white themed-border-subtle shadow-soft hover:themed-shadow-medium'}`}>
-      {/* GÃâÃÂ³wna linia */}
+    <div 
+      onClick={() => onEdit(item)}
+      className={`rounded-lg p-2 border transition-all cart-item-enter cursor-pointer ${isGrayed ? 'bg-stone-100 border-stone-300 opacity-50' : 'bg-white border-stone-200 shadow-soft hover:shadow-medium hover:border-primary-300'}`}
+    >
+      {/* Główna linia */}
       <div className="flex items-start gap-2">
-        {/* Lewa: OkrÃâ¦g z numerem */}
-        <div className="shrink-0">
+        {/* Lewa: Numer i nazwa */}
+        <div className="flex-1 min-w-0">
+          {/* Pizza: numer . nazwa */}
           {subtitle && (
-            <div className="w-8 h-8 rounded-full border-2 border-black bg-black flex items-center justify-center font-bold text-sm shrink-0 pizza-number">
-              <div className="w-7 h-7 rounded-full border-2 border-black bg-white flex items-center justify-center font-bold shrink-0" style={{ fontSize: '20px' }}>
-                {subtitle.nr}
-              </div>
+            <div className="font-bold text-stone-800">
+              {subtitle.nr} . {itemName}
+            </div>
+          )}
+          {/* Menu: tylko nazwa */}
+          {!subtitle && (
+            <div className="font-bold text-stone-800">{itemName}</div>
+          )}
+          
+          {/* Rozmiar pod nazwą */}
+          {subtitle && (
+            <div className="text-sm text-stone-500 mt-0.5">
+              {subtitle.size}
             </div>
           )}
         </div>
 
-        {/* ÃÅ¡rodek: Rozmiar + Nazwa (wysokoÃâºÃâ¡ kÃÂ³Ãâka 32px = 2 linie po 16px) */}
-        {subtitle ? (
-          <div className="flex-1 min-w-0" style={{ height: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div className="font-black text-stone-700 truncate" style={{ fontSize: '0.75rem', lineHeight: '1rem' }}>
-              {subtitle.size}
-            </div>
-            <div className="text-xs text-stone-500 truncate" style={{ lineHeight: '1rem' }}>
-              {itemName}
-            </div>
+        {/* Środek: Cena */}
+        <div className="text-right shrink-0">
+          <div className={`font-bold ${isGrayed ? 'text-stone-400' : 'text-primary-600'}`}>
+            {price.toFixed(2).replace('.', ',')}
           </div>
-        ) : (
-          <div className="flex-1 min-w-0 text-sm font-semibold text-stone-700">{itemName}</div>
-        )}
+          {packagingCost > 0 && (
+            <div className="text-xs text-stone-400">
+              +{packagingCost.toFixed(2).replace('.', ',')}
+            </div>
+          )}
+        </div>
 
-        {/* Prawa: Cena + Edycja + IloÃâºÃâ¡ */}
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Cena */}
-          <div className="text-right">
-            <div className={`font-bold ${isGrayed ? 'text-stone-400' : 'text-primary-600'}`}>{formatPrice(price)}</div>
-            {packagingCost > 0 && <div className="text-xs text-stone-400">+{formatPrice(packagingCost)}</div>}
-          </div>
-
-          {/* Edytuj */}
+        {/* Prawa: Ilość (pionowo: + liczba -) */}
+        <div 
+          className="flex flex-col shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button
-            onClick={() => onEdit(item)}
-            className="w-7 h-7 rounded bg-sky-100 text-sky-700 flex items-center justify-center active:scale-95 shrink-0"
+            onClick={() => handleQuantityChange(1)}
+            className="w-7 h-7 rounded-t bg-stone-200 flex items-center justify-center active:scale-95 shrink-0 hover:bg-stone-300"
           >
-            <Icon.Edit2 size={14} />
+            <Icon.Plus size={14} />
           </button>
-
-          {/* IloÃâºÃâ¡ */}
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => handleQuantityChange(-1)}
-              className="w-7 h-7 rounded bg-stone-200 flex items-center justify-center active:scale-95 shrink-0"
-            >
-              <Icon.Minus size={14} />
-            </button>
-            <div className="w-7 h-7 flex items-center justify-center font-bold text-sm shrink-0">{item.qty}</div>
-            <button
-              onClick={() => handleQuantityChange(1)}
-              className="w-7 h-7 rounded bg-stone-200 flex items-center justify-center active:scale-95 shrink-0"
-            >
-              <Icon.Plus size={14} />
-            </button>
+          <div className="w-7 h-7 flex items-center justify-center font-bold text-sm shrink-0 bg-stone-100 border-y border-stone-200">
+            {item.qty}
           </div>
+          <button
+            onClick={() => handleQuantityChange(-1)}
+            className="w-7 h-7 rounded-b bg-stone-200 flex items-center justify-center active:scale-95 shrink-0 hover:bg-stone-300"
+          >
+            <Icon.Minus size={14} />
+          </button>
         </div>
       </div>
 
-      {/* Lista dodatkÃ³w - w kolejnoÅci: domyÅlne, usuniÄte, dodane, sosy */}
+      {/* Lista dodatków - w kolejności: domyślne, usunięte, dodane, sosy */}
       {addonsInfo && (addonsInfo.defaultList.length > 0 || addonsInfo.added.length > 0 || addonsInfo.removed.length > 0 || addonsInfo.sauces.length > 0) && (
-        <div className="mt-1 pt-1 border-t border-stone-100 space-y-1">
+        <div className="mt-2 pt-2 border-t border-stone-100 space-y-1">
           {addonsInfo.defaultList.length > 0 && (
             <div className="text-xs text-stone-600">{addonsInfo.defaultList.join(', ')}</div>
           )}
@@ -178,22 +176,22 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
             <div className="text-xs text-emerald-600">+{addonsInfo.added.join(', ')}</div>
           )}
           {addonsInfo.sauces.length > 0 && (
-            <div className="text-xs text-stone-500">ð¥« {addonsInfo.sauces.join(', ')}</div>
+            <div className="text-xs text-stone-500">🥫 {addonsInfo.sauces.join(', ')}</div>
           )}
         </div>
       )}
 
       {/* Dodatkowe info */}
       {(item.notes || item.discount) && (
-        <div className="mt-1 pt-1 border-t border-stone-100 flex flex-wrap gap-1">
+        <div className="mt-2 pt-2 border-t border-stone-100 flex flex-wrap gap-1">
           {item.notes && (
             <span className="text-xs bg-primary-50 text-amber-700 px-2 py-0.5 rounded">
-              Ã°Å¸ÂÂÃ¢â¬ÅÃÂ {item.notes}
+              📝 {item.notes}
             </span>
           )}
           {item.discount && (
             <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">
-              Ã°Å¸ÂÂÃÂÃÂ·ÃÂ¯ÃÂ¸ÃÂ {item.discount.name}
+              🏷️ {item.discount.name}
             </span>
           )}
         </div>
