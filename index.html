@@ -27,17 +27,12 @@
     </form>
   </div>
 
-  <script type="module">
+  <script>
     const appScripts = [
       'data.js','helpers.js','fuzzy.js','reducer.js','hooks.js','ui-basic.js','ui-addon.js','editors.js','views-cart.js','views-history.js','views-label.js','views-admin.js','app.js'
     ];
 
-    function showError(msg){
-      const el = document.getElementById('login-error');
-      el.textContent = msg; el.style.display = 'block';
-    }
-
-    // Client-side auth: compare SHA-256(salt + password) to stored hashes.
+    // Client-side auth: compare SHA-256(salt + password) to stored hashes
     const credentials = {
       natka: { salt: 's@1t_natka', hash: '447b3c55205911d3939b92ffc306d7fcefe656afa737fae72f8d61ca9345b1c4' },
       admin: { salt: 's@1t_admin', hash: '872fc47682b9db3732d34c0194421ce8bba061c5d510d1b7e0f3fbbfdf20bbba' }
@@ -56,33 +51,45 @@
       if (!entry) throw new Error('Nieznany użytkownik');
       const digest = await sha256Hex(entry.salt + password);
       if (digest !== entry.hash) throw new Error('Nieprawidłowe dane');
-      // set simple session markers
       const token = btoa(username + ':' + Date.now());
       sessionStorage.setItem('authToken', token);
       sessionStorage.setItem('authUser', username);
       return { user: username, token };
     }
 
+    function showError(msg){
+      const el = document.getElementById('login-error');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
     function loadApp(){
-      // remove overlay
-      const ov = document.getElementById('login-overlay'); if (ov) ov.remove();
-      // dynamically add app script tags (Babel will compile them)
+      const ov = document.getElementById('login-overlay');
+      if (ov) ov.remove();
       for(const s of appScripts){
         const sc = document.createElement('script');
-        sc.type = 'text/babel'; sc.src = s; document.body.appendChild(sc);
+        sc.type = 'text/babel';
+        sc.src = s;
+        document.body.appendChild(sc);
       }
     }
 
-    document.getElementById('login-form').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
-      try{
-        await doLogin(u,p);
-        loadApp();
-      }catch(err){ showError(err.message || 'Błąd'); }
+    document.addEventListener('DOMContentLoaded', function(){
+      const form = document.getElementById('login-form');
+      if(form){
+        form.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const u = document.getElementById('username').value.trim();
+          const p = document.getElementById('password').value;
+          try{
+            await doLogin(u,p);
+            loadApp();
+          }catch(err){
+            showError(err.message || 'Błąd');
+          }
+        });
+      }
     });
-
   </script>
 </body>
 </html>
