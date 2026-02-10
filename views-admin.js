@@ -743,6 +743,16 @@ const AdminPanel = ({ onClose }) => {
           <Input label="DopÃâata ÃÂ½/ÃÂ½" type="number" step="0.01" value={db.settings.splitSurcharge} onChange={e => actions.updateSettings({ splitSurcharge: parseFloat(e.target.value) || 0 })} />
         </div>
       </Section>
+      <Section title="Interfejs">
+        <Input 
+          label="Szerokość koszyka (%)" 
+          type="number" 
+          min="20" 
+          max="50" 
+          value={db.settings.cartWidth || 33} 
+          onChange={e => actions.updateSettings({ cartWidth: parseInt(e.target.value) || 33 })} 
+        />
+      </Section>
       <Section title="Dane">
         <Button variant="danger" className="w-full" onClick={() => { if (window.confirm('ResetowaÃâ¡ wszystkie dane?')) actions.resetData(); }}>
           <Icon.Trash2 size={16} /> Reset danych
@@ -783,18 +793,6 @@ const AdminPanel = ({ onClose }) => {
 
       {/* Content - scrollable */}
       <div className="flex-1 overflow-y-auto p-3">
-        <div className="overflow-x-auto mb-4 -mx-1 px-1 flex gap-2 pb-2">
-          {tabs.map(t => (
-            <button
-              key={t.id}
-              onClick={() => { setTab(t.id); cancelEdit(); }}
-              className={`px-3 py-2 rounded-lg font-semibold whitespace-nowrap text-sm ${tab === t.id ? 'bg-amber-500 text-white' : 'bg-stone-100'}`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
         {tab === 'pizzas' && (
           editType === 'pizza' ? <PizzaForm /> : (
             <>

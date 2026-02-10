@@ -249,9 +249,20 @@ const CartBreakdownModal = ({ onClose }) => {
           const itemName = item.isSplit && item.splitName ? `${item.name} / ${item.splitName}` : item.name;
           const price = getItemPrice(item);
           const packaging = getItemPackaging(item);
+      {/* Header */}
+      <div className="flex items-center justify-between p-2 bg-white border-b shrink-0 shadow-soft">
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-lg bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition-colors"
+        >
+          <Icon.ChevronLeft />
+        </button>
+        <h2 className="font-bold text-base truncate px-2">Rozwinięcie koszyka</h2>
+        <div className="w-9" />
+      </div>
 
-          return (
-            <div key={item.id} className="bg-white rounded-lg p-3 border-2 border-stone-200 space-y-2">
+      {/* Content - scrollable */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
               <div className="font-semibold text-stone-800">{itemName}</div>
               
               {/* Cena pozycji */}
@@ -337,7 +348,7 @@ const CartBreakdownModal = ({ onClose }) => {
           </div>
         </div>
       </div>
-    </Modal>
+    </div>
   );
 };
 
@@ -353,21 +364,18 @@ const CartSidebar = ({ onOrder }) => {
     globalDiscount,
     setGlobalDiscount,
     promo,
-    setPromo
+const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) => {
   } = useApp();
 
   const [editing, setEditing] = useState(null);
   const [editingMenu, setEditingMenu] = useState(null);
-  const [showBreakdown, setShowBreakdown] = useState(false);
   const [showDiscountsPromos, setShowDiscountsPromos] = useState(false);
 
   const totals = calculateTotal(cart.filter(item => item.qty > 0), db, globalDiscount, promo);
   const globalDiscounts = db.discounts.filter(d => d.active && !d.perItem);
   const activePromos = db.promotions.filter(p => p.active);
   const activeCart = cart.filter(item => item.qty > 0);
-
-  const handleEdit = (item) => {
-    if (item.type === 'pizza') {
+  const [showDiscountsPromos, setShowDiscountsPromos] = useState(false);
       setEditing(item);
     } else if (item.type === 'menu') {
       setEditingMenu(item);
@@ -375,38 +383,13 @@ const CartSidebar = ({ onOrder }) => {
   };
 
   // Renderowanie edytorÃÂ³w
-  if (editing) {
-    return (
-      <PizzaEditor
-        item={editing}
-        onSave={updateCartItem}
-        onClose={() => setEditing(null)}
-      />
-    );
-  }
-
-  if (editingMenu) {
-    return (
-      <MenuItemEditor
-        item={editingMenu}
-        onSave={updateCartItem}
-        onClose={() => setEditingMenu(null)}
-      />
-    );
-  }
-
-  if (showBreakdown) {
-    return <CartBreakdownModal onClose={() => setShowBreakdown(false)} />;
-  }
-
-  return (
-    <div className="h-full flex flex-col bg-themed-subtle">
-      {/* Lista pozycji */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-2">
-        {cart.length === 0 ? (
-          <div className="text-center py-12 text-stone-400">
-            <Icon.ShoppingCart size={40} className="mx-auto mb-2 opacity-30" />
-            <p className="text-xs">Brak pozycji</p>
+  const handleEdit = (item) => {
+    if (item.type === 'pizza') {
+      onEditItem(item);
+    } else if (item.type === 'menu') {
+      onEditMenuItem(item);
+    }
+  };
           </div>
         ) : (
           cart.map(item => (
@@ -488,7 +471,7 @@ const CartSidebar = ({ onOrder }) => {
 
             {/* 3. RAZEM */}
             <button
-              onClick={() => setShowBreakdown(true)}
+              onClick={() => onShowBreakdown(true)}
               className="flex-1 px-2 py-3 rounded-lg bg-white border-2 border-stone-300 hover:border-stone-400 font-bold flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all shadow-soft"
             >
               <span className="text-xs text-stone-600">RAZEM</span>
@@ -524,6 +507,11 @@ const MainApp = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   const [showLabel, setShowLabel] = useState(null);
   const [showOrderForm, setShowOrderForm] = useState(false);
+  
+  // Stany dla edytorów - aby koszyk był widoczny podczas edycji
+  const [editingItem, setEditingItem] = useState(null);
+  const [editingMenuItemState, setEditingMenuItemState] = useState(null);
+  const [showCartBreakdown, setShowCartBreakdown] = useState(false);
 
   // Dodaj pizzÃâ¢ do koszyka
   const handleAddPizza = (pizza) => {
@@ -591,10 +579,29 @@ const MainApp = () => {
 
   return (
     <div className="h-screen flex themed-bg">
-      {/* Lewa strona - Menu / Admin / History */}
+      {/* Lewa strona - Menu / Admin / History / Edytory */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Renderowanie contentu - główny widok, admin lub historia */}
-        {showAdmin ? (
+        {/* Renderowanie contentu - główny widok, admin, historia lub edytory */}
+        {editingItem ? (
+          <PizzaEditor
+            item={editingItem}
+            onSave={(updated) => { updateCartItem(updated); setEditingItem(null); }}
+            onClose={() => setEditingItem(null)}
+          />
+        ) : editingMenuItemState ? (
+          <MenuItemEditor
+            item={editingMenuItemState}
+            onSave={(updated) => { updateCartItem(updated); setEditingMenuItemState(null); }}
+            onClose={() => setEditingMenuItemState(null)}
+          />
+        ) : showCartBreakdown ? (
+          <CartBreakdownModal onClose={() => setShowCartBreakdown(false)} />
+        ) : showOrderForm ? (
+          <CartView 
+            onClose={() => setShowOrderForm(false)} 
+            onOrder={handleOrder}
+          />
+        ) : showAdmin ? (
           <AdminPanel onClose={() => setShowAdmin(false)} />
         ) : showHistory ? (
           <HistoryView
@@ -749,17 +756,16 @@ const MainApp = () => {
       </div>
 
       {/* Prawa strona - Koszyk ZAWSZE WIDOCZNY */}
-      <div className="shrink-0 bg-themed-subtle border-l-2 themed-border-subtle" style={{ width: '33%' }}>
-        <CartSidebar onOrder={handleOrderClick} />
+      <div className="shrink-0 bg-themed-subtle border-l-2 themed-border-subtle" style={{ width: `${db.settings.cartWidth || 33}%` }}>
+        <CartSidebar 
+          onOrder={handleOrderClick}
+          onEditItem={setEditingItem}
+          onEditMenuItem={setEditingMenuItemState}
+          onShowBreakdown={setShowCartBreakdown}
+        />
       </div>
 
-      {/* Modale */}
-      {showOrderForm && (
-        <CartView 
-          onClose={() => setShowOrderForm(false)} 
-          onOrder={handleOrder}
-        />
-      )}
+      {/* Modale (tylko pełnoekranowe) */}
       {showLabel && (
         <OrderLabel order={showLabel} onClose={() => setShowLabel(null)} onConfirm={handleConfirmReprint} />
       )}

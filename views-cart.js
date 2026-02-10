@@ -1,4 +1,4 @@
-// ==================== CART VIEW - FORMULARZ ZAMÃƒâ€œWIENIA ====================
+// ==================== CART VIEW - FORMULARZ ZAMÃÆÃ¢â¬ÅWIENIA ====================
 
 const CartView = ({ onClose, onOrder, initialData = null }) => {
   const { db, cart } = useApp();
@@ -57,13 +57,13 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
     }
   }, []);
 
-  // WALIDACJA FORMULARZA - zwraca ostrzeżenia ale nie blokuje
+  // WALIDACJA FORMULARZA - zwraca ostrzeÅ¼enia ale nie blokuje
   const validateOrder = () => {
     if (activeCart.length === 0) {
       return 'Koszyk jest pusty';
     }
 
-    // Ostrzeżenia dla dowozu (nie blokują)
+    // OstrzeÅ¼enia dla dowozu (nie blokujÄ)
     const warnings = [];
     if (!form.isTakeout) {
       if (!form.city.trim()) warnings.push('Brak miasta');
@@ -74,7 +74,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
       } else {
         const phoneDigits = form.phone.replace(/\D/g, '');
         if (phoneDigits.length < 9) {
-          warnings.push('Telefon niepełny');
+          warnings.push('Telefon niepeÅny');
         }
       }
     }
@@ -85,7 +85,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
     }
 
     if (warnings.length > 0) {
-      return '⚠️ ' + warnings.join(', ');
+      return 'â ï¸ ' + warnings.join(', ');
     }
 
     return null;
@@ -100,7 +100,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
       return;
     }
     
-    // Dla ostrzeżeń - ustaw błąd ale pozwól kontynuować
+    // Dla ostrzeÅ¼eÅ - ustaw bÅÄd ale pozwÃ³l kontynuowaÄ
     if (validationError) {
       setError(validationError);
     } else {
@@ -150,34 +150,25 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
   };
 
   return (
-    <Modal
-      onClose={onClose}
-      title={isEditMode ? `Edycja #${initialData.orderNumber}` : 'Nowe zamÃ³wienie'}
-      footer={
-        <div className="space-y-2">
-          {error && (
-            <div className={`border-2 px-4 py-3 rounded-lg text-sm font-semibold ${
-              error.startsWith('⚠️')
-                ? 'bg-yellow-100 border-yellow-400 text-yellow-800'
-                : 'bg-red-100 border-red-400 text-red-700'
-            }`}>
-              Ã¢Å¡Â Ã¯Â¸Â {error}
-            </div>
-          )}
-          <div className="flex gap-2">
-            <Button variant="secondary" className="flex-1" onClick={onClose}>
-              Anuluj
-            </Button>
-            <Button variant="primary" className="flex-1" onClick={submit}>
-              {isEditMode ? 'Zapisz' : 'Potwierdź'}
-            </Button>
-          </div>
-        </div>
-      }
-    >
-      <div className="p-3 space-y-3">
+    <div className="h-full flex flex-col bg-stone-100">
+      {/* Header z przyciskiem powrotu */}
+      <div className="flex items-center justify-between p-2 bg-white border-b shrink-0 shadow-soft">
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-lg bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition-colors"
+        >
+          <Icon.ChevronLeft />
+        </button>
+        <h2 className="font-bold text-base truncate px-2">
+          {isEditMode ? `Edycja #${initialData.orderNumber}` : 'Nowe zamówienie'}
+        </h2>
+        <div className="w-9" />
+      </div>
+
+      {/* Content - scrollable */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         <div className="bg-white rounded-xl p-3 border-2 border-stone-200 space-y-3">
-          {/* DowÃ³z / Wynos */}
+          {/* DowÃÂ³z / Wynos */}
           <div className="flex gap-2">
             <button
               onClick={() => { setForm(f => ({ ...f, isTakeout: false })); setError(''); }}
@@ -187,7 +178,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                   : 'border-stone-200'
               }`}
             >
-              <Icon.MapPin size={16} /> DowÃ³z
+              <Icon.MapPin size={16} /> DowÃÂ³z
             </button>
             <button
               onClick={() => { setForm(f => ({ ...f, isTakeout: true })); setError(''); }}
@@ -217,7 +208,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                     value={form.city}
                     onChange={v => setForm(f => ({ ...f, city: v }))}
                     options={db.locations.cities}
-                    placeholder="MiejscowoÅ›Ä‡*"
+                    placeholder="MiejscowoÃâºÃâ¡*"
                     onSelect={handleCitySelect}
                   />
                 </div>
@@ -282,7 +273,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                   #
                 </button>
                 <button
-                  onClick={() => addDoorCodeChar('Ã‚Â§')}
+                  onClick={() => addDoorCodeChar('ÃâÃÂ§')}
                   className="w-10 h-10 rounded-lg bg-stone-100 flex items-center justify-center active:scale-95"
                 >
                   <Icon.Key size={18} />
@@ -292,14 +283,14 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
               {/* Landmarki */}
               {db.locations.landmarks.length > 0 && (
                 <div className="flex flex-wrap gap-1 pt-2 border-t border-stone-100">
-                  <span className="text-xs text-stone-400 w-full mb-1">Szybki wybÃ³r:</span>
+                  <span className="text-xs text-stone-400 w-full mb-1">Szybki wybÃÂ³r:</span>
                   {db.locations.landmarks.map(lm => (
                     <button
                       key={lm.id}
                       onClick={() => selectLandmark(lm)}
                       className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 active:scale-95"
                     >
-                      ðŸâ€œÂ {lm.name}
+                      Ã°Å¸ÂÂÃ¢â¬ÅÃÂ {lm.name}
                     </button>
                   ))}
                 </div>
@@ -339,7 +330,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
               onChange={e => setForm(f => ({ ...f, isScheduled: e.target.checked }))}
               className="w-5 h-5"
             />
-            <span className="font-semibold">ðŸ•Â Na termin</span>
+            <span className="font-semibold">Ã°Å¸Ââ¢ÃÂ Na termin</span>
             {form.isScheduled && (
               <>
                 <input
@@ -358,9 +349,9 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
             )}
           </label>
 
-          {/* PÅ‚atnoÅ›Ä‡ */}
+          {/* PÃâatnoÃâºÃâ¡ */}
           <div>
-            <div className="text-xs font-bold text-stone-500 mb-2">PÅ‚atnoÅ›Ä‡</div>
+            <div className="text-xs font-bold text-stone-500 mb-2">PÃâatnoÃâºÃâ¡</div>
             <div className="flex gap-2">
               {db.settings.paymentTypes.map(p => (
                 <button
@@ -379,6 +370,28 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
           </div>
         </div>
       </div>
-    </Modal>
+      </div>
+
+      {/* Footer z przyciskami */}
+      <div className="p-2 bg-white border-t shrink-0 shadow-strong space-y-2">
+        {error && (
+          <div className={`border-2 px-4 py-3 rounded-lg text-sm font-semibold ${
+            error.startsWith('⚠️')
+              ? 'bg-yellow-100 border-yellow-400 text-yellow-800'
+              : 'bg-red-100 border-red-400 text-red-700'
+          }`}>
+            ⚠️ {error}
+          </div>
+        )}
+        <div className="flex gap-2">
+          <Button variant="secondary" className="flex-1" onClick={onClose}>
+            Anuluj
+          </Button>
+          <Button variant="primary" className="flex-1" onClick={submit}>
+            {isEditMode ? 'Zapisz' : 'Potwierdź'}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
