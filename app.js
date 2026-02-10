@@ -234,7 +234,7 @@ const CartBreakdownModal = ({ onClose }) => {
 
   const handlePriceChange = (itemId, value) => {
     setEditingPrices(prev => ({ ...prev, [itemId]: value }));
-    setCustomTotal(null); // Reset custom total gdy zmieniamy pojedyncze ceny
+    setCustomTotal(null);
   };
 
   const handleTotalChange = (value) => {
@@ -243,12 +243,7 @@ const CartBreakdownModal = ({ onClose }) => {
   };
 
   return (
-    <Modal onClose={onClose} title="RozwiniÃâ¢cie koszyka">
-      <div className="p-3 space-y-3">
-        {activeCart.map(item => {
-          const itemName = item.isSplit && item.splitName ? `${item.name} / ${item.splitName}` : item.name;
-          const price = getItemPrice(item);
-          const packaging = getItemPackaging(item);
+    <div className="h-full flex flex-col bg-stone-100">
       {/* Header */}
       <div className="flex items-center justify-between p-2 bg-white border-b shrink-0 shadow-soft">
         <button
@@ -263,6 +258,13 @@ const CartBreakdownModal = ({ onClose }) => {
 
       {/* Content - scrollable */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        {activeCart.map(item => {
+          const itemName = item.isSplit && item.splitName ? `${item.name} / ${item.splitName}` : item.name;
+          const price = getItemPrice(item);
+          const packaging = getItemPackaging(item);
+
+          return (
+            <div key={item.id} className="bg-white rounded-lg p-3 border-2 border-stone-200 space-y-2">
               <div className="font-semibold text-stone-800">{itemName}</div>
               
               {/* Cena pozycji */}
@@ -275,7 +277,7 @@ const CartBreakdownModal = ({ onClose }) => {
                   onChange={e => handlePriceChange(item.id, e.target.value)}
                   className="flex-1 font-bold text-primary-600"
                 />
-                <span className="text-xs text-stone-500">zÃâ</span>
+                <span className="text-xs text-stone-500">zł</span>
               </div>
 
               {/* Opakowanie */}
@@ -285,7 +287,7 @@ const CartBreakdownModal = ({ onClose }) => {
                 </div>
               )}
 
-              {/* Additki dla pizzy */}
+              {/* Dodatki dla pizzy */}
               {item.type === 'pizza' && item.addons && (
                 <div className="space-y-1">
                   <div className="text-xs text-stone-500 font-semibold">Dodatki:</div>
@@ -294,7 +296,7 @@ const CartBreakdownModal = ({ onClose }) => {
                     if (!addon || qty === 0) return null;
                     return (
                       <div key={addonId} className="text-xs text-stone-600 ml-2">
-                        Ã¢â¬Â¢ {addon.name} Ãâ{qty}
+                        • {addon.name} ×{qty}
                       </div>
                     );
                   })}
@@ -310,7 +312,7 @@ const CartBreakdownModal = ({ onClose }) => {
                     if (!sauce || qty === 0) return null;
                     return (
                       <div key={sauceId} className="text-xs text-stone-600 ml-2">
-                        Ã¢â¬Â¢ {sauce.name} Ãâ{qty}
+                        • {sauce.name} ×{qty}
                       </div>
                     );
                   })}
@@ -342,7 +344,7 @@ const CartBreakdownModal = ({ onClose }) => {
                   autoFocus
                   className="flex-1 text-right font-black text-xl text-primary-600 border-primary-400"
                 />
-                <span className="text-sm text-stone-500">zÃâ</span>
+                <span className="text-sm text-stone-500">zł</span>
               </div>
             )}
           </div>
@@ -351,6 +353,7 @@ const CartBreakdownModal = ({ onClose }) => {
     </div>
   );
 };
+
 
 // ==================== CART SIDEBAR ====================
 // Koszyk zawsze widoczny po prawej stronie

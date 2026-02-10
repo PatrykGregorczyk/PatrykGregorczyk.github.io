@@ -370,7 +370,6 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
           </div>
         </div>
       </div>
-      </div>
 
       {/* Footer z przyciskami */}
       <div className="p-2 bg-white border-t shrink-0 shadow-strong space-y-2">
