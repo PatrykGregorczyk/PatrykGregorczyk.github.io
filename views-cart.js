@@ -1,4 +1,4 @@
-// ==================== CART VIEW - FORMULARZ ZAMÃÆÃ¢â¬ÅWIENIA ====================
+// ==================== CART VIEW - FORMULARZ ZAMÓWIENIA ====================
 
 const CartView = ({ onClose, onOrder, initialData = null }) => {
   const { db, cart } = useApp();
@@ -57,13 +57,13 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
     }
   }, []);
 
-  // WALIDACJA FORMULARZA - zwraca ostrzeÅ¼enia ale nie blokuje
+  // WALIDACJA FORMULARZA - zwraca ostrzeżenia ale nie blokuje
   const validateOrder = () => {
     if (activeCart.length === 0) {
       return 'Koszyk jest pusty';
     }
 
-    // OstrzeÅ¼enia dla dowozu (nie blokujÄ)
+    // Ostrzeżenia dla dowozu (nie blokują)
     const warnings = [];
     if (!form.isTakeout) {
       if (!form.city.trim()) warnings.push('Brak miasta');
@@ -74,7 +74,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
       } else {
         const phoneDigits = form.phone.replace(/\D/g, '');
         if (phoneDigits.length < 9) {
-          warnings.push('Telefon niepeÅny');
+          warnings.push('Telefon niepełny');
         }
       }
     }
@@ -85,7 +85,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
     }
 
     if (warnings.length > 0) {
-      return 'â ï¸ ' + warnings.join(', ');
+      return '⚠️ ' + warnings.join(', ');
     }
 
     return null;
@@ -100,7 +100,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
       return;
     }
     
-    // Dla ostrzeÅ¼eÅ - ustaw bÅÄd ale pozwÃ³l kontynuowaÄ
+    // Dla ostrzeżeń - ustaw błąd ale pozwól kontynuować
     if (validationError) {
       setError(validationError);
     } else {
@@ -168,7 +168,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
       {/* Content - scrollable */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         <div className="bg-white rounded-xl p-3 border-2 border-stone-200 space-y-3">
-          {/* DowÃÂ³z / Wynos */}
+          {/* Dowóz / Wynos */}
           <div className="flex gap-2">
             <button
               onClick={() => { setForm(f => ({ ...f, isTakeout: false })); setError(''); }}
@@ -178,7 +178,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                   : 'border-stone-200'
               }`}
             >
-              <Icon.MapPin size={16} /> DowÃÂ³z
+              <Icon.MapPin size={16} /> Dowóz
             </button>
             <button
               onClick={() => { setForm(f => ({ ...f, isTakeout: true })); setError(''); }}
@@ -208,7 +208,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                     value={form.city}
                     onChange={v => setForm(f => ({ ...f, city: v }))}
                     options={db.locations.cities}
-                    placeholder="MiejscowoÃâºÃâ¡*"
+                    placeholder="Miejscowość*"
                     onSelect={handleCitySelect}
                   />
                 </div>
@@ -273,7 +273,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
                   #
                 </button>
                 <button
-                  onClick={() => addDoorCodeChar('ÃâÃÂ§')}
+                  onClick={() => addDoorCodeChar('§')}
                   className="w-10 h-10 rounded-lg bg-stone-100 flex items-center justify-center active:scale-95"
                 >
                   <Icon.Key size={18} />
@@ -283,14 +283,14 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
               {/* Landmarki */}
               {db.locations.landmarks.length > 0 && (
                 <div className="flex flex-wrap gap-1 pt-2 border-t border-stone-100">
-                  <span className="text-xs text-stone-400 w-full mb-1">Szybki wybÃÂ³r:</span>
+                  <span className="text-xs text-stone-400 w-full mb-1">Szybki wybór:</span>
                   {db.locations.landmarks.map(lm => (
                     <button
                       key={lm.id}
                       onClick={() => selectLandmark(lm)}
                       className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 active:scale-95"
                     >
-                      Ã°Å¸ÂÂÃ¢â¬ÅÃÂ {lm.name}
+                      🍝" {lm.name}
                     </button>
                   ))}
                 </div>
@@ -330,7 +330,7 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
               onChange={e => setForm(f => ({ ...f, isScheduled: e.target.checked }))}
               className="w-5 h-5"
             />
-            <span className="font-semibold">Ã°Å¸Ââ¢ÃÂ Na termin</span>
+            <span className="font-semibold">🍕 Na termin</span>
             {form.isScheduled && (
               <>
                 <input
@@ -349,9 +349,9 @@ const CartView = ({ onClose, onOrder, initialData = null }) => {
             )}
           </label>
 
-          {/* PÃâatnoÃâºÃâ¡ */}
+          {/* Płatność */}
           <div>
-            <div className="text-xs font-bold text-stone-500 mb-2">PÃâatnoÃâºÃâ¡</div>
+            <div className="text-xs font-bold text-stone-500 mb-2">Płatność</div>
             <div className="flex gap-2">
               {db.settings.paymentTypes.map(p => (
                 <button

@@ -1,25 +1,25 @@
 // ==================== DEFAULT DATA ====================
-// Wszystkie domyÃâºlne dane aplikacji
+// Wszystkie domyślne dane aplikacji
 
 const DEFAULT_DATA = {
   settings: {
     restaurantName: 'Da Grasso',
     theme: 'classic',
     sizes: [
-      { id: 'S', label: 'maÃâa', short: 'm' },
-      { id: 'M', label: 'Ãâºrednia', short: 'Ãâº' },
-      { id: 'L', label: 'duÃÂ¼a', short: 'd' }
+      { id: 'S', label: 'mała', short: 'm' },
+      { id: 'M', label: 'średnia', short: 'ś' },
+      { id: 'L', label: 'duża', short: 'd' }
     ],
     splitSurcharge: 5,
     defaultFreeSauces: 2,
     cartWidth: 33,  // Szerokość koszyka w procentach
     deliveryTimes: ['30', '45', '60', '90'],
     paymentTypes: [
-      { id: 'cash', label: 'GotÃÂ³wka', icon: 'Ã°Å¸âÂµ' },
-      { id: 'card', label: 'Karta', icon: 'Ã°Å¸âÂ³' },
-      { id: 'online', label: 'Online', icon: 'Ã°Å¸âÂ±' }
+      { id: 'cash', label: 'Gotówka', icon: '💵' },
+      { id: 'card', label: 'Karta', icon: '💳' },
+      { id: 'online', label: 'Online', icon: '📱' }
     ],
-    quickNotes: ['PRZYPIECZONA', 'BEZ CEBULI', 'NA CIENKIM', 'DUÃÂ»O SOSU']
+    quickNotes: ['PRZYPIECZONA', 'BEZ CEBULI', 'NA CIENKIM', 'DUŻO SOSU']
   },
 
   themes: {
@@ -42,7 +42,7 @@ const DEFAULT_DATA = {
       cartBorder: 'emerald-200'
     },
     sunset: {
-      name: 'ZachÃÂ³d sÃâoÃâca',
+      name: 'Zachód słońca',
       primary: 'orange',
       cartBg: 'orange-50',
       cartBorder: 'orange-200'
@@ -54,7 +54,7 @@ const DEFAULT_DATA = {
       cartBorder: 'purple-200'
     },
     rose: {
-      name: 'RÃÂ³ÃÂ¼a',
+      name: 'Róża',
       primary: 'rose',
       cartBg: 'rose-50',
       cartBorder: 'rose-200'
@@ -62,11 +62,11 @@ const DEFAULT_DATA = {
   },
 
   packaging: [
-    { id: 1, name: 'PudeÃâko S', price: 1 },
-    { id: 2, name: 'PudeÃâko M', price: 1.5 },
-    { id: 3, name: 'PudeÃâko L', price: 2 },
-    { id: 4, name: 'Pojemnik maÃây', price: 0.5 },
-    { id: 5, name: 'Pojemnik duÃÂ¼y', price: 1 }
+    { id: 1, name: 'Pudełko S', price: 1 },
+    { id: 2, name: 'Pudełko M', price: 1.5 },
+    { id: 3, name: 'Pudełko L', price: 2 },
+    { id: 4, name: 'Pojemnik mały', price: 0.5 },
+    { id: 5, name: 'Pojemnik duży', price: 1 }
   ],
 
   addons: [
@@ -76,25 +76,25 @@ const DEFAULT_DATA = {
     { id: 3, name: 'feta', price: 5, category: 'serowe', forType: 'both' },
     { id: 4, name: 'gorgonzola', price: 5, category: 'serowe', forType: 'pizza' },
     { id: 5, name: 'parmezan', price: 5, category: 'serowe', forType: 'pizza' },
-    // MiÃâ¢sne
-    { id: 10, name: 'szynka', price: 5, category: 'miÃâ¢sne', forType: 'pizza' },
-    { id: 11, name: 'salami', price: 5, category: 'miÃâ¢sne', forType: 'pizza' },
-    { id: 12, name: 'pepperoni', price: 5, category: 'miÃâ¢sne', forType: 'pizza' },
-    { id: 13, name: 'boczek', price: 5, category: 'miÃâ¢sne', forType: 'both' },
-    { id: 14, name: 'kurczak', price: 6, category: 'miÃâ¢sne', forType: 'both' },
+    // Mięsne
+    { id: 10, name: 'szynka', price: 5, category: 'mięsne', forType: 'pizza' },
+    { id: 11, name: 'salami', price: 5, category: 'mięsne', forType: 'pizza' },
+    { id: 12, name: 'pepperoni', price: 5, category: 'mięsne', forType: 'pizza' },
+    { id: 13, name: 'boczek', price: 5, category: 'mięsne', forType: 'both' },
+    { id: 14, name: 'kurczak', price: 6, category: 'mięsne', forType: 'both' },
     // Warzywne
     { id: 20, name: 'pieczarki', price: 3, category: 'warzywne', forType: 'pizza' },
     { id: 21, name: 'cebula', price: 2, category: 'warzywne', forType: 'both' },
     { id: 22, name: 'papryka', price: 3, category: 'warzywne', forType: 'pizza' },
     { id: 23, name: 'pomidor', price: 3, category: 'warzywne', forType: 'both' },
     { id: 24, name: 'oliwki', price: 4, category: 'warzywne', forType: 'pizza' },
-    { id: 25, name: 'jalapeÃÂ±o', price: 4, category: 'warzywne', forType: 'both' },
+    { id: 25, name: 'jalapeño', price: 4, category: 'warzywne', forType: 'both' },
     { id: 26, name: 'ananas', price: 4, category: 'warzywne', forType: 'pizza' },
-    { id: 30, name: 'saÃâata', price: 2, category: 'warzywne', forType: 'menu' },
-    { id: 31, name: 'ogÃÂ³rek', price: 2, category: 'warzywne', forType: 'menu' },
+    { id: 30, name: 'sałata', price: 2, category: 'warzywne', forType: 'menu' },
+    { id: 31, name: 'ogórek', price: 2, category: 'warzywne', forType: 'menu' },
     // Inne
     { id: 50, name: 'jajko', price: 3, category: 'inne', forType: 'pizza' },
-    { id: 51, name: 'podwÃÂ³jne miÃâ¢so', price: 8, category: 'inne', forType: 'menu' },
+    { id: 51, name: 'podwójne mięso', price: 8, category: 'inne', forType: 'menu' },
   ],
 
   sauces: [
@@ -151,10 +151,10 @@ const DEFAULT_DATA = {
   ],
 
   menu: [
-    { id: 101, cat: 'przekÃâ¦ski', name: 'Nuggetsy 6szt', price: 14, pkg: 4, availableAddons: [], defaultAddons: {} },
+    { id: 101, cat: 'przekÄ…ski', name: 'Nuggetsy 6szt', price: 14, pkg: 4, availableAddons: [], defaultAddons: {} },
     { id: 104, cat: 'przekąski', name: 'Placki ziemniaczane', price: 12, pkg: 4, availableAddons: [], defaultAddons: {} },
-    { id: 102, cat: 'przekÃâ¦ski', name: 'Frytki', price: 10, pkg: 4, availableAddons: [3], defaultAddons: {} },
-    { id: 103, cat: 'przekÃâ¦ski', name: 'SkrzydeÃâka 8szt', price: 18, pkg: 4, availableAddons: [], defaultAddons: {} },
+    { id: 102, cat: 'przekÄ…ski', name: 'Frytki', price: 10, pkg: 4, availableAddons: [3], defaultAddons: {} },
+    { id: 103, cat: 'przekąski', name: 'Skrzydełka 8szt', price: 18, pkg: 4, availableAddons: [], defaultAddons: {} },
     {
       id: 301, cat: 'burgery', name: 'Burger Classic', price: 26, pkg: 4,
       availableAddons: [3, 13, 25, 21, 23, 30, 31, 51],
@@ -170,8 +170,8 @@ const DEFAULT_DATA = {
       availableAddons: [3, 13, 25, 21, 23, 30, 31, 51],
       defaultAddons: { 13: 1, 23: 1, 30: 1, 21: 1 }
     },
-    { id: 401, cat: 'saÃâatki', name: 'SaÃâatka Grecka', price: 18, pkg: 4, availableAddons: [3], defaultAddons: {} },
-    { id: 402, cat: 'saÃâatki', name: 'SaÃâatka Cezar', price: 20, pkg: 4, availableAddons: [14], defaultAddons: {} },
+    { id: 401, cat: 'sałatki', name: 'Sałatka Grecka', price: 18, pkg: 4, availableAddons: [3], defaultAddons: {} },
+    { id: 402, cat: 'sałatki', name: 'Sałatka Cezar', price: 20, pkg: 4, availableAddons: [14], defaultAddons: {} },
     { id: 451, cat: 'makarony', name: 'Carbonara', price: 22, pkg: 5, availableAddons: [13], defaultAddons: {} },
     { id: 452, cat: 'makarony', name: 'Bolognese', price: 24, pkg: 5, availableAddons: [], defaultAddons: {} },
     { id: 501, cat: 'napoje', name: 'Coca-Cola 0.5L', price: 7, availableAddons: [], defaultAddons: {} },
@@ -179,26 +179,26 @@ const DEFAULT_DATA = {
     { id: 503, cat: 'napoje', name: 'Sprite 0.5L', price: 7, availableAddons: [], defaultAddons: {} },
     { id: 504, cat: 'napoje', name: 'Woda 0.5L', price: 5, availableAddons: [], defaultAddons: {} },
     { id: 701, cat: 'alkohole', name: 'Piwo Tyskie 0.5L', price: 10, alco: true, availableAddons: [], defaultAddons: {} },
-    { id: 702, cat: 'alkohole', name: 'Piwo ÃÂÃÂ»ywiec 0.5L', price: 10, alco: true, availableAddons: [], defaultAddons: {} },
+    { id: 702, cat: 'alkohole', name: 'Piwo ٻywiec 0.5L', price: 10, alco: true, availableAddons: [], defaultAddons: {} },
     { id: 801, cat: 'desery', name: 'Lody waniliowe', price: 12, pkg: 4, availableAddons: [], defaultAddons: {} },
     { id: 802, cat: 'desery', name: 'Tiramisu', price: 15, pkg: 4, availableAddons: [], defaultAddons: {} },
   ],
 
   discounts: [
-    { id: 1, name: 'MundurÃÂ³wka', type: 'size-upgrade', sizeFrom: 'L', sizeTo: 'M', active: true, perItem: true },
-    { id: 2, name: 'Pizza 25zÃâ', type: 'fixed', fixedPrice: 25, active: true, perItem: true },
+    { id: 1, name: 'Mundurówka', type: 'size-upgrade', sizeFrom: 'L', sizeTo: 'M', active: true, perItem: true },
+    { id: 2, name: 'Pizza 25zł', type: 'fixed', fixedPrice: 25, active: true, perItem: true },
     { id: 3, name: 'Studenci 15%', type: 'percent', percent: 15, active: true, perItem: false, noAlco: true },
   ],
 
   promotions: [
-    { id: 1, name: '2 duÃÂ¼e za 90zÃâ', type: 'combo', price: 90, size: 'L', count: 2, pizzas: [1, 2, 3, 4, 5, 6, 7], active: true }
+    { id: 1, name: '2 duże za 90zł', type: 'combo', price: 90, size: 'L', count: 2, pizzas: [1, 2, 3, 4, 5, 6, 7], active: true }
   ],
 
   locations: {
     cities: [
-      { id: 1, name: 'CheÃâm', deliveryFee: 0, minOrder: 30 },
-      { id: 2, name: 'PokrÃÂ³wka', deliveryFee: 5, minOrder: 40 },
-      { id: 3, name: 'OkszÃÂ³w', deliveryFee: 8, minOrder: 50 },
+      { id: 1, name: 'Chełm', deliveryFee: 0, minOrder: 30 },
+      { id: 2, name: 'Pokrówka', deliveryFee: 5, minOrder: 40 },
+      { id: 3, name: 'Okszów', deliveryFee: 8, minOrder: 50 },
     ],
     streets: [
       { id: 1, cityId: 1, name: 'Lubelska', aliases: [], maxNumber: null },
@@ -206,8 +206,8 @@ const DEFAULT_DATA = {
       { id: 3, cityId: 1, name: 'Hrubieszowska', aliases: [], maxNumber: 120 },
       { id: 4, cityId: 1, name: 'Lwowska', aliases: [], maxNumber: 80 },
       { id: 5, cityId: 1, name: 'Kolejowa', aliases: [], maxNumber: null },
-      { id: 6, cityId: 2, name: 'GÃâÃÂ³wna', aliases: [], maxNumber: 50 },
-      { id: 7, cityId: 3, name: 'CheÃâmska', aliases: [], maxNumber: 40 },
+      { id: 6, cityId: 2, name: 'Główna', aliases: [], maxNumber: 50 },
+      { id: 7, cityId: 3, name: 'Chełmska', aliases: [], maxNumber: 40 },
     ],
     landmarks: [
       { id: 1, name: 'Orlen Hrubieszowska', cityId: 1, streetId: 3, number: '45' },
@@ -220,7 +220,7 @@ const DEFAULT_DATA = {
 };
 
 // ==================== STORAGE SERVICE ====================
-// ObsÃâuga localStorage
+// Obsługa localStorage
 
 const STORAGE_KEY = 'dagrasso_v13';
 

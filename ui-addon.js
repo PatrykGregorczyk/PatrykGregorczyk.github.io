@@ -1,5 +1,5 @@
 // ==================== ADDON CHIP ====================
-// Uniwersalny przycisk dodatku - jeden wyglÄ…d dla wszystkich trybÃ³w
+// Uniwersalny przycisk dodatku - jeden wygląd dla wszystkich trybów
 
 const AddonChip = ({
   name,
@@ -51,7 +51,7 @@ const AddonChip = ({
             isPressed ? 'bg-red-600' : 'bg-rose-500'
           } text-white font-bold`}
         >
-          Ã—{qty}
+          ×{qty}
         </button>
         <button
           onClick={qty < maxQty ? onAdd : undefined}
@@ -65,7 +65,7 @@ const AddonChip = ({
     );
   }
 
-  // ========== USUNIÄ˜TY DOMYÅÅ¡LNY ==========
+  // ========== USUNIĘTY DOMYŁšLNY ==========
   if (isRemoved) {
     return (
       <button
@@ -84,7 +84,7 @@ const AddonChip = ({
     );
   }
 
-  // ========== NIEAKTYWNY (domyÅ›lny lub dodany) ==========
+  // ========== NIEAKTYWNY (domyślny lub dodany) ==========
   return (
     <button
       onClick={onToggle}
@@ -121,12 +121,12 @@ const AutocompleteInput = ({
   const [inputValue, setInputValue] = useState(value || '');
   const containerRef = useRef(null);
 
-  // Sync z zewnÄ™trznÄ… wartoÅ›ciÄ…
+  // Sync z zewnętrzną wartością
   useEffect(() => {
     setInputValue(value || '');
   }, [value]);
 
-  // Zamknij dropdown przy klikniÄ™ciu poza komponentem
+  // Zamknij dropdown przy kliknięciu poza komponentem
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -238,7 +238,7 @@ const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
       const letter = getSizeLetter(sizeIdx, db.settings);
 
       if (item.isSplit) {
-        return `${letter} ${item.pizzaNr}/${item.splitPizzaNr} â€¢ pÃ³Å‚/pÃ³Å‚`;
+        return `${letter} ${item.pizzaNr}/${item.splitPizzaNr} • pół/pół`;
       }
 
       const pizza = db.pizzas.find(p => p.nr === item.pizzaNr);
@@ -247,7 +247,7 @@ const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
 
       let changes = [];
 
-      // Policz usuniÄ™te
+      // Policz usunięte
       Object.entries(defaultAddons).forEach(([id, qty]) => {
         const curr = currentAddons[id] || 0;
         if (curr < qty) changes.push(`-${qty - curr}`);
@@ -290,12 +290,12 @@ const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
 
           {getSubtitle() && <div className="text-xs text-stone-500 mt-0.5">{getSubtitle()}</div>}
 
-          {item.notes && <div className="text-xs text-primary-600 mt-0.5 truncate">ðŸâ€œÂ {item.notes}</div>}
+          {item.notes && <div className="text-xs text-primary-600 mt-0.5 truncate">🍝" {item.notes}</div>}
 
           {item.discount && (
             <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-1">
-              ðŸÂÂ·Ã¯Â¸Â {item.discount.name}
-              <button onClick={handleRemoveDiscount} className="font-bold">Ã—</button>
+              🍝·ï¸ {item.discount.name}
+              <button onClick={handleRemoveDiscount} className="font-bold">×</button>
             </span>
           )}
         </div>
