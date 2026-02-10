@@ -1,5 +1,5 @@
 // ==================== CART ITEM COMPACT ====================
-// Ultra-kompaktowa pozycja z listÃâ¦ dodatkÃÂ³w
+// Ultra-kompaktowa pozycja z listÃƒÂ„Ã¢Â€Â¦ dodatkÃƒÂƒÃ‚Â³w
 
 const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
   const { db, globalDiscount } = useApp();
@@ -21,7 +21,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
     return null;
   };
 
-  // Lista dodatków dla pizzy i menu
+  // Lista dodatkÃ³w dla pizzy i menu
   const getAddonsInfo = () => {
     let sourceData, defaultAddons, currentAddons;
     
@@ -41,7 +41,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
     const added = [];
     const removed = [];
     
-    // Lista domyślnych (bez zmian)
+    // Lista domyÅ›lnych (bez zmian)
     Object.entries(defaultAddons).forEach(([id, qty]) => {
       const curr = currentAddons[id] || 0;
       if (curr === qty) {
@@ -52,7 +52,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
       }
     });
     
-    // Usunięte (z domyślnych)
+    // UsuniÄ™te (z domyÅ›lnych)
     Object.entries(defaultAddons).forEach(([id, qty]) => {
       const curr = currentAddons[id] || 0;
       if (curr < qty) {
@@ -64,7 +64,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
       }
     });
     
-    // Dodane (ponad domyślne)
+    // Dodane (ponad domyÅ›lne)
     Object.entries(currentAddons).forEach(([id, qty]) => {
       const def = defaultAddons[id] || 0;
       if (qty > def) {
@@ -105,14 +105,14 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
       onClick={() => onEdit(item)}
       className={`rounded-lg p-2 border transition-all cart-item-enter cursor-pointer ${isGrayed ? 'bg-stone-100 border-stone-300 opacity-50' : 'bg-white border-stone-200 shadow-soft hover:shadow-medium hover:border-primary-300'}`}
     >
-      {/* Główna linia */}
+      {/* GÅ‚Ã³wna linia */}
       <div className="flex items-start gap-2">
         {/* Lewa: Numer i nazwa */}
         <div className="flex-1 min-w-0">
-          {/* Pizza: numer . nazwa */}
+          {/* Pizza: numer.nazwa (bez spacji) */}
           {subtitle && (
             <div className="font-bold text-stone-800">
-              {subtitle.nr} . {itemName}
+              {subtitle.nr}.{itemName}
             </div>
           )}
           {/* Menu: tylko nazwa */}
@@ -120,7 +120,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
             <div className="font-bold text-stone-800">{itemName}</div>
           )}
           
-          {/* Rozmiar pod nazwą */}
+          {/* Rozmiar pod nazwÄ… */}
           {subtitle && (
             <div className="text-sm text-stone-500 mt-0.5">
               {subtitle.size}
@@ -128,7 +128,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
           )}
         </div>
 
-        {/* Środek: Cena */}
+        {/* Åšrodek: Cena */}
         <div className="text-right shrink-0">
           <div className={`font-bold ${isGrayed ? 'text-stone-400' : 'text-primary-600'}`}>
             {price.toFixed(2).replace('.', ',')}
@@ -140,30 +140,30 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
           )}
         </div>
 
-        {/* Prawa: Ilość (pionowo: + liczba -) */}
+        {/* Prawa: IloÅ›Ä‡ - pionowo z zaokrÄ…glonymi rogami */}
         <div 
-          className="flex flex-col shrink-0"
+          className="flex flex-col gap-0.5 shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={() => handleQuantityChange(1)}
-            className="w-7 h-7 rounded-t bg-stone-200 flex items-center justify-center active:scale-95 shrink-0 hover:bg-stone-300"
+            className="w-9 h-9 rounded-lg bg-stone-200 flex items-center justify-center active:scale-95 shrink-0 hover:bg-stone-300 transition-colors"
           >
-            <Icon.Plus size={14} />
+            <Icon.Plus size={16} />
           </button>
-          <div className="w-7 h-7 flex items-center justify-center font-bold text-sm shrink-0 bg-stone-100 border-y border-stone-200">
+          <div className="w-9 h-9 flex items-center justify-center font-bold text-base shrink-0 bg-white rounded-lg border-2 border-stone-200">
             {item.qty}
           </div>
           <button
             onClick={() => handleQuantityChange(-1)}
-            className="w-7 h-7 rounded-b bg-stone-200 flex items-center justify-center active:scale-95 shrink-0 hover:bg-stone-300"
+            className="w-9 h-9 rounded-lg bg-stone-200 flex items-center justify-center active:scale-95 shrink-0 hover:bg-stone-300 transition-colors"
           >
-            <Icon.Minus size={14} />
+            <Icon.Minus size={16} />
           </button>
         </div>
       </div>
 
-      {/* Lista dodatków - w kolejności: domyślne, usunięte, dodane, sosy */}
+      {/* Lista dodatkÃ³w - w kolejnoÅ›ci: domyÅ›lne, usuniÄ™te, dodane, sosy */}
       {addonsInfo && (addonsInfo.defaultList.length > 0 || addonsInfo.added.length > 0 || addonsInfo.removed.length > 0 || addonsInfo.sauces.length > 0) && (
         <div className="mt-2 pt-2 border-t border-stone-100 space-y-1">
           {addonsInfo.defaultList.length > 0 && (
@@ -176,7 +176,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
             <div className="text-xs text-emerald-600">+{addonsInfo.added.join(', ')}</div>
           )}
           {addonsInfo.sauces.length > 0 && (
-            <div className="text-xs text-stone-500">🥫 {addonsInfo.sauces.join(', ')}</div>
+            <div className="text-xs text-stone-500">ðŸ¥« {addonsInfo.sauces.join(', ')}</div>
           )}
         </div>
       )}
@@ -186,12 +186,12 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
         <div className="mt-2 pt-2 border-t border-stone-100 flex flex-wrap gap-1">
           {item.notes && (
             <span className="text-xs bg-primary-50 text-amber-700 px-2 py-0.5 rounded">
-              📝 {item.notes}
+              ðŸ“ {item.notes}
             </span>
           )}
           {item.discount && (
             <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">
-              🏷️ {item.discount.name}
+              ðŸ·ï¸ {item.discount.name}
             </span>
           )}
         </div>
@@ -201,10 +201,10 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
 };
 
 // ==================== CART BREAKDOWN MODAL ====================
-// Modal z peÃânym rozwiniÃâ¢ciem koszyka i edycjÃâ¦ cen
+// Modal z peÃƒÂ…Ã¢Â€Âšnym rozwiniÃƒÂ„Ã¢Â„Â¢ciem koszyka i edycjÃƒÂ„Ã¢Â€Â¦ cen
 
 const CartBreakdownModal = ({ onClose }) => {
-  const { db, cart, globalDiscount, promo, updateCartItem } = useApp();
+  const { db, cart, globalDiscount, promo } = useApp();
   const [editingPrices, setEditingPrices] = useState({});
   const [editingTotal, setEditingTotal] = useState(false);
   const [customTotal, setCustomTotal] = useState(null);
@@ -250,7 +250,7 @@ const CartBreakdownModal = ({ onClose }) => {
         >
           <Icon.ChevronLeft />
         </button>
-        <h2 className="font-bold text-base truncate px-2">Rozwinięcie koszyka</h2>
+        <h2 className="font-bold text-base truncate px-2">RozwiniÄ™cie koszyka</h2>
         <div className="w-9" />
       </div>
 
@@ -275,7 +275,7 @@ const CartBreakdownModal = ({ onClose }) => {
                   onChange={e => handlePriceChange(item.id, e.target.value)}
                   className="flex-1 font-bold text-primary-600"
                 />
-                <span className="text-xs text-stone-500">zł</span>
+                <span className="text-xs text-stone-500">zÅ‚</span>
               </div>
 
               {/* Opakowanie */}
@@ -294,7 +294,7 @@ const CartBreakdownModal = ({ onClose }) => {
                     if (!addon || qty === 0) return null;
                     return (
                       <div key={addonId} className="text-xs text-stone-600 ml-2">
-                        • {addon.name} ×{qty}
+                        â€¢ {addon.name} Ã—{qty}
                       </div>
                     );
                   })}
@@ -310,7 +310,7 @@ const CartBreakdownModal = ({ onClose }) => {
                     if (!sauce || qty === 0) return null;
                     return (
                       <div key={sauceId} className="text-xs text-stone-600 ml-2">
-                        • {sauce.name} ×{qty}
+                        â€¢ {sauce.name} Ã—{qty}
                       </div>
                     );
                   })}
@@ -342,7 +342,7 @@ const CartBreakdownModal = ({ onClose }) => {
                   autoFocus
                   className="flex-1 text-right font-black text-xl text-primary-600 border-primary-400"
                 />
-                <span className="text-sm text-stone-500">zł</span>
+                <span className="text-sm text-stone-500">zÅ‚</span>
               </div>
             )}
           </div>
@@ -408,7 +408,7 @@ const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) =
       {/* Footer - 3 przyciski obok siebie */}
       {activeCart.length > 0 && (
         <div className="p-2 border-t-2 border-stone-200 shrink-0">
-          {/* Rozwinięte rabaty i promocje - nad przyciskami */}
+          {/* RozwiniÄ™te rabaty i promocje - nad przyciskami */}
           {showDiscountsPromos && (
             <div className="space-y-2 pb-2 mb-2 border-b border-stone-200">
               {globalDiscounts.length > 0 && (
@@ -463,12 +463,12 @@ const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) =
               </button>
             )}
 
-            {/* 2. Zamów */}
+            {/* 2. ZamÃ³w */}
             <button
               onClick={onOrder}
               className="flex-1 px-3 py-3 rounded-lg bg-primary-gradient text-white text-base font-bold flex items-center justify-center active:scale-95 transition-all shadow-medium hover:shadow-strong"
             >
-              Zamów
+              ZamÃ³w
             </button>
 
             {/* 3. RAZEM */}
@@ -493,7 +493,7 @@ const MainApp = () => {
   const { db, cart, addToCart, clearCart, loadCart, actions } = useApp();
   const theme = useTheme(db);
   
-  // Aplikuj CSS variables gdy motyw siÃâ¢ zmieni
+  // Aplikuj CSS variables gdy motyw siÃƒÂ„Ã¢Â„Â¢ zmieni
   React.useEffect(() => {
     if (window.applyThemeVars && db) {
       window.applyThemeVars(db);
@@ -502,7 +502,7 @@ const MainApp = () => {
   
   const [sizeIdx, setSizeIdx] = useState(1);
   const [mainTab, setMainTab] = useState('pizza');
-  const [kitchenCat, setKitchenCat] = useState('przekÃâ¦ski');
+  const [kitchenCat, setKitchenCat] = useState('przekÃƒÂ„Ã¢Â€Â¦ski');
   const [barCat, setBarCat] = useState('napoje');
   
   const [showCart, setShowCart] = useState(true); // Globalny toggle koszyka
@@ -511,24 +511,24 @@ const MainApp = () => {
   const [showLabel, setShowLabel] = useState(null);
   const [showOrderForm, setShowOrderForm] = useState(false);
   
-  // Stany dla edytorów - aby koszyk był widoczny podczas edycji
+  // Stany dla edytorÃ³w - aby koszyk byÅ‚ widoczny podczas edycji
   const [editingItem, setEditingItem] = useState(null);
   const [editingMenuItemState, setEditingMenuItemState] = useState(null);
   const [showCartBreakdown, setShowCartBreakdown] = useState(false);
 
-  // Dodaj pizzÃâ¢ do koszyka
+  // Dodaj pizzÃƒÂ„Ã¢Â„Â¢ do koszyka
   const handleAddPizza = (pizza) => {
     const item = createPizzaItem(pizza.nr, db.settings.sizes[sizeIdx].id, db);
     addToCart(item);
   };
 
-  // Dodaj pozycjÃâ¢ z menu
+  // Dodaj pozycjÃƒÂ„Ã¢Â„Â¢ z menu
   const handleAddMenuItem = (menuItem) => {
     const item = createMenuItem(menuItem, db);
     addToCart(item);
   };
 
-  // ObsÃâuga zamÃÂ³wienia z koszyka
+  // ObsÃƒÂ…Ã¢Â€Âšuga zamÃƒÂƒÃ‚Â³wienia z koszyka
   const handleOrderClick = () => {
     setShowOrderForm(true);
   };
@@ -538,7 +538,7 @@ const MainApp = () => {
     setShowLabel(order);
   };
 
-  // PotwierdÃÂº zamÃÂ³wienie
+  // PotwierdÃƒÂ…Ã‚Âº zamÃƒÂƒÃ‚Â³wienie
   const handleConfirmOrder = () => {
     actions.addOrder(showLabel);
     clearCart();
@@ -557,7 +557,7 @@ const MainApp = () => {
     setShowLabel({ ...order, _reprintOnly: true });
   };
 
-  // PotwierdÃÂº reprint
+  // PotwierdÃƒÂ…Ã‚Âº reprint
   const handleConfirmReprint = () => {
     if (showLabel._reprintOnly) {
       setShowLabel(null);
@@ -568,16 +568,16 @@ const MainApp = () => {
 
   // Kategorie
   const kitchenCategories = [
-    { id: 'przekÃâ¦ski', label: 'Ã°Å¸Å¸Â¢ PrzekÃâ¦ski' },
-    { id: 'burgery', label: 'Ã°Å¸Ââ Burgery' },
-    { id: 'saÃâatki', label: 'Ã°Å¸Â¥â SaÃâatki' },
-    { id: 'makarony', label: 'Ã°Å¸ÂÂ Makarony' },
-    { id: 'desery', label: 'Ã°Å¸ÂÂ° Desery' },
+    { id: 'przekÃƒÂ„Ã¢Â€Â¦ski', label: 'ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¢ PrzekÃƒÂ„Ã¢Â€Â¦ski' },
+    { id: 'burgery', label: 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ¢Â€Â Burgery' },
+    { id: 'saÃƒÂ…Ã¢Â€Âšatki', label: 'ÃƒÂ°Ã…Â¸Ã‚Â¥Ã¢Â€Â” SaÃƒÂ…Ã¢Â€Âšatki' },
+    { id: 'makarony', label: 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â Makarony' },
+    { id: 'desery', label: 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â° Desery' },
   ];
 
   const barCategories = [
-    { id: 'napoje', label: 'Ã°Å¸Â¥Â¤ Zimne' },
-    { id: 'alkohole', label: 'Ã°Å¸ÂÂº Alkohol' },
+    { id: 'napoje', label: 'ÃƒÂ°Ã…Â¸Ã‚Â¥Ã‚Â¤ Zimne' },
+    { id: 'alkohole', label: 'ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Âº Alkohol' },
   ];
 
 
@@ -585,7 +585,7 @@ const MainApp = () => {
     <div className="h-screen flex themed-bg">
       {/* Lewa strona - Menu / Admin / History / Edytory */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Renderowanie contentu - główny widok, admin, historia lub edytory */}
+        {/* Renderowanie contentu - gÅ‚Ã³wny widok, admin, historia lub edytory */}
         {editingItem ? (
           <PizzaEditor
             item={editingItem}
@@ -617,14 +617,14 @@ const MainApp = () => {
           <>
             {/* Header */}
             <header className="bg-white border-b p-3 shrink-0 shadow-soft space-y-3">
-          {/* ZakÅadki gÅÃ³wne z przyciskami po prawej */}
+          {/* ZakÃ…Â‚adki gÃ…Â‚ÃƒÂ³wne z przyciskami po prawej */}
           <div className="flex items-center gap-3">
-            {/* ZakÅadki */}
+            {/* ZakÃ…Â‚adki */}
             <div className="flex-1 flex gap-1 p-1 bg-stone-200 rounded-xl">
               {[
-                { id: 'pizza', label: 'Pizza', icon: '🍕' },
-                { id: 'kuchnia', label: 'Kuchnia', icon: '👨‍🍳' },
-                { id: 'bar', label: 'Bar', icon: '☕' },
+                { id: 'pizza', label: 'Pizza', icon: 'ðŸ•' },
+                { id: 'kuchnia', label: 'Kuchnia', icon: 'ðŸ‘¨â€ðŸ³' },
+                { id: 'bar', label: 'Bar', icon: 'â˜•' },
               ].map(t => (
                 <button
                   key={t.id}
@@ -748,7 +748,7 @@ const MainApp = () => {
                     <div className="font-semibold text-stone-700 truncate">{item.name}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="font-bold text-primary-600">{formatPrice(item.price)}</span>
-                      {item.alco && <span>Ã°Å¸ÂÂÃÂÃÂº</span>}
+                      {item.alco && <span>ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚ÂÃƒÂ‚Ã‚ÂÃƒÂ‚Ã‚Âº</span>}
                     </div>
                   </Tile>
                 ))}
@@ -769,7 +769,7 @@ const MainApp = () => {
         />
       </div>
 
-      {/* Modale (tylko pełnoekranowe) */}
+      {/* Modale (tylko peÅ‚noekranowe) */}
       {showLabel && (
         <OrderLabel order={showLabel} onClose={() => setShowLabel(null)} onConfirm={handleConfirmReprint} />
       )}
@@ -790,7 +790,7 @@ const App = () => {
 const AppWithContext = () => {
   const { removeFromCart } = useApp();
   
-  // UdostÃâ¢pniamy globalnie dla edytorÃÂ³w
+  // UdostÃƒÂ„Ã¢Â„Â¢pniamy globalnie dla edytorÃƒÂƒÃ‚Â³w
   React.useEffect(() => {
     window.__appContext = { removeFromCart };
   }, [removeFromCart]);
