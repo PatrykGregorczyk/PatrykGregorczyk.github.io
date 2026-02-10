@@ -1,5 +1,5 @@
 // ==================== PIZZA EDITOR ====================
-// PeÅ‚ny edytor pizzy z pÃ³Å‚ na pÃ³Å‚, dodatkami, sosami, notatkami
+// Pełny edytor pizzy z pół na pół, dodatkami, sosami, notatkami
 
 const PizzaEditor = ({ item, onSave, onClose }) => {
   const { db } = useApp();
@@ -24,13 +24,13 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
   const availableAddons1 = getAvailableAddons(pizza);
   const availableAddons2 = getAvailableAddons(splitPizza);
 
-  // Handlers dla pierwszej poÅ‚Ã³wki
+  // Handlers dla pierwszej połówki
   const getQty1 = (id) => ed.addons[id] || 0;
   const isDefault1 = (id) => (pizza?.defaultAddons || {})[id] > 0;
   const getDefaultQty1 = (id) => (pizza?.defaultAddons || {})[id] || 0;
 
   const addAddon1 = (id) => {
-    if (getQty1(id) < 20) {
+    if (getQty1(id) < 5) {
       setEd(p => ({ ...p, addons: { ...p.addons, [id]: getQty1(id) + 1 } }));
     }
   };
@@ -61,13 +61,13 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
     }
   };
 
-  // Handlers dla drugiej poÅ‚Ã³wki
+  // Handlers dla drugiej połówki
   const getQty2 = (id) => ed.splitAddons[id] || 0;
   const isDefault2 = (id) => (splitPizza?.defaultAddons || {})[id] > 0;
   const getDefaultQty2 = (id) => (splitPizza?.defaultAddons || {})[id] || 0;
 
   const addAddon2 = (id) => {
-    if (getQty2(id) < 20) {
+    if (getQty2(id) < 5) {
       setEd(p => ({ ...p, splitAddons: { ...p.splitAddons, [id]: getQty2(id) + 1 } }));
     }
   };
@@ -98,11 +98,11 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
     }
   };
 
-  // Handlers dla sosÃ³w
+  // Handlers dla sosów
   const getSauceQty = (id) => ed.sauces[id] || 0;
 
   const addSauce = (id) => {
-    if (getSauceQty(id) < 20) {
+    if (getSauceQty(id) < 5) {
       setEd(p => ({ ...p, sauces: { ...p.sauces, [id]: getSauceQty(id) + 1 } }));
     }
   };
@@ -124,7 +124,7 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
     getSauceQty(id) > 0 ? removeSauce(id) : addSauce(id);
   };
 
-  // PÃ³Å‚ na pÃ³Å‚
+  // Pół na pół
   const enableSplit = (p2) => {
     const addons2 = { ...(p2.defaultAddons || {}) };
     setEd(prev => ({
@@ -171,32 +171,32 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
     : `${pizza?.name} (${pizza?.nr})`;
 
   return (
-    <Modal
-      onClose={onClose}
-      title={
-        <div className="flex items-center justify-between w-full">
-          <span>{title}</span>
-          <button
-            onClick={() => {
-              if (window.confirm('UsunÄ…Ä‡ tÄ™ pozycjÄ™ z koszyka?')) {
-                const { removeFromCart } = window.__appContext;
-                removeFromCart(item.id);
-                onClose();
-              }
-            }}
-            className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center active:scale-95"
-          >
-            <Icon.Trash2 size={16} />
-          </button>
-        </div>
-      }
-      footer={
-        <Button variant="primary" className="w-full" onClick={handleSave}>
-          Zapisz â€¢ {formatPrice(price)}
-        </Button>
-      }
-    >
-      <div className="p-3 space-y-4">
+    <div className="h-full flex flex-col bg-stone-100">
+      {/* Header */}
+      <div className="flex items-center justify-between p-2 bg-white border-b shrink-0 shadow-soft">
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-lg bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition-colors"
+        >
+          <Icon.ChevronLeft />
+        </button>
+        <h2 className="font-bold text-base truncate px-2">{title}</h2>
+        <button
+          onClick={() => {
+            if (window.confirm('Usunąć tę pozycję z koszyka?')) {
+              const { removeFromCart } = window.__appContext;
+              removeFromCart(item.id);
+              onClose();
+            }
+          }}
+          className="w-9 h-9 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center active:scale-95 shrink-0"
+        >
+          <Icon.Trash2 size={16} />
+        </button>
+      </div>
+
+      {/* Content - scrollable */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-4">
         {/* Rozmiar */}
         <Section title="Rozmiar">
           <div className="flex gap-2">
@@ -216,8 +216,8 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
           </div>
         </Section>
 
-        {/* PÃ³Å‚ na pÃ³Å‚ */}
-        <Section title="ðŸÂâ€¢ PÃ³Å‚ na pÃ³Å‚" collapsible defaultOpen={showSplit}>
+        {/* Pół na pół */}
+        <Section title="🍕 Pół na pół" collapsible defaultOpen={showSplit}>
           {!ed.isSplit ? (
             <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
               {db.pizzas
@@ -235,19 +235,19 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
           ) : (
             <div className="space-y-3">
               <div className="bg-violet-50 border-2 border-violet-200 rounded-lg p-3 flex justify-between items-center">
-                <span className="font-semibold text-violet-700">ðŸÂâ€¢ {ed.splitName}</span>
+                <span className="font-semibold text-violet-700">🍕 {ed.splitName}</span>
                 <button
                   onClick={disableSplit}
                   className="px-2 py-1 rounded bg-violet-200 text-violet-700 text-xs font-semibold active:scale-95"
                 >
-                  UsuÅ„
+                  Usuń
                 </button>
               </div>
 
-              {/* SkÅ‚adniki drugiej poÅ‚Ã³wki */}
+              {/* Składniki drugiej połówki */}
               <div className="bg-violet-50 rounded-lg p-3">
                 <div className="text-xs font-bold text-violet-600 mb-2">
-                  SkÅ‚adniki: {ed.splitName}
+                  Składniki: {ed.splitName}
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {availableAddons2.map(addon => (
@@ -269,8 +269,8 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
           )}
         </Section>
 
-        {/* SkÅ‚adniki pierwszej poÅ‚Ã³wki */}
-        <Section title={ed.isSplit ? `SkÅ‚adniki: ${pizza?.name}` : 'SkÅ‚adniki'}>
+        {/* Składniki pierwszej połówki */}
+        <Section title={ed.isSplit ? `Składniki: ${pizza?.name}` : 'Składniki'}>
           {Object.entries(groupByCategory(availableAddons1)).map(([cat, addons]) =>
             addons.length > 0 && (
               <div key={cat} className="mb-2">
@@ -336,7 +336,7 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
             ))}
           </div>
           <Input
-            placeholder="WÅ‚asna notatka..."
+            placeholder="Własna notatka..."
             value={ed.notes || ''}
             onChange={e => setEd(p => ({ ...p, notes: e.target.value }))}
           />
@@ -361,7 +361,14 @@ const PizzaEditor = ({ item, onSave, onClose }) => {
           </div>
         </Section>
       </div>
-    </Modal>
+
+      {/* Footer */}
+      <div className="p-2 bg-white border-t shrink-0 shadow-strong">
+        <Button variant="primary" className="w-full" onClick={handleSave}>
+          Zapisz • {formatPrice(price)}
+        </Button>
+      </div>
+    </div>
   );
 };
 
@@ -387,7 +394,7 @@ const MenuItemEditor = ({ item, onSave, onClose }) => {
   const getDefaultQty = id => (menuItem?.defaultAddons || {})[id] || 0;
 
   const addAddon = id => {
-    if (getQty(id) < 20) {
+    if (getQty(id) < 5) {
       setEd(p => ({ ...p, addons: { ...p.addons, [id]: getQty(id) + 1 } }));
     }
   };
@@ -424,32 +431,32 @@ const MenuItemEditor = ({ item, onSave, onClose }) => {
   };
 
   return (
-    <Modal
-      onClose={onClose}
-      title={
-        <div className="flex items-center justify-between w-full">
-          <span>{menuItem?.name || 'Edycja'}</span>
-          <button
-            onClick={() => {
-              if (window.confirm('UsunÄ…Ä‡ tÄ™ pozycjÄ™ z koszyka?')) {
-                const { removeFromCart } = window.__appContext;
-                removeFromCart(item.id);
-                onClose();
-              }
-            }}
-            className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center active:scale-95"
-          >
-            <Icon.Trash2 size={16} />
-          </button>
-        </div>
-      }
-      footer={
-        <Button variant="primary" className="w-full" onClick={handleSave}>
-          Zapisz â€¢ {formatPrice(price)}
-        </Button>
-      }
-    >
-      <div className="p-3 space-y-4">
+    <div className="h-full flex flex-col bg-stone-100">
+      {/* Header */}
+      <div className="flex items-center justify-between p-2 bg-white border-b shrink-0 shadow-soft">
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-lg bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition-colors"
+        >
+          <Icon.ChevronLeft />
+        </button>
+        <h2 className="font-bold text-base truncate px-2">{menuItem?.name || 'Edycja'}</h2>
+        <button
+          onClick={() => {
+            if (window.confirm('Usunąć tę pozycję z koszyka?')) {
+              const { removeFromCart } = window.__appContext;
+              removeFromCart(item.id);
+              onClose();
+            }
+          }}
+          className="w-9 h-9 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center active:scale-95 shrink-0"
+        >
+          <Icon.Trash2 size={16} />
+        </button>
+      </div>
+
+      {/* Content - scrollable */}
+      <div className="flex-1 overflow-y-auto p-3">
         {availableAddons.length > 0 ? (
           <Section title="Dodatki">
             <div className="flex flex-wrap gap-1">
@@ -470,11 +477,18 @@ const MenuItemEditor = ({ item, onSave, onClose }) => {
           </Section>
         ) : (
           <div className="text-center py-8 text-stone-500">
-            <p className="text-sm">Ta pozycja nie ma dostÄ™pnych dodatkÃ³w</p>
-            <p className="text-xs mt-2">UÅ¼yj przycisku usuÅ„ aby usunÄ…Ä‡ z koszyka</p>
+            <p className="text-sm">Ta pozycja nie ma dostępnych dodatków</p>
+            <p className="text-xs mt-2">Użyj przycisku usuń aby usunąć z koszyka</p>
           </div>
         )}
       </div>
-    </Modal>
+
+      {/* Footer */}
+      <div className="p-2 bg-white border-t shrink-0 shadow-strong">
+        <Button variant="primary" className="w-full" onClick={handleSave}>
+          Zapisz • {formatPrice(price)}
+        </Button>
+      </div>
+    </div>
   );
 };
