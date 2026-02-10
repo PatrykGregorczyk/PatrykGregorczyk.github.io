@@ -120,7 +120,7 @@ const CartItemCompact = ({ item, onUpdate, onRemove, onEdit }) => {
             <div className="font-bold text-stone-800">{itemName}</div>
           )}
           
-          {/* Rozmiar pod nazwÄ… */}
+          {/* Rozmiar pod nazwą */}
           {subtitle && (
             <div className="text-sm text-stone-500 mt-0.5">
               {subtitle.size}
@@ -493,7 +493,7 @@ const MainApp = () => {
   const { db, cart, addToCart, clearCart, loadCart, actions } = useApp();
   const theme = useTheme(db);
   
-  // Aplikuj CSS variables gdy motyw siÄ™ zmieni
+  // Aplikuj CSS variables gdy motyw się zmieni
   React.useEffect(() => {
     if (window.applyThemeVars && db) {
       window.applyThemeVars(db);
@@ -502,7 +502,7 @@ const MainApp = () => {
   
   const [sizeIdx, setSizeIdx] = useState(1);
   const [mainTab, setMainTab] = useState('pizza');
-  const [kitchenCat, setKitchenCat] = useState('przekÄ…ski');
+  const [kitchenCat, setKitchenCat] = useState('przekąski');
   const [barCat, setBarCat] = useState('napoje');
   
   const [showCart, setShowCart] = useState(true); // Globalny toggle koszyka
@@ -516,13 +516,13 @@ const MainApp = () => {
   const [editingMenuItemState, setEditingMenuItemState] = useState(null);
   const [showCartBreakdown, setShowCartBreakdown] = useState(false);
 
-  // Dodaj pizzÄ™ do koszyka
+  // Dodaj pizzę do koszyka
   const handleAddPizza = (pizza) => {
     const item = createPizzaItem(pizza.nr, db.settings.sizes[sizeIdx].id, db);
     addToCart(item);
   };
 
-  // Dodaj pozycjÄ™ z menu
+  // Dodaj pozycję z menu
   const handleAddMenuItem = (menuItem) => {
     const item = createMenuItem(menuItem, db);
     addToCart(item);

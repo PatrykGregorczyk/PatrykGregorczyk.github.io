@@ -220,7 +220,7 @@ const AutocompleteInput = ({
 };
 
 // ==================== CART ITEM ====================
-// Pozycja w koszyku z edycjÄ…
+// Pozycja w koszyku z edycją
 
 const CartItem = ({ item, onUpdate, onRemove, onEdit }) => {
   const { db, globalDiscount } = useApp();

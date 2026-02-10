@@ -151,9 +151,9 @@ const DEFAULT_DATA = {
   ],
 
   menu: [
-    { id: 101, cat: 'przekÄ…ski', name: 'Nuggetsy 6szt', price: 14, pkg: 4, availableAddons: [], defaultAddons: {} },
+    { id: 101, cat: 'przekąski', name: 'Nuggetsy 6szt', price: 14, pkg: 4, availableAddons: [], defaultAddons: {} },
     { id: 104, cat: 'przekąski', name: 'Placki ziemniaczane', price: 12, pkg: 4, availableAddons: [], defaultAddons: {} },
-    { id: 102, cat: 'przekÄ…ski', name: 'Frytki', price: 10, pkg: 4, availableAddons: [3], defaultAddons: {} },
+    { id: 102, cat: 'przekąski', name: 'Frytki', price: 10, pkg: 4, availableAddons: [3], defaultAddons: {} },
     { id: 103, cat: 'przekąski', name: 'Skrzydełka 8szt', price: 18, pkg: 4, availableAddons: [], defaultAddons: {} },
     {
       id: 301, cat: 'burgery', name: 'Burger Classic', price: 26, pkg: 4,

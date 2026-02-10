@@ -1,4 +1,4 @@
-// ==================== ADMIN PANEL - KOMPLETNA WERSJA Z WALIDACJÄ" ====================
+// ==================== ADMIN PANEL - KOMPLETNA WERSJA Z WALIDACJĄ ====================
 
 const AdminPanel = ({ onClose }) => {
   const { db, actions } = useApp();
@@ -73,7 +73,7 @@ const AdminPanel = ({ onClose }) => {
     const pizzaAddons = db.addons.filter(a => a.forType === 'pizza' || a.forType === 'both');
 
     const validate = () => {
-      if (!f.name.trim()) return 'Podaj nazwÄ™ pizzy';
+      if (!f.name.trim()) return 'Podaj nazwę pizzy';
       if (f.p[0] <= 0 || f.p[1] <= 0 || f.p[2] <= 0) return 'Wszystkie ceny muszą być większe od 0';
       if (isNew && db.pizzas.find(p => p.nr === f.nr)) return 'Pizza o tym numerze już istnieje';
       return null;
@@ -144,7 +144,7 @@ const AdminPanel = ({ onClose }) => {
 
     return (
       <div className="bg-white rounded-xl p-4 border-2 border-amber-300 space-y-4 max-h-[80vh] overflow-y-auto">
-        <h3 className="font-bold text-lg">{isNew ? 'Nowa pizza' : 'Edytuj pizzÄ™'}</h3>
+        <h3 className="font-bold text-lg">{isNew ? 'Nowa pizza' : 'Edytuj pizzę'}</h3>
         <ErrorMessage />
         <div className="grid grid-cols-4 gap-3">
           <Input label="Nr" type="number" value={f.nr} onChange={e => setF(p => ({ ...p, nr: parseInt(e.target.value) || 0 }))} />
@@ -192,13 +192,13 @@ const AdminPanel = ({ onClose }) => {
 
   // ==================== MENU FORM ====================
   const MenuForm = () => {
-    const [f, setF] = useState(editData || { id: generateId(db.menu), name: '', price: 0, cat: 'przekÄ…ski', pkg: null, availableAddons: [], defaultAddons: {}, alco: false });
+    const [f, setF] = useState(editData || { id: generateId(db.menu), name: '', price: 0, cat: 'przekÄ...ski', pkg: null, availableAddons: [], defaultAddons: {}, alco: false });
     const isNew = !editData;
     const cats = ['przekąski', 'sałatki', 'makarony', 'burgery', 'napoje', 'alkohole', 'desery'];
     const menuAddons = db.addons.filter(a => a.forType === 'menu' || a.forType === 'both');
 
     const validate = () => {
-      if (!f.name.trim()) return 'Podaj nazwÄ™ pozycji';
+      if (!f.name.trim()) return 'Podaj nazwę pozycji';
       if (f.price <= 0) return 'Cena musi być większa od 0';
       return null;
     };
@@ -255,7 +255,7 @@ const AdminPanel = ({ onClose }) => {
 
     return (
       <div className="bg-white rounded-xl p-4 border-2 border-amber-300 space-y-4">
-        <h3 className="font-bold text-lg">{isNew ? 'Nowa pozycja' : 'Edytuj pozycjÄ™'}</h3>
+        <h3 className="font-bold text-lg">{isNew ? 'Nowa pozycja' : 'Edytuj pozycję'}</h3>
         <ErrorMessage />
         <Input label="Nazwa*" value={f.name} onChange={e => setF(p => ({ ...p, name: e.target.value }))} />
         <div className="grid grid-cols-2 gap-3">
@@ -299,7 +299,7 @@ const AdminPanel = ({ onClose }) => {
     const isNew = !editData;
 
     const validate = () => {
-      if (!f.name.trim()) return 'Podaj nazwÄ™ dodatku';
+      if (!f.name.trim()) return 'Podaj nazwę dodatku';
       if (f.price < 0) return 'Cena nie może być ujemna';
       return null;
     };
@@ -337,7 +337,7 @@ const AdminPanel = ({ onClose }) => {
     const isNew = !editData;
 
     const validate = () => {
-      if (!f.name.trim()) return 'Podaj nazwÄ™ sosu';
+      if (!f.name.trim()) return 'Podaj nazwę sosu';
       if (f.price < 0) return 'Cena nie może być ujemna';
       return null;
     };
@@ -371,7 +371,7 @@ const AdminPanel = ({ onClose }) => {
     const isNew = !editData;
 
     const validate = () => {
-      if (!f.name.trim()) return 'Podaj nazwÄ™ opakowania';
+      if (!f.name.trim()) return 'Podaj nazwę opakowania';
       if (f.price < 0) return 'Cena nie może być ujemna';
       return null;
     };
@@ -414,10 +414,10 @@ const AdminPanel = ({ onClose }) => {
     const isNew = !editData;
 
     const validate = () => {
-      if (!f.name.trim()) return 'Podaj nazwÄ™ promocji';
+      if (!f.name.trim()) return 'Podaj nazwę promocji';
       if (f.price <= 0) return 'Cena musi być większa od 0';
       if (f.count <= 0) return 'Ilość musi być większa od 0';
-      if (f.pizzas.length === 0) return 'Wybierz przynajmniej jednÄ… pizzÄ™';
+      if (f.pizzas.length === 0) return 'Wybierz przynajmniej jedną pizzę';
       return null;
     };
 
@@ -435,7 +435,7 @@ const AdminPanel = ({ onClose }) => {
 
     return (
       <div className="bg-white rounded-xl p-4 border-2 border-amber-300 space-y-4 max-h-[80vh] overflow-y-auto">
-        <h3 className="font-bold text-lg">{isNew ? 'Nowa promocja' : 'Edytuj promocjÄ™'}</h3>
+        <h3 className="font-bold text-lg">{isNew ? 'Nowa promocja' : 'Edytuj promocję'}</h3>
         <ErrorMessage />
         <Input label="Nazwa*" value={f.name} onChange={e => setF(p => ({ ...p, name: e.target.value }))} />
         <div className="grid grid-cols-3 gap-3">
@@ -469,7 +469,7 @@ const AdminPanel = ({ onClose }) => {
     const isNew = !editData;
 
     const validate = () => {
-      if (!f.name.trim()) return 'Podaj nazwÄ™ rabatu';
+      if (!f.name.trim()) return 'Podaj nazwę rabatu';
       if (f.type === 'percent' && (f.percent <= 0 || f.percent > 100)) return 'Procent musi być między 1 a 100';
       if (f.type === 'fixed' && f.fixedPrice <= 0) return 'Stała cena musi być większa od 0';
       return null;
@@ -518,20 +518,20 @@ const AdminPanel = ({ onClose }) => {
     const [aliasInput, setAliasInput] = useState('');
 
     const validateCity = (data) => {
-      if (!data.name.trim()) return 'Podaj nazwÄ™ miasta';
+      if (!data.name.trim()) return 'Podaj nazwę miasta';
       if (data.deliveryFee < 0) return 'Koszt dowozu nie może być ujemny';
       if (data.minOrder < 0) return 'Min. zamówienie nie może być ujemne';
       return null;
     };
 
     const validateStreet = (data) => {
-      if (!data.name.trim()) return 'Podaj nazwÄ™ ulicy';
+      if (!data.name.trim()) return 'Podaj nazwę ulicy';
       if (!data.cityId) return 'Wybierz miasto';
       return null;
     };
 
     const validateLandmark = (data) => {
-      if (!data.name.trim()) return 'Podaj nazwÄ™ obiektu';
+      if (!data.name.trim()) return 'Podaj nazwę obiektu';
       if (!data.cityId) return 'Wybierz miasto';
       if (!data.number.trim()) return 'Podaj numer';
       return null;
@@ -599,7 +599,7 @@ const AdminPanel = ({ onClose }) => {
     if (editing?.type === 'street') {
       return (
         <div className="bg-white rounded-xl p-4 border-2 border-amber-300 space-y-4">
-          <h3 className="font-bold text-lg">{editing.data.id ? 'Edytuj ulicÄ™' : 'Nowa ulica'}</h3>
+          <h3 className="font-bold text-lg">{editing.data.id ? 'Edytuj ulicę' : 'Nowa ulica'}</h3>
           <ErrorMessage />
           <Input label="Nazwa*" value={editing.data.name} onChange={e => setEditing(p => ({ ...p, data: { ...p.data, name: e.target.value } }))} />
           <Select label="Miasto*" value={editing.data.cityId || ''} onChange={e => setEditing(p => ({ ...p, data: { ...p.data, cityId: parseInt(e.target.value) } }))} options={db.locations.cities.map(c => ({ value: c.id, label: c.name }))} />
@@ -670,7 +670,7 @@ const AdminPanel = ({ onClose }) => {
 
         {subTab === 'streets' && (
           <>
-            <Button variant="success" className="w-full" onClick={() => { setEditing({ type: 'street', data: { cityId: db.locations.cities[0]?.id, name: '', aliases: [], maxNumber: null } }); setError(''); }}><Icon.Plus size={16} /> Dodaj ulicÄ™</Button>
+            <Button variant="success" className="w-full" onClick={() => { setEditing({ type: 'street', data: { cityId: db.locations.cities[0]?.id, name: '', aliases: [], maxNumber: null } }); setError(''); }}><Icon.Plus size={16} /> Dodaj ulicę</Button>
             {db.locations.cities.map(city => {
               const streets = db.locations.streets.filter(s => s.cityId === city.id);
               if (streets.length === 0) return null;
@@ -740,7 +740,7 @@ const AdminPanel = ({ onClose }) => {
       <Section title="Pizza">
         <div className="grid grid-cols-2 gap-3">
           <Input label="Darmowe sosy (domyślnie)" type="number" value={db.settings.defaultFreeSauces} onChange={e => actions.updateSettings({ defaultFreeSauces: parseInt(e.target.value) || 0 })} />
-          <Input label="Dopłata ½/½" type="number" step="0.01" value={db.settings.splitSurcharge} onChange={e => actions.updateSettings({ splitSurcharge: parseFloat(e.target.value) || 0 })} />
+          <Input label="Dopłata 1⁄2/1⁄2" type="number" step="0.01" value={db.settings.splitSurcharge} onChange={e => actions.updateSettings({ splitSurcharge: parseFloat(e.target.value) || 0 })} />
         </div>
       </Section>
       <Section title="Interfejs">
@@ -796,7 +796,7 @@ const AdminPanel = ({ onClose }) => {
         {tab === 'pizzas' && (
           editType === 'pizza' ? <PizzaForm /> : (
             <>
-              <Button variant="success" className="w-full mb-3" onClick={() => startEdit('pizza', null)}><Icon.Plus size={16} /> Dodaj pizzÄ™</Button>
+              <Button variant="success" className="w-full mb-3" onClick={() => startEdit('pizza', null)}><Icon.Plus size={16} /> Dodaj pizzę</Button>
               {db.pizzas.map(p => (
                 <ItemRow key={p.nr} onClick={() => startEdit('pizza', p)}>
                   <div className="font-semibold">{p.nr}. {p.name}</div>
@@ -810,7 +810,7 @@ const AdminPanel = ({ onClose }) => {
         {tab === 'menu' && (
           editType === 'menu' ? <MenuForm /> : (
             <>
-              <Button variant="success" className="w-full mb-3" onClick={() => startEdit('menu', null)}><Icon.Plus size={16} /> Dodaj pozycjÄ™</Button>
+              <Button variant="success" className="w-full mb-3" onClick={() => startEdit('menu', null)}><Icon.Plus size={16} /> Dodaj pozycję</Button>
               {['przekąski', 'burgery', 'sałatki', 'makarony', 'napoje', 'alkohole', 'desery'].map(cat => {
                 const items = db.menu.filter(m => m.cat === cat);
                 if (items.length === 0) return null;
@@ -818,7 +818,7 @@ const AdminPanel = ({ onClose }) => {
                   <Section key={cat} title={cat} collapsible defaultOpen={false}>
                     {items.map(m => (
                       <ItemRow key={m.id} onClick={() => startEdit('menu', m)}>
-                        <div className="font-semibold">{m.name} {m.alco && '🍝º'}</div>
+                        <div className="font-semibold">{m.name} {m.alco && '🍝o'}</div>
                         <div className="text-sm text-amber-600">{formatPrice(m.price)}</div>
                       </ItemRow>
                     ))}
@@ -906,7 +906,7 @@ const AdminPanel = ({ onClose }) => {
         {tab === 'promotions' && (
           editType === 'promo' ? <PromotionForm /> : (
             <>
-              <Button variant="success" className="w-full mb-3" onClick={() => startEdit('promo', null)}><Icon.Plus size={16} /> Dodaj promocjÄ™</Button>
+              <Button variant="success" className="w-full mb-3" onClick={() => startEdit('promo', null)}><Icon.Plus size={16} /> Dodaj promocję</Button>
               {db.promotions.map(p => (
                 <ItemRow key={p.id} onClick={() => startEdit('promo', p)}>
                   <div className="flex items-center gap-2">
