@@ -1,5 +1,5 @@
 // ==================== HISTORY VIEW ====================
-// Historia zamówień z wyszukiwaniem, edycją, usuwaniem
+// Historia zamÃÂ³wieÃâ z wyszukiwaniem, edycjÃâ¦, usuwaniem
 
 const HistoryView = ({ onClose, onReprint, onCopy }) => {
   const { db, actions, version } = useApp();
@@ -15,7 +15,7 @@ const HistoryView = ({ onClose, onReprint, onCopy }) => {
 
   const handleDelete = (order) => {
     actions.addLog(`UI: handleDelete called for #${order.orderNumber}`);
-    if (window.confirm(`Usunąć zamówienie #${order.orderNumber}?`)) {
+    if (window.confirm(`UsunÃâ¦Ãâ¡ zamÃÂ³wienie #${order.orderNumber}?`)) {
       actions.addLog(`UI: User confirmed delete`);
       actions.deleteOrder(order.id);
     } else {
@@ -33,16 +33,29 @@ const HistoryView = ({ onClose, onReprint, onCopy }) => {
   }
 
   return (
-    <Modal onClose={onClose} title="Historia">
-      <div className="p-3 space-y-3" key={version}>
+    <div className="h-full flex flex-col bg-stone-100">
+      {/* Header z przyciskiem powrotu */}
+      <div className="flex items-center justify-between p-2 bg-white border-b shrink-0 shadow-soft">
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-lg bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition-colors"
+        >
+          <Icon.ChevronLeft />
+        </button>
+        <h2 className="font-bold text-base truncate px-2">Historia</h2>
+        <div className="w-9" />
+      </div>
+
+      {/* Content - scrollable */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-3" key={version}>
         <DebugPanel />
         
-        <Input placeholder="ðŸ” Szukaj..." value={filter} onChange={e => setFilter(e.target.value)} />
+        <Input placeholder="ÃÂ°ÃÂ¸Ã¢â¬ÂÃÂ Szukaj..." value={filter} onChange={e => setFilter(e.target.value)} />
 
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-stone-400">
             <Icon.History size={48} className="mx-auto mb-3 opacity-30" />
-            <p>Brak zamówień</p>
+            <p>Brak zamÃÂ³wieÃâ</p>
           </div>
         ) : (
           filtered.map(order => (
@@ -56,7 +69,7 @@ const HistoryView = ({ onClose, onReprint, onCopy }) => {
                     )}
                   </div>
                   <div className="text-sm text-stone-500">
-                    {formatDateFull(order.timestamp)} • {formatTime(order.timestamp)}
+                    {formatDateFull(order.timestamp)} Ã¢â¬Â¢ {formatTime(order.timestamp)}
                   </div>
                   {order.address && (
                     <div className="text-sm text-stone-600 truncate mt-1">
@@ -64,7 +77,7 @@ const HistoryView = ({ onClose, onReprint, onCopy }) => {
                     </div>
                   )}
                   <div className="font-semibold text-amber-600 mt-1">
-                    {order.items.length} poz. • {formatPrice(order.total)}
+                    {order.items.length} poz. Ã¢â¬Â¢ {formatPrice(order.total)}
                   </div>
                   <div className="text-xs text-stone-300 mt-1">id: {order.id}</div>
                 </div>
@@ -104,6 +117,6 @@ const HistoryView = ({ onClose, onReprint, onCopy }) => {
           ))
         )}
       </div>
-    </Modal>
+    </div>
   );
 };
