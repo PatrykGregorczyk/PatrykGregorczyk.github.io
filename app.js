@@ -358,7 +358,7 @@ const CartBreakdownModal = ({ onClose }) => {
 // ==================== CART SIDEBAR ====================
 // Koszyk zawsze widoczny po prawej stronie
 
-const CartSidebar = ({ onOrder }) => {
+const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) => {
   const {
     db,
     cart,
@@ -367,25 +367,16 @@ const CartSidebar = ({ onOrder }) => {
     globalDiscount,
     setGlobalDiscount,
     promo,
-const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) => {
+    setPromo
   } = useApp();
 
-  const [editing, setEditing] = useState(null);
-  const [editingMenu, setEditingMenu] = useState(null);
   const [showDiscountsPromos, setShowDiscountsPromos] = useState(false);
 
   const totals = calculateTotal(cart.filter(item => item.qty > 0), db, globalDiscount, promo);
   const globalDiscounts = db.discounts.filter(d => d.active && !d.perItem);
   const activePromos = db.promotions.filter(p => p.active);
   const activeCart = cart.filter(item => item.qty > 0);
-  const [showDiscountsPromos, setShowDiscountsPromos] = useState(false);
-      setEditing(item);
-    } else if (item.type === 'menu') {
-      setEditingMenu(item);
-    }
-  };
 
-  // Renderowanie edytorÃÂ³w
   const handleEdit = (item) => {
     if (item.type === 'pizza') {
       onEditItem(item);
@@ -393,6 +384,15 @@ const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) =
       onEditMenuItem(item);
     }
   };
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Lista pozycji */}
+      <div className="flex-1 overflow-y-auto p-2 space-y-2">
+        {cart.length === 0 ? (
+          <div className="text-center py-12 text-stone-400">
+            <Icon.ShoppingCart size={40} className="mx-auto mb-2 opacity-30" />
+            <p className="text-xs">Brak pozycji</p>
           </div>
         ) : (
           cart.map(item => (
@@ -410,7 +410,7 @@ const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) =
       {/* Footer - 3 przyciski obok siebie */}
       {activeCart.length > 0 && (
         <div className="p-2 border-t-2 border-stone-200 shrink-0">
-          {/* RozwiniÃâ¢te rabaty i promocje - nad przyciskami */}
+          {/* Rozwinięte rabaty i promocje - nad przyciskami */}
           {showDiscountsPromos && (
             <div className="space-y-2 pb-2 mb-2 border-b border-stone-200">
               {globalDiscounts.length > 0 && (
@@ -461,20 +461,21 @@ const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) =
               >
                 <span className="text-xs text-stone-700">Promocje</span>
                 <span className="text-xs text-stone-700">i Rabaty</span>
+                <Icon.ChevronDown size={14} className={`text-stone-400 transition-transform ${showDiscountsPromos ? 'rotate-180' : ''}`} />
               </button>
             )}
 
-            {/* 2. ZamÃÂ³w */}
+            {/* 2. Zamów */}
             <button
               onClick={onOrder}
               className="flex-1 px-3 py-3 rounded-lg bg-primary-gradient text-white text-base font-bold flex items-center justify-center active:scale-95 transition-all shadow-medium hover:shadow-strong"
             >
-              ZamÃÂ³w
+              Zamów
             </button>
 
             {/* 3. RAZEM */}
             <button
-              onClick={() => onShowBreakdown(true)}
+              onClick={onShowBreakdown}
               className="flex-1 px-2 py-3 rounded-lg bg-white border-2 border-stone-300 hover:border-stone-400 font-bold flex flex-col items-center justify-center gap-0.5 active:scale-95 transition-all shadow-soft"
             >
               <span className="text-xs text-stone-600">RAZEM</span>
@@ -486,6 +487,7 @@ const CartSidebar = ({ onOrder, onEditItem, onEditMenuItem, onShowBreakdown }) =
     </div>
   );
 };
+
 
 // ==================== MAIN APP ====================
 
@@ -519,6 +521,7 @@ const MainApp = () => {
   // Dodaj pizzÃâ¢ do koszyka
   const handleAddPizza = (pizza) => {
     const item = createPizzaItem(pizza.nr, db.settings.sizes[sizeIdx].id, db);
+    addToCart(item);
   };
 
   // Dodaj pozycjÃâ¢ z menu

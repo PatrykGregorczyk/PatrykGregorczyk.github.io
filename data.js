@@ -152,6 +152,7 @@ const DEFAULT_DATA = {
 
   menu: [
     { id: 101, cat: 'przekÃâ¦ski', name: 'Nuggetsy 6szt', price: 14, pkg: 4, availableAddons: [], defaultAddons: {} },
+    { id: 104, cat: 'przekąski', name: 'Placki ziemniaczane', price: 12, pkg: 4, availableAddons: [], defaultAddons: {} },
     { id: 102, cat: 'przekÃâ¦ski', name: 'Frytki', price: 10, pkg: 4, availableAddons: [3], defaultAddons: {} },
     { id: 103, cat: 'przekÃâ¦ski', name: 'SkrzydeÃâka 8szt', price: 18, pkg: 4, availableAddons: [], defaultAddons: {} },
     {
