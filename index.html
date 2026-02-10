@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!-- STAÃâ¦ÃÂY VIEWPORT TABLETOWY - 1024px szerokoÃâ¦Ã¢â¬Âºci -->
   <meta name="viewport" content="width=1024, initial-scale=1.0, minimum-scale=0.1, maximum-scale=2.0, user-scalable=yes">
-  <title>DaGrasso POS</title>
+  <title>Da Grasso POS</title>
   <link rel="stylesheet" href="style.css">
   
   <!-- React 18 -->
@@ -16,97 +16,20 @@
 </head>
 <body>
   <div id="root"></div>
-  <!-- Login overlay (client waits for server auth before loading app scripts) -->
-  <div id="login-overlay" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:9999;">
-    <form id="login-form" style="background:#fff;padding:20px;border-radius:6px;min-width:280px;box-shadow:0 6px 18px rgba(0,0,0,0.2);">
-      <h3 style="margin-top:0;margin-bottom:8px;color:#333;">Zaloguj się do DaGrasso</h3>
-      <p style="color:#666;font-size:12px;margin:0 0 15px 0;">Test login: natka/natka123 lub admin/admin123</p>
-      <div style="margin-bottom:8px;"><input id="username" name="username" placeholder="Użytkownik" style="width:100%;padding:8px;box-sizing:border-box;" required></div>
-      <div style="margin-bottom:8px;"><input id="password" name="password" type="password" placeholder="Hasło" style="width:100%;padding:8px;box-sizing:border-box;" required></div>
-      <div style="text-align:right;"><button type="submit" style="padding:8px 12px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer;">Zaloguj</button></div>
-      <div id="login-error" style="color:#d00;margin-top:8px;display:none;font-size:12px;"></div>
-    </form>
-  </div>
 
-  <script>
-    console.log('Script loaded');
-    
-    const appScripts = [
-      'data.js','helpers.js','fuzzy.js','reducer.js','hooks.js','ui-basic.js','ui-addon.js','editors.js','views-cart.js','views-history.js','views-label.js','views-admin.js','app.js'
-    ];
-
-    // Client-side auth: compare SHA-256(salt + password) to stored hashes
-    const credentials = {
-      natka: { salt: 's@1t_natka', hash: '447b3c55205911d3939b92ffc306d7fcefe656afa737fae72f8d61ca9345b1c4' },
-      admin: { salt: 's@1t_admin', hash: '872fc47682b9db3732d34c0194421ce8bba061c5d510d1b7e0f3fbbfdf20bbba' }
-    };
-
-    async function sha256Hex(str){
-      const enc = new TextEncoder();
-      const data = enc.encode(str);
-      const hash = await crypto.subtle.digest('SHA-256', data);
-      const bytes = new Uint8Array(hash);
-      return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
-    }
-
-    async function doLogin(username, password){
-      try {
-        const entry = credentials[username];
-        if (!entry) throw new Error('Nieznany użytkownik');
-        console.log('Checking password for', username);
-        const digest = await sha256Hex(entry.salt + password);
-        console.log('Computed hash:', digest);
-        console.log('Expected hash:', entry.hash);
-        if (digest !== entry.hash) throw new Error('Nieprawidłowe dane');
-        const token = btoa(username + ':' + Date.now());
-        sessionStorage.setItem('authToken', token);
-        sessionStorage.setItem('authUser', username);
-        return { user: username, token };
-      } catch(e) {
-        console.error('Login error:', e);
-        throw e;
-      }
-    }
-
-    function showError(msg){
-      const el = document.getElementById('login-error');
-      el.textContent = msg;
-      el.style.display = 'block';
-    }
-
-    function loadApp(){
-      const ov = document.getElementById('login-overlay');
-      if (ov) ov.remove();
-      for(const s of appScripts){
-        const sc = document.createElement('script');
-        sc.type = 'text/babel';
-        sc.src = s;
-        document.body.appendChild(sc);
-      }
-    }
-
-    // Attach form listener immediately
-    window.addEventListener('load', function(){
-      console.log('Window loaded');
-      const form = document.getElementById('login-form');
-      console.log('Form element:', form);
-      if(form){
-        form.addEventListener('submit', async (e)=>{
-          e.preventDefault();
-          console.log('Form submitted');
-          const u = document.getElementById('username').value.trim();
-          const p = document.getElementById('password').value;
-          console.log('Attempting login for:', u);
-          try{
-            await doLogin(u,p);
-            loadApp();
-          }catch(err){
-            console.error('Error:', err);
-            showError(err.message || 'Błąd');
-          }
-        });
-      }
-    });
-  </script>
+  <!-- App Scripts -->
+  <script type="text/babel" src="data.js"></script>
+  <script type="text/babel" src="helpers.js"></script>
+  <script type="text/babel" src="fuzzy.js"></script>
+  <script type="text/babel" src="reducer.js"></script>
+  <script type="text/babel" src="hooks.js"></script>
+  <script type="text/babel" src="ui-basic.js"></script>
+  <script type="text/babel" src="ui-addon.js"></script>
+  <script type="text/babel" src="editors.js"></script>
+  <script type="text/babel" src="views-cart.js"></script>
+  <script type="text/babel" src="views-history.js"></script>
+  <script type="text/babel" src="views-label.js"></script>
+  <script type="text/babel" src="views-admin.js"></script>
+  <script type="text/babel" src="app.js"></script>
 </body>
 </html>
