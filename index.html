@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/svg+xml" href="./icon.svg">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<meta name="theme-color" content="#1e293b">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Karta Pracy</title>
+
+    <!-- Konfiguracja PWA (GitHub Pages) -->
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <meta name="theme-color" content="#0b1320">
 
     <!-- Czcionka Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,18 +26,18 @@
            Kompaktowy układ, wysoka gęstość treści, zero glow
            ========================================================= */
         :root {
-            --bg-page: #eef5f1;
-            --bg-topbar: #d7efe0;
+            --bg-page: #eef4f2;
+            --bg-topbar: #d8ede3;
             --bg-card: #ffffff;
             --bg-field: #f1f5f9;
-            --bg-field-hover: #e6edf4;
+            --bg-field-hover: #e5edf4;
             --bg-tile: #eef3f7;
             --bg-tile-hover: #e1eaf1;
             --bg-chip: #eef2f6;
             --bg-chip-hover: #e2e8f0;
-            --bg-table-head: #f4f7f5;
-            --bg-row-hover: #f6faf7;
-            --bg-icon-btn: rgba(255, 255, 255, 0.9);
+            --bg-table-head: #f4f7f6;
+            --bg-row-hover: #f6faf8;
+            --bg-icon-btn: rgba(255, 255, 255, 0.92);
             --bg-icon-btn-hover: #ffffff;
 
             --text-main: #111c24;
@@ -48,7 +50,7 @@
             --shadow-btn: 0 2px 5px rgba(15, 23, 42, 0.14);
             --shadow-btn-active: 0 1px 2px rgba(15, 23, 42, 0.16);
 
-            /* Zróżnicowana paleta przycisków */
+            /* Zróżnicowana paleta kolorów przycisków */
             --c-save: #2e9e5b;
             --c-save-hover: #25874c;
             --c-share: #3b6ef5;
@@ -65,38 +67,43 @@
             --c-danger: #dc2626;
             --c-danger-hover: #b91c1c;
 
-            /* Statusy dnia */
-            --st-work: #2e9e5b;
-            --st-uw: #2563eb;
-            --st-uo: #7c3aed;
-            --st-l4: #dc2626;
+            /* Tryb dnia i rodzaje wolnego */
+            --mode-work: #2e9e5b;
+            --mode-leave: #3b6ef5;
+
+            --lv-l4: #dc2626;
+            --lv-uw: #2563eb;
+            --lv-uo: #7c3aed;
+            --lv-ub: #d97706;
+            --lv-uop: #0d9488;
+            --lv-inne: #475569;
 
             --tile-active: #0d9488;
             --chip-active: #3b6ef5;
             --badge-hours-bg: #dff4e8;
             --badge-hours-txt: #166534;
 
-            --radius-card: 16px;
+            --radius-card: 17px;
             --radius-btn: 11px;
             --radius-field: 11px;
-            --ctrl-h: 34px;
+            --ctrl-h: 36px;
             --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         [data-theme="dark"] {
-            --bg-page: #0f1419;
-            --bg-topbar: #152129;
-            --bg-card: #182028;
-            --bg-field: #222c36;
-            --bg-field-hover: #2a3642;
-            --bg-tile: #222c36;
-            --bg-tile-hover: #2c3947;
-            --bg-chip: #222c36;
-            --bg-chip-hover: #2c3947;
-            --bg-table-head: #1e2832;
-            --bg-row-hover: #1e2833;
-            --bg-icon-btn: #222c36;
-            --bg-icon-btn-hover: #2c3947;
+            --bg-page: #0b1320;
+            --bg-topbar: #131f30;
+            --bg-card: #162131;
+            --bg-field: #1e2c40;
+            --bg-field-hover: #263750;
+            --bg-tile: #1e2c40;
+            --bg-tile-hover: #273852;
+            --bg-chip: #1e2c40;
+            --bg-chip-hover: #273852;
+            --bg-table-head: #1b283b;
+            --bg-row-hover: #1b283a;
+            --bg-icon-btn: #1e2c40;
+            --bg-icon-btn-hover: #283a54;
 
             --text-main: #edf2f7;
             --text-secondary: #a8b7c7;
@@ -123,6 +130,16 @@
             --c-repeat-hover: rgba(217, 119, 6, 0.34);
             --c-danger: #c72828;
             --c-danger-hover: #dc2626;
+
+            --mode-work: #288c50;
+            --mode-leave: #3563db;
+
+            --lv-l4: #c72828;
+            --lv-uw: #2e5fd6;
+            --lv-uo: #7438d4;
+            --lv-ub: #c46b06;
+            --lv-uop: #0d8278;
+            --lv-inne: #64748b;
 
             --tile-active: #0d8278;
             --chip-active: #3563db;
@@ -213,7 +230,7 @@
         .owner-input {
             flex: 1 1 auto;
             min-width: 0;
-            height: var(--ctrl-h);
+            height: 34px;
             padding: 0 12px;
             background: var(--bg-card);
             border: 1px solid var(--field-border);
@@ -246,7 +263,7 @@
             background: var(--bg-icon-btn-hover);
         }
 
-        /* Dokładnie 4 przyciski w jednej linii */
+        /* Dokładnie 4 przyciski w jednej linii (dopasowane nawet do 360px) */
         .topbar-actions-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -266,7 +283,7 @@
             }
             .topbar-actions-grid {
                 width: auto;
-                min-width: 400px;
+                min-width: 390px;
                 margin-left: auto;
             }
         }
@@ -280,7 +297,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 5px;
             white-space: nowrap;
             color: #ffffff;
             box-shadow: var(--shadow-btn);
@@ -289,6 +306,7 @@
 
         .topbar-actions-grid .btn {
             padding: 0 4px;
+            gap: 4px;
             font-size: 12px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -356,7 +374,7 @@
 
         @media (min-width: 900px) {
             .layout {
-                grid-template-columns: clamp(340px, 34vw, 430px) minmax(0, 1fr);
+                grid-template-columns: clamp(350px, 35vw, 440px) minmax(0, 1fr);
             }
             .form-col {
                 position: sticky;
@@ -451,7 +469,7 @@
         .field-ctrl {
             width: 100%;
             height: var(--ctrl-h);
-            padding: 0 10px;
+            padding: 0 9px;
             background: var(--bg-field);
             border: 1px solid var(--field-border);
             border-radius: var(--radius-field);
@@ -465,58 +483,89 @@
         }
 
         /* =========================================================
-           DATA + PRZEŁĄCZNIK STATUSU DNIA
+           DATA + PRZYCISKI PRACA / WOLNE W JEDNEJ LINII
            ========================================================= */
-        .date-status-grid {
-            display: grid;
-            grid-template-columns: minmax(126px, 43%) minmax(0, 1fr);
-            gap: 8px;
-            align-items: end;
+        .date-mode-row {
+            display: flex;
+            align-items: stretch;
+            gap: 6px;
+            width: 100%;
         }
 
-        @media (max-width: 350px) {
-            .date-status-grid {
-                grid-template-columns: 1fr;
-            }
+        .date-input-inline {
+            flex: 1 1 120px;
+            min-width: 116px;
+            height: var(--ctrl-h);
+            padding: 0 8px;
+            font-size: 12.5px;
         }
 
-        .status-segment {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+        .mode-segment {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: stretch;
             gap: 4px;
             padding: 3px;
+            height: var(--ctrl-h);
             background: var(--bg-field);
+            border: 1px solid var(--field-border);
             border-radius: var(--radius-field);
         }
 
-        .status-btn {
-            height: 28px;
-            padding: 0 2px;
+        .mode-btn {
+            height: 100%;
+            padding: 0 9px;
             border-radius: 8px;
             font-size: 12px;
             font-weight: 700;
             color: var(--text-secondary);
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
         }
 
-        .status-btn:hover:not(.active) {
+        .mode-btn svg {
+            flex-shrink: 0;
+        }
+
+        .mode-btn:hover:not(.active) {
             background: var(--bg-tile-hover);
             color: var(--text-main);
         }
 
-        .status-btn.active {
+        .mode-btn.active {
             color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
         }
-        .status-btn.active[data-status="work"] { background: var(--st-work); }
-        .status-btn.active[data-status="UW"]   { background: var(--st-uw); }
-        .status-btn.active[data-status="UO"]   { background: var(--st-uo); }
-        .status-btn.active[data-status="L4"]   { background: var(--st-l4); }
+
+        .mode-btn.active[data-mode="work"] {
+            background: var(--mode-work);
+        }
+
+        .mode-btn.active[data-mode="leave"] {
+            background: var(--mode-leave);
+        }
+
+        @media (max-width: 380px) {
+            .date-mode-row {
+                gap: 5px;
+            }
+            .date-input-inline {
+                min-width: 112px;
+                padding: 0 6px;
+                font-size: 12px;
+            }
+            .mode-btn {
+                padding: 0 7px;
+                gap: 4px;
+                font-size: 11.5px;
+            }
+        }
 
         /* =========================================================
-           GODZINY PRACY + 12 KAFELKÓW SZYBKIEGO KOŃCA (14:30-20:00)
+           SEKCJA PRACA: GODZINY + 12 KAFELKÓW + SKŁAD + PRACE
            ========================================================= */
         .time-row {
             display: grid;
@@ -562,13 +611,14 @@
             letter-spacing: 0.03em;
         }
 
+        /* 12 kafelków szybkiego końca: 6x2 (lub 4x3 poniżej 400px) */
         .quick-end-grid {
             display: grid;
             grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 5px;
         }
 
-        @media (max-width: 390px) {
+        @media (max-width: 400px) {
             .quick-end-grid {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
@@ -599,13 +649,24 @@
             box-shadow: 0 2px 5px rgba(13, 148, 136, 0.26);
         }
 
-        /* =========================================================
-           SKŁAD OSOBOWY
-           ========================================================= */
+        /* Skład osobowy */
+        .crew-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+            min-height: 24px;
+            align-items: center;
+        }
+
+        .crew-empty {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
         .crew-add-row {
             display: flex;
             gap: 6px;
-            margin-bottom: 8px;
         }
 
         .btn-add-person {
@@ -624,19 +685,6 @@
 
         .btn-add-person:hover {
             background: var(--c-share-hover);
-        }
-
-        .crew-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            min-height: 24px;
-            align-items: center;
-        }
-
-        .crew-empty {
-            font-size: 12px;
-            color: var(--text-muted);
         }
 
         .person-chip {
@@ -687,9 +735,7 @@
             background: rgba(0, 0, 0, 0.14);
         }
 
-        /* =========================================================
-           WYKONANE PRACE I ZAPIS
-           ========================================================= */
+        /* Wykonane prace */
         .tasks-head {
             display: flex;
             align-items: center;
@@ -721,16 +767,89 @@
             font-size: 13px;
             line-height: 1.42;
             resize: vertical;
-            margin-bottom: 10px;
         }
 
         .tasks-textarea::placeholder {
             color: var(--text-muted);
         }
 
+        /* =========================================================
+           SEKCJA WOLNE: ZAWSZE 2 PRZYCISKI OBOK SIEBIE (2x3)
+           ========================================================= */
+        .leave-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .leave-tile {
+            min-height: 38px;
+            padding: 6px 8px;
+            border-radius: 11px;
+            background: var(--bg-tile);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .leave-tile:hover:not(.active) {
+            background: var(--bg-tile-hover);
+        }
+
+        .leave-tile-code {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.08);
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        [data-theme="dark"] .leave-tile-code {
+            background: rgba(255, 255, 255, 0.09);
+            color: var(--text-secondary);
+        }
+
+        .leave-tile.active {
+            color: #ffffff;
+            box-shadow: var(--shadow-btn);
+        }
+
+        .leave-tile.active .leave-tile-code {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+
+        .leave-tile.active[data-leave="L4"]   { background: var(--lv-l4); }
+        .leave-tile.active[data-leave="UW"]   { background: var(--lv-uw); }
+        .leave-tile.active[data-leave="UO"]   { background: var(--lv-uo); }
+        .leave-tile.active[data-leave="UB"]   { background: var(--lv-ub); }
+        .leave-tile.active[data-leave="UOp"]  { background: var(--lv-uop); }
+        .leave-tile.active[data-leave="Inne"] { background: var(--lv-inne); }
+
+        @media (max-width: 375px) {
+            .leave-tile {
+                padding: 6px 7px;
+                font-size: 11.5px;
+            }
+        }
+
+        .leave-other-wrap {
+            margin-top: 9px;
+        }
+
+        /* Przyciski zapisu formularza */
         .form-actions {
             display: flex;
             gap: 7px;
+            margin-top: 11px;
         }
 
         .form-actions .btn-save {
@@ -738,6 +857,7 @@
             height: 36px;
             font-size: 13.5px;
             font-weight: 700;
+            gap: 6px;
         }
 
         .form-actions .btn-save.editing {
@@ -754,70 +874,13 @@
         }
 
         /* =========================================================
-           KARTA TABELI: PODSUMOWANIE + KOMPAKTOWA TABELA
+           KARTA TABELI: KOMPAKTOWA TABELA + PODSUMOWANIE NA DOLE
            ========================================================= */
         .table-card {
             background: var(--bg-card);
             border-radius: var(--radius-card);
             box-shadow: var(--shadow-card);
             overflow: hidden;
-        }
-
-        .summary-bar {
-            padding: 10px 12px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            border-bottom: 1px solid var(--divider);
-        }
-
-        .summary-pills {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .stat-pill {
-            height: 27px;
-            padding: 0 9px;
-            border-radius: 999px;
-            background: var(--bg-field);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .stat-pill strong {
-            font-size: 12.5px;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .stat-pill.hours strong { color: var(--c-save); }
-        .stat-pill.uw strong { color: var(--st-uw); }
-        .stat-pill.uo strong { color: var(--st-uo); }
-        .stat-pill.l4 strong { color: var(--st-l4); }
-
-        .btn-clear-all {
-            height: 27px;
-            padding: 0 10px;
-            border-radius: 999px;
-            font-size: 11.5px;
-            font-weight: 600;
-            background: rgba(220, 38, 38, 0.1);
-            color: var(--c-danger);
-        }
-
-        .btn-clear-all:hover {
-            background: var(--c-danger);
-            color: #ffffff;
         }
 
         .table-wrap {
@@ -882,7 +945,7 @@
             margin-top: 1px;
         }
 
-        /* Kolumna Godz.: 3 wiersze, wyśrodkowana */
+        /* Kolumna Godz.: 3 wiersze dla pracy, wyśrodkowana */
         .col-hours {
             width: 1%;
             white-space: nowrap;
@@ -922,20 +985,28 @@
             font-weight: 700;
             color: #ffffff;
         }
-        .leave-UW { background: var(--st-uw); }
-        .leave-UO { background: var(--st-uo); }
-        .leave-L4 { background: var(--st-l4); }
+        .leave-L4   { background: var(--lv-l4); }
+        .leave-UW   { background: var(--lv-uw); }
+        .leave-UO   { background: var(--lv-uo); }
+        .leave-UB   { background: var(--lv-ub); }
+        .leave-UOp  { background: var(--lv-uop); }
+        .leave-Inne { background: var(--lv-inne); }
 
-        /* Kolumna Skład: pionowo */
+        /* Kolumna Skład */
         .col-crew {
             width: 1%;
-            min-width: 46px;
+            min-width: 44px;
             max-width: 82px;
             color: var(--text-secondary);
             font-weight: 500;
             white-space: pre-line;
             line-height: 1.3;
             font-size: 12px;
+        }
+
+        .col-crew.is-empty {
+            text-align: center;
+            color: var(--text-muted);
         }
 
         /* Kolumna Prace: cała pozostała szerokość */
@@ -999,6 +1070,70 @@
             font-size: 13.5px;
         }
 
+        /* Podsumowanie NA DOLE karty tabeli */
+        .summary-footer {
+            padding: 10px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-top: 1px solid var(--divider);
+            background: var(--bg-table-head);
+        }
+
+        .summary-pills {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-pill {
+            height: 26px;
+            padding: 0 9px;
+            border-radius: 999px;
+            background: var(--bg-card);
+            border: 1px solid var(--divider);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-pill strong {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .stat-pill.hours strong { color: var(--c-save); }
+        .stat-pill.lv-L4 strong { color: var(--lv-l4); }
+        .stat-pill.lv-UW strong { color: var(--lv-uw); }
+        .stat-pill.lv-UO strong { color: var(--lv-uo); }
+        .stat-pill.lv-UB strong { color: var(--lv-ub); }
+        .stat-pill.lv-UOp strong { color: var(--lv-uop); }
+        .stat-pill.lv-Inne strong { color: var(--lv-inne); }
+
+        .btn-clear-all {
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 600;
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--c-danger);
+            white-space: nowrap;
+        }
+
+        .btn-clear-all:hover {
+            background: var(--c-danger);
+            color: #ffffff;
+        }
+
         @media (max-width: 520px) {
             .entries-table thead th,
             .entries-table tbody td {
@@ -1012,14 +1147,14 @@
                 font-size: 10px;
             }
             .col-crew {
-                min-width: 42px;
+                min-width: 40px;
                 max-width: 68px;
                 font-size: 11.5px;
             }
         }
 
         /* =========================================================
-           TOAST I MODAL (DOMYŚLNIE DISPLAY: NONE)
+           TOAST I MODAL (BEZ ALERT/CONFIRM, ZERO BLOKOWANIA)
            ========================================================= */
         .toast {
             position: fixed;
@@ -1058,7 +1193,7 @@
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.54);
+            background: rgba(11, 19, 32, 0.56);
             z-index: 50;
             display: none;
             align-items: center;
@@ -1077,7 +1212,7 @@
             color: var(--text-main);
             border-radius: 18px;
             padding: 16px;
-            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
         }
 
         .modal-title {
@@ -1124,7 +1259,7 @@
                     type="text"
                     id="owner-name"
                     class="owner-input"
-                    placeholder="Imię i nazwisko"
+                    placeholder="Imię i nazwisko..."
                     autocomplete="name"
                     aria-label="Imię i nazwisko"
                 >
@@ -1148,7 +1283,7 @@
             </div>
 
             <div class="topbar-actions-grid">
-                <button type="button" id="share-pdf-btn" class="btn btn-share" title="Wyślij kartę">
+                <button type="button" id="share-pdf-btn" class="btn btn-share" title="Wyślij kartę pracy">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="18" cy="5" r="3"></circle>
                         <circle cx="6" cy="12" r="3"></circle>
@@ -1159,7 +1294,7 @@
                     <span>Wyślij</span>
                 </button>
 
-                <button type="button" id="download-pdf-btn" class="btn btn-pdf" title="Pobierz kartę">
+                <button type="button" id="download-pdf-btn" class="btn btn-pdf" title="Pobierz kartę pracy">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
@@ -1214,25 +1349,37 @@
                     </button>
                 </div>
 
-                <!-- Data + Status dnia -->
-                <div class="date-status-grid">
-                    <div>
-                        <label class="field-label" for="entry-date">Data</label>
-                        <input type="date" id="entry-date" class="field-ctrl" required>
-                    </div>
-                    <div>
-                        <span class="field-label">Status</span>
-                        <div class="status-segment" role="group" aria-label="Status dnia">
-                            <button type="button" class="status-btn active" data-status="work">Praca</button>
-                            <button type="button" class="status-btn" data-status="UW">UW</button>
-                            <button type="button" class="status-btn" data-status="UO">UO</button>
-                            <button type="button" class="status-btn" data-status="L4">L4</button>
-                        </div>
+                <!-- DATA + PRZEŁĄCZNIK PRACA / WOLNE W JEDNEJ LINII -->
+                <div class="date-mode-row">
+                    <input type="date" id="entry-date" class="field-ctrl date-input-inline" aria-label="Data" required>
+
+                    <div class="mode-segment" role="group" aria-label="Tryb dnia">
+                        <button type="button" class="mode-btn active" data-mode="work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                            <span>Praca</span>
+                        </button>
+                        <button type="button" class="mode-btn" data-mode="leave">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <path d="M12 2v2"></path>
+                                <path d="M12 20v2"></path>
+                                <path d="m4.93 4.93 1.41 1.41"></path>
+                                <path d="m17.66 17.66 1.41 1.41"></path>
+                                <path d="M2 12h2"></path>
+                                <path d="M20 12h2"></path>
+                                <path d="m6.34 17.66-1.41 1.41"></path>
+                                <path d="m19.07 4.93-1.41 1.41"></path>
+                            </svg>
+                            <span>Wolne</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Sekcje widoczne wyłącznie dla statusu "Praca" -->
-                <div id="work-only-section">
+                <!-- SEKCJA WYŁĄCZNIE DLA TRYBU "PRACA" -->
+                <div id="work-section">
                     <div class="section-divider"></div>
 
                     <!-- Godziny pracy: pełna doba 00:00 - 24:00 co 30 min -->
@@ -1257,8 +1404,9 @@
 
                     <div class="section-divider"></div>
 
-                    <!-- Skład -->
-                    <label class="field-label" for="person-input">Skład</label>
+                    <!-- Skład osobowy -->
+                    <label class="field-label" for="person-input">Skład osobowy</label>
+                    <div class="crew-chips" id="crew-chips"></div>
                     <div class="crew-add-row">
                         <input
                             type="text"
@@ -1283,46 +1431,58 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="crew-chips" id="crew-chips"></div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Wykonane prace -->
+                    <div class="tasks-head">
+                        <label class="field-label" for="entry-tasks" style="margin:0;">Wykonane prace</label>
+                        <button type="button" id="clear-tasks-btn" class="btn-text-clear">Wyczyść</button>
+                    </div>
+                    <textarea
+                        id="entry-tasks"
+                        class="tasks-textarea"
+                        rows="3"
+                        placeholder="Wpisz wykonane prace lub podyktuj z klawiatury..."
+                    ></textarea>
                 </div>
 
-                <div class="section-divider"></div>
+                <!-- SEKCJA WYŁĄCZNIE DLA TRYBU "WOLNE" (2 PRZYCISKI OBOK SIEBIE) -->
+                <div id="leave-section" class="hidden">
+                    <div class="section-divider"></div>
+                    <span class="field-label">Rodzaj wolnego</span>
+                    <div class="leave-grid" id="leave-grid" role="radiogroup" aria-label="Rodzaj wolnego"></div>
 
-                <!-- Wykonane prace -->
-                <div class="tasks-head">
-                    <label class="field-label" for="entry-tasks" id="tasks-label" style="margin:0;">Wykonane prace</label>
-                    <button type="button" id="clear-tasks-btn" class="btn-text-clear">Wyczyść</button>
+                    <!-- Pole opisu pojawia się WYŁĄCZNIE po wybraniu "Inne" -->
+                    <div id="leave-other-wrap" class="leave-other-wrap hidden">
+                        <label class="field-label" for="leave-note-input">Powód / opis</label>
+                        <input
+                            type="text"
+                            id="leave-note-input"
+                            class="field-ctrl"
+                            placeholder="Wpisz powód, np. Opieka nad dzieckiem, Krwiodawstwo..."
+                            autocomplete="off"
+                        >
+                    </div>
                 </div>
-                <textarea
-                    id="entry-tasks"
-                    class="tasks-textarea"
-                    rows="3"
-                    placeholder="Wpisz wykonane prace lub podyktuj z klawiatury..."
-                ></textarea>
 
-                <!-- Zapis / Edycja -->
+                <!-- Przycisk zapisu z ikonką + Anuluj przy edycji -->
                 <div class="form-actions">
                     <button type="button" id="cancel-edit-btn" class="btn btn-tonal hidden">Anuluj</button>
-                    <button type="submit" id="submit-btn" class="btn btn-save">Dodaj wpis</button>
+                    <button type="submit" id="submit-btn" class="btn btn-save">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span id="submit-btn-text">Zapisz wpis</span>
+                    </button>
                 </div>
             </section>
         </form>
 
-        <!-- TABELA WPISÓW -->
+        <!-- TABELA WPISÓW + PODSUMOWANIE NA DOLE -->
         <section class="list-col">
             <div class="table-card">
-                <div class="summary-bar">
-                    <div class="summary-pills">
-                        <span class="stat-pill hours">Suma: <strong id="stat-hours">0 h</strong></span>
-                        <span class="stat-pill">Dni: <strong id="stat-days">0</strong></span>
-                        <span class="stat-pill uw hidden" id="stat-uw-wrap">UW: <strong id="stat-uw">0</strong></span>
-                        <span class="stat-pill uo hidden" id="stat-uo-wrap">UO: <strong id="stat-uo">0</strong></span>
-                        <span class="stat-pill l4 hidden" id="stat-l4-wrap">L4: <strong id="stat-l4">0</strong></span>
-                    </div>
-
-                    <button type="button" id="clear-all-btn" class="btn-clear-all" title="Usuń wszystkie wpisy">Wyczyść</button>
-                </div>
-
                 <div class="table-wrap">
                     <table class="entries-table" aria-label="Lista wpisów">
                         <thead>
@@ -1336,6 +1496,16 @@
                         </thead>
                         <tbody id="entries-tbody"></tbody>
                     </table>
+                </div>
+
+                <div class="summary-footer">
+                    <div class="summary-pills" id="summary-pills">
+                        <span class="stat-pill hours">Suma: <strong id="stat-hours">0 h</strong></span>
+                        <span class="stat-pill">Dni: <strong id="stat-days">0</strong></span>
+                        <span id="leave-counters-host" style="display:contents;"></span>
+                    </div>
+
+                    <button type="button" id="clear-all-btn" class="btn-clear-all" title="Usuń wszystkie wpisy z karty">Wyczyść kartę</button>
                 </div>
             </div>
         </section>
@@ -1359,20 +1529,28 @@
             'use strict';
 
             /* =========================================================
-               KLUCZE LOCALSTORAGE (CZYSTY START) I STAŁE
+               KLUCZE LOCALSTORAGE (CZYSTY START) I KONFIGURACJA
                ========================================================= */
             const STORAGE_KEYS = {
-                entries: 'godzinowki_v5_entries',
-                people: 'godzinowki_v5_people',
-                owner: 'godzinowki_v5_owner',
-                theme: 'godzinowki_v5_theme'
+                entries: 'karta_pracy_pwa_entries',
+                people: 'karta_pracy_pwa_people',
+                owner: 'karta_pracy_pwa_owner',
+                theme: 'karta_pracy_pwa_theme'
             };
 
-            const LEAVE_DESCRIPTIONS = {
-                UW: 'Urlop wypoczynkowy',
-                UO: 'Urlop okolicznościowy',
-                L4: 'Zwolnienie lekarskie (L4)'
-            };
+            const LEAVE_OPTIONS = [
+                { code: 'L4',   label: 'Zwolnienie lekarskie (L4)' },
+                { code: 'UW',   label: 'Urlop wypoczynkowy' },
+                { code: 'UO',   label: 'Urlop okolicznościowy' },
+                { code: 'UB',   label: 'Urlop bezpłatny' },
+                { code: 'UOp',  label: 'Urlop opiekuńczy' },
+                { code: 'Inne', label: 'Inne' }
+            ];
+
+            const LEAVE_LABEL_MAP = {};
+            LEAVE_OPTIONS.forEach(function (opt) {
+                LEAVE_LABEL_MAP[opt.code] = opt.label;
+            });
 
             const QUICK_END_TIMES = [
                 '14:30', '15:00', '15:30', '16:00', '16:30', '17:00',
@@ -1385,7 +1563,7 @@
             ];
 
             /* =========================================================
-               ELEMENTY DOM
+               REFERENCJE DO ELEMENTÓW DOM
                ========================================================= */
             const els = {
                 ownerName: document.getElementById('owner-name'),
@@ -1404,9 +1582,9 @@
                 editPill: document.getElementById('edit-pill'),
                 repeatLastBtn: document.getElementById('repeat-last-btn'),
                 entryDate: document.getElementById('entry-date'),
-                statusBtns: Array.from(document.querySelectorAll('.status-btn')),
+                modeBtns: Array.from(document.querySelectorAll('.mode-btn')),
 
-                workOnlySection: document.getElementById('work-only-section'),
+                workSection: document.getElementById('work-section'),
                 timeStart: document.getElementById('time-start'),
                 timeEnd: document.getElementById('time-end'),
                 durationPill: document.getElementById('duration-pill'),
@@ -1417,23 +1595,23 @@
                 personInput: document.getElementById('person-input'),
                 addPersonBtn: document.getElementById('add-person-btn'),
                 crewChips: document.getElementById('crew-chips'),
-
-                tasksLabel: document.getElementById('tasks-label'),
                 clearTasksBtn: document.getElementById('clear-tasks-btn'),
                 entryTasks: document.getElementById('entry-tasks'),
+
+                leaveSection: document.getElementById('leave-section'),
+                leaveGrid: document.getElementById('leave-grid'),
+                leaveOtherWrap: document.getElementById('leave-other-wrap'),
+                leaveNoteInput: document.getElementById('leave-note-input'),
+
                 cancelEditBtn: document.getElementById('cancel-edit-btn'),
                 submitBtn: document.getElementById('submit-btn'),
+                submitBtnText: document.getElementById('submit-btn-text'),
 
+                entriesTbody: document.getElementById('entries-tbody'),
                 statHours: document.getElementById('stat-hours'),
                 statDays: document.getElementById('stat-days'),
-                statUwWrap: document.getElementById('stat-uw-wrap'),
-                statUw: document.getElementById('stat-uw'),
-                statUoWrap: document.getElementById('stat-uo-wrap'),
-                statUo: document.getElementById('stat-uo'),
-                statL4Wrap: document.getElementById('stat-l4-wrap'),
-                statL4: document.getElementById('stat-l4'),
+                leaveCountersHost: document.getElementById('leave-counters-host'),
                 clearAllBtn: document.getElementById('clear-all-btn'),
-                entriesTbody: document.getElementById('entries-tbody'),
 
                 toast: document.getElementById('toast'),
                 modal: document.getElementById('app-modal'),
@@ -1450,7 +1628,8 @@
                 people: [],
                 selectedTeam: [],
                 owner: '',
-                status: 'work',
+                mode: 'work',        // 'work' | 'leave'
+                leaveType: 'L4',     // 'L4' | 'UW' | 'UO' | 'UB' | 'UOp' | 'Inne'
                 theme: 'light'
             };
 
@@ -1527,7 +1706,7 @@
             }
 
             /* =========================================================
-               NARZĘDZIA POMOCNICZE (CZAS, DATY, HTML, TOAST, MODAL)
+               FUNKCJE POMOCNICZE
                ========================================================= */
             function escapeHtml(str) {
                 return String(str == null ? '' : str)
@@ -1559,7 +1738,7 @@
                 return h * 60 + m;
             }
 
-            /* Obsługa zmian nocnych: gdy koniec <= start (np. 22:00-06:00 = 8h, 00:00-00:00 = 24h) */
+            /* Obsługa zmian nocnych: np. 22:00-06:00 = 8h, 00:00-00:00 = 24h */
             function calcHours(start, end) {
                 const s = parseMinutes(start);
                 const e = parseMinutes(end);
@@ -1599,6 +1778,15 @@
                 return t.startsWith('0') ? t.slice(1) : t;
             }
 
+            function getLeaveDisplayText(entry) {
+                const code = entry.leaveType || 'Inne';
+                if (code === 'Inne') {
+                    const note = (entry.leaveNote || entry.tasks || '').trim();
+                    return note || 'Inne';
+                }
+                return LEAVE_LABEL_MAP[code] || code;
+            }
+
             function showToast(msg, isError) {
                 els.toast.textContent = msg;
                 els.toast.classList.toggle('error', Boolean(isError));
@@ -1635,7 +1823,7 @@
             }
 
             /* =========================================================
-               GODZINY (00:00-24:00 CO 30 MIN) I 12 KAFELKÓW (14:30-20:00)
+               GODZINY (00:00-24:00) I 12 KAFELKÓW (14:30-20:00)
                ========================================================= */
             function populateTimeSelects() {
                 const options = [];
@@ -1688,31 +1876,54 @@
             }
 
             /* =========================================================
-               STATUS DNIA (PRACA / UW / UO / L4)
+               TRYB DNIA (PRACA / WOLNE) I 6 KAFELKÓW WOLNEGO (2x3)
                ========================================================= */
-            function setStatus(newStatus, autoFillTasks) {
-                const prevStatus = state.status;
-                state.status = newStatus;
+            function buildLeaveTiles() {
+                els.leaveGrid.innerHTML = '';
+                LEAVE_OPTIONS.forEach(function (opt) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'leave-tile';
+                    btn.dataset.leave = opt.code;
+                    btn.setAttribute('role', 'radio');
+                    btn.innerHTML = `<span>${escapeHtml(opt.label)}</span><span class="leave-tile-code">${escapeHtml(opt.code)}</span>`;
+                    btn.addEventListener('click', function () {
+                        setLeaveType(opt.code);
+                    });
+                    els.leaveGrid.appendChild(btn);
+                });
+            }
 
-                els.statusBtns.forEach(function (btn) {
-                    btn.classList.toggle('active', btn.dataset.status === newStatus);
+            function setLeaveType(code) {
+                const valid = LEAVE_LABEL_MAP[code] ? code : 'L4';
+                state.leaveType = valid;
+
+                els.leaveGrid.querySelectorAll('.leave-tile').forEach(function (tile) {
+                    const isActive = tile.dataset.leave === valid;
+                    tile.classList.toggle('active', isActive);
+                    tile.setAttribute('aria-checked', String(isActive));
                 });
 
-                const isWork = newStatus === 'work';
-                els.workOnlySection.classList.toggle('hidden', !isWork);
-                els.tasksLabel.textContent = isWork ? 'Wykonane prace' : 'Opis / uwagi';
+                const isOther = valid === 'Inne';
+                els.leaveOtherWrap.classList.toggle('hidden', !isOther);
+                if (isOther && state.mode === 'leave') {
+                    els.leaveNoteInput.focus();
+                }
+            }
 
-                if (autoFillTasks) {
-                    const currentText = els.entryTasks.value.trim();
-                    const prevAuto = LEAVE_DESCRIPTIONS[prevStatus] || '';
-                    const knownAuto = Object.values(LEAVE_DESCRIPTIONS);
-                    if (!isWork) {
-                        if (currentText === '' || currentText === prevAuto || knownAuto.includes(currentText)) {
-                            els.entryTasks.value = LEAVE_DESCRIPTIONS[newStatus] || newStatus;
-                        }
-                    } else if (knownAuto.includes(currentText)) {
-                        els.entryTasks.value = '';
-                    }
+            function setMode(newMode) {
+                state.mode = newMode === 'leave' ? 'leave' : 'work';
+
+                els.modeBtns.forEach(function (btn) {
+                    btn.classList.toggle('active', btn.dataset.mode === state.mode);
+                });
+
+                const isWork = state.mode === 'work';
+                els.workSection.classList.toggle('hidden', !isWork);
+                els.leaveSection.classList.toggle('hidden', isWork);
+
+                if (!isWork) {
+                    setLeaveType(state.leaveType || 'L4');
                 }
             }
 
@@ -1725,7 +1936,7 @@
                 if (state.people.length === 0) {
                     const span = document.createElement('span');
                     span.className = 'crew-empty';
-                    span.textContent = 'Brak zapisanych osób — wpisz imię powyżej.';
+                    span.textContent = 'Brak zapisanych osób — dodaj poniżej.';
                     els.crewChips.appendChild(span);
                     return;
                 }
@@ -1796,7 +2007,7 @@
             }
 
             /* =========================================================
-               TABELA I PODSUMOWANIE
+               TABELA I PODSUMOWANIE NA DOLE KARTY
                ========================================================= */
             function getSortedEntries() {
                 return state.entries.slice().sort(function (a, b) {
@@ -1811,9 +2022,7 @@
                 const sorted = getSortedEntries();
                 let totalHours = 0;
                 let workDays = 0;
-                let uwCount = 0;
-                let uoCount = 0;
-                let l4Count = 0;
+                const leaveCounts = {};
 
                 els.entriesTbody.innerHTML = '';
 
@@ -1825,36 +2034,39 @@
                     const frag = document.createDocumentFragment();
 
                     sorted.forEach(function (entry) {
-                        const type = entry.type || 'work';
-                        const isWork = type === 'work';
-                        let hrs = 0;
+                        const isWork = entry.status !== 'leave';
+                        let hoursHtml = '';
+                        let crewText = '—';
+                        let crewEmpty = true;
+                        let tasksText = '';
 
                         if (isWork) {
-                            hrs = calcHours(entry.start, entry.end);
+                            const hrs = calcHours(entry.start, entry.end);
                             totalHours += hrs;
                             workDays += 1;
-                        } else if (type === 'UW') {
-                            uwCount += 1;
-                        } else if (type === 'UO') {
-                            uoCount += 1;
-                        } else if (type === 'L4') {
-                            l4Count += 1;
+
+                            hoursHtml = `<span class="time-start-txt">${escapeHtml(formatSingleTime(entry.start))}</span><strong class="time-end-txt">${escapeHtml(formatSingleTime(entry.end))}</strong><span class="hours-chip">${escapeHtml(formatHours(hrs, true))}</span>`;
+
+                            if (Array.isArray(entry.team) && entry.team.length > 0) {
+                                crewText = entry.team.join('\n');
+                                crewEmpty = false;
+                            }
+                            tasksText = entry.tasks || '';
+                        } else {
+                            const code = LEAVE_LABEL_MAP[entry.leaveType] ? entry.leaveType : 'Inne';
+                            leaveCounts[code] = (leaveCounts[code] || 0) + 1;
+                            hoursHtml = `<span class="leave-badge leave-${escapeHtml(code)}">${escapeHtml(code)}</span>`;
+                            crewText = '—';
+                            crewEmpty = true;
+                            tasksText = getLeaveDisplayText(entry);
                         }
-
-                        const hoursHtml = isWork
-                            ? `<span class="time-start-txt">${escapeHtml(formatSingleTime(entry.start))}</span><strong class="time-end-txt">${escapeHtml(formatSingleTime(entry.end))}</strong><span class="hours-chip">${escapeHtml(formatHours(hrs, true))}</span>`
-                            : `<span class="leave-badge leave-${escapeHtml(type)}">${escapeHtml(type)}</span>`;
-
-                        const crewText = isWork && Array.isArray(entry.team) && entry.team.length
-                            ? entry.team.join('\n')
-                            : '–';
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td class="col-date">${formatDateStackedHtml(entry.date)}</td>
                             <td class="col-hours">${hoursHtml}</td>
-                            <td class="col-crew">${escapeHtml(crewText)}</td>
-                            <td class="col-tasks">${escapeHtml(entry.tasks || '')}</td>
+                            <td class="col-crew${crewEmpty ? ' is-empty' : ''}">${escapeHtml(crewText)}</td>
+                            <td class="col-tasks">${escapeHtml(tasksText)}</td>
                             <td class="col-actions">
                                 <div class="row-btns">
                                     <button type="button" class="row-icon-btn edit" data-action="edit" data-id="${escapeHtml(entry.id)}" title="Edytuj" aria-label="Edytuj wpis">
@@ -1872,17 +2084,20 @@
                     els.entriesTbody.appendChild(frag);
                 }
 
+                // Aktualizacja podsumowania na dole karty
                 els.statHours.textContent = formatHours(totalHours, false);
                 els.statDays.textContent = String(workDays);
 
-                els.statUw.textContent = String(uwCount);
-                els.statUwWrap.classList.toggle('hidden', uwCount === 0);
-
-                els.statUo.textContent = String(uoCount);
-                els.statUoWrap.classList.toggle('hidden', uoCount === 0);
-
-                els.statL4.textContent = String(l4Count);
-                els.statL4Wrap.classList.toggle('hidden', l4Count === 0);
+                els.leaveCountersHost.innerHTML = '';
+                LEAVE_OPTIONS.forEach(function (opt) {
+                    const count = leaveCounts[opt.code] || 0;
+                    if (count > 0) {
+                        const pill = document.createElement('span');
+                        pill.className = `stat-pill lv-${opt.code}`;
+                        pill.innerHTML = `${escapeHtml(opt.code)}: <strong>${count}</strong>`;
+                        els.leaveCountersHost.appendChild(pill);
+                    }
+                });
             }
 
             /* =========================================================
@@ -1892,12 +2107,15 @@
                 els.editId.value = '';
                 els.formTitle.textContent = 'Nowy wpis';
                 els.editPill.classList.remove('visible');
-                els.submitBtn.textContent = 'Dodaj wpis';
+                els.submitBtnText.textContent = 'Zapisz wpis';
                 els.submitBtn.classList.remove('editing');
                 els.cancelEditBtn.classList.add('hidden');
 
                 els.entryDate.value = getTodayISO();
-                setStatus('work', false);
+                setMode('work');
+                setLeaveType('L4');
+                els.leaveNoteInput.value = '';
+
                 els.timeStart.value = '07:00';
                 els.timeEnd.value = '15:00';
                 updateDurationDisplay();
@@ -1917,15 +2135,18 @@
                 els.editId.value = entry.id;
                 els.formTitle.textContent = 'Edycja wpisu';
                 els.editPill.classList.add('visible');
-                els.submitBtn.textContent = 'Zapisz zmiany';
+                els.submitBtnText.textContent = 'Zapisz zmiany';
                 els.submitBtn.classList.add('editing');
                 els.cancelEditBtn.classList.remove('hidden');
 
                 els.entryDate.value = entry.date || getTodayISO();
-                const type = entry.type || 'work';
-                setStatus(type, false);
 
-                if (type === 'work') {
+                if (entry.status === 'leave') {
+                    setMode('leave');
+                    setLeaveType(entry.leaveType || 'L4');
+                    els.leaveNoteInput.value = entry.leaveType === 'Inne' ? (entry.leaveNote || '') : '';
+                } else {
+                    setMode('work');
                     els.timeStart.value = entry.start || '07:00';
                     els.timeEnd.value = entry.end || '15:00';
                     updateDurationDisplay();
@@ -1940,9 +2161,9 @@
                     savePeople();
                     state.selectedTeam = team;
                     renderCrewChips();
+                    els.entryTasks.value = entry.tasks || '';
                 }
 
-                els.entryTasks.value = entry.tasks || '';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
@@ -1956,55 +2177,35 @@
                     return;
                 }
 
-                const type = state.status;
-                const isWork = type === 'work';
-                let start = '';
-                let end = '';
-                let team = [];
-
-                if (isWork) {
-                    start = els.timeStart.value;
-                    end = els.timeEnd.value;
-                    team = state.selectedTeam.slice();
-                }
-
-                let tasks = els.entryTasks.value.trim();
-                if (!isWork && !tasks) {
-                    tasks = LEAVE_DESCRIPTIONS[type] || type;
-                }
+                const isWork = state.mode === 'work';
+                const record = {
+                    id: els.editId.value || generateId(),
+                    date: date,
+                    status: isWork ? 'work' : 'leave',
+                    start: isWork ? els.timeStart.value : '',
+                    end: isWork ? els.timeEnd.value : '',
+                    team: isWork ? state.selectedTeam.slice() : [],
+                    tasks: isWork ? els.entryTasks.value.trim() : '',
+                    leaveType: isWork ? '' : (state.leaveType || 'L4'),
+                    leaveNote: (!isWork && state.leaveType === 'Inne') ? els.leaveNoteInput.value.trim() : ''
+                };
 
                 const editingId = els.editId.value;
                 if (editingId) {
                     const idx = state.entries.findIndex(e => e.id === editingId);
                     if (idx !== -1) {
-                        state.entries[idx] = {
-                            id: editingId,
-                            date: date,
-                            type: type,
-                            start: start,
-                            end: end,
-                            team: team,
-                            tasks: tasks
-                        };
+                        state.entries[idx] = record;
                     }
                     saveEntries();
                     renderEntries();
                     resetForm(true);
                     showToast('Zapisano zmiany.');
                 } else {
-                    state.entries.push({
-                        id: generateId(),
-                        date: date,
-                        type: type,
-                        start: start,
-                        end: end,
-                        team: team,
-                        tasks: tasks
-                    });
+                    state.entries.push(record);
                     saveEntries();
                     renderEntries();
                     resetForm(true);
-                    showToast('Dodano wpis.');
+                    showToast('Zapisano wpis.');
                 }
             }
 
@@ -2016,17 +2217,19 @@
                 }
 
                 const last = sorted[sorted.length - 1];
-                const keepDate = els.entryDate.value || getTodayISO();
-
                 if (els.editId.value) {
                     resetForm(false);
                 }
-                els.entryDate.value = keepDate;
 
-                const type = last.type || 'work';
-                setStatus(type, false);
+                // Zostawiamy dzisiejszą datę
+                els.entryDate.value = getTodayISO();
 
-                if (type === 'work') {
+                if (last.status === 'leave') {
+                    setMode('leave');
+                    setLeaveType(last.leaveType || 'L4');
+                    els.leaveNoteInput.value = last.leaveType === 'Inne' ? (last.leaveNote || '') : '';
+                } else {
+                    setMode('work');
                     els.timeStart.value = last.start || '07:00';
                     els.timeEnd.value = last.end || '15:00';
                     updateDurationDisplay();
@@ -2041,31 +2244,41 @@
                     savePeople();
                     state.selectedTeam = team;
                     renderCrewChips();
+                    els.entryTasks.value = last.tasks || '';
                 }
 
-                els.entryTasks.value = last.tasks || '';
                 showToast(`Skopiowano wpis z ${formatDatePL(last.date)}.`);
             }
 
             /* =========================================================
                EKSPORT I KOMPATYBILNY WSTECZNIE IMPORT JSON
                ========================================================= */
+            function getExportMonthSuffix(sorted) {
+                if (sorted && sorted.length > 0) {
+                    const lastDate = sorted[sorted.length - 1].date || '';
+                    const m = lastDate.match(/^(\d{4}-\d{2})/);
+                    if (m) return m[1];
+                }
+                return getTodayISO().slice(0, 7);
+            }
+
             function exportJSON() {
                 try {
+                    const sorted = getSortedEntries();
                     const payload = {
                         app: 'Karta Pracy',
-                        version: 5,
+                        version: 7,
                         exportedAt: new Date().toISOString(),
                         owner: state.owner,
                         people: state.people,
-                        entries: getSortedEntries()
+                        entries: sorted
                     };
 
                     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `karta_pracy_${getTodayISO()}.json`;
+                    a.download = `karta_pracy_${getExportMonthSuffix(sorted)}.json`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -2109,58 +2322,92 @@
                 return '';
             }
 
+            function normalizeLeaveCode(val) {
+                if (!val) return '';
+                const clean = String(val).trim();
+                const upper = clean.toUpperCase();
+                if (upper === 'L4' || upper.includes('ZWOLNIENIE')) return 'L4';
+                if (upper === 'UW' || upper.includes('WYPOCZYNKOW')) return 'UW';
+                if (upper === 'UO' || upper.includes('OKOLICZNO')) return 'UO';
+                if (upper === 'UB' || upper.includes('BEZPŁATN') || upper.includes('BEZPLATN')) return 'UB';
+                if (upper === 'UOP' || upper.includes('OPIEKU')) return 'UOp';
+                if (upper === 'INNE') return 'Inne';
+                return '';
+            }
+
             function normalizeImportedEntry(raw) {
                 if (!raw || typeof raw !== 'object') return null;
 
                 const date = normalizeDateToISO(raw.date || raw.data || raw.day || raw.dzien);
                 if (!date) return null;
 
-                let type = String(raw.type || raw.status || raw.dayType || 'work').trim();
-                const upper = type.toUpperCase();
-                if (upper === 'UW' || upper === 'UO' || upper === 'L4') {
-                    type = upper;
+                const rawStatus = String(raw.status || raw.type || raw.dayType || 'work').trim();
+                const rawStatusLower = rawStatus.toLowerCase();
+                const rawLeaveType = raw.leaveType || '';
+
+                let status = 'work';
+                let leaveType = '';
+                let leaveNote = '';
+
+                if (rawStatusLower === 'leave' || rawStatusLower === 'wolne') {
+                    status = 'leave';
+                    leaveType = normalizeLeaveCode(rawLeaveType) || 'Inne';
+                    leaveNote = String(raw.leaveNote ?? raw.note ?? raw.tasks ?? raw.opis ?? '').trim();
+                    if (leaveType !== 'Inne') leaveNote = '';
                 } else {
-                    type = 'work';
-                }
-
-                let start = normalizeTimeToHHMM(raw.start || raw.startTime || raw.od || raw.from);
-                let end = normalizeTimeToHHMM(raw.end || raw.endTime || raw.do || raw.to);
-
-                const range = raw.hours || raw.godziny || raw.timeRange;
-                if ((!start || !end) && typeof range === 'string') {
-                    const parts = range.split(/[-–—]/);
-                    if (parts.length === 2) {
-                        if (!start) start = normalizeTimeToHHMM(parts[0]);
-                        if (!end) end = normalizeTimeToHHMM(parts[1]);
+                    const legacyLeave = normalizeLeaveCode(rawStatus);
+                    if (legacyLeave) {
+                        status = 'leave';
+                        leaveType = legacyLeave;
+                        leaveNote = legacyLeave === 'Inne'
+                            ? String(raw.leaveNote ?? raw.tasks ?? raw.opis ?? '').trim()
+                            : '';
+                    } else {
+                        status = 'work';
                     }
                 }
 
-                if (type === 'work') {
+                let start = '';
+                let end = '';
+                let team = [];
+                let tasks = '';
+
+                if (status === 'work') {
+                    start = normalizeTimeToHHMM(raw.start || raw.startTime || raw.od || raw.from);
+                    end = normalizeTimeToHHMM(raw.end || raw.endTime || raw.do || raw.to);
+
+                    const range = raw.hours || raw.godziny || raw.timeRange;
+                    if ((!start || !end) && typeof range === 'string') {
+                        const parts = range.split(/[-–—]/);
+                        if (parts.length === 2) {
+                            if (!start) start = normalizeTimeToHHMM(parts[0]);
+                            if (!end) end = normalizeTimeToHHMM(parts[1]);
+                        }
+                    }
+
                     if (!start) start = '07:00';
                     if (!end) end = '15:00';
-                } else {
-                    start = '';
-                    end = '';
-                }
 
-                let team = [];
-                const rawTeam = raw.team ?? raw.crew ?? raw.people ?? raw.sklad ?? raw.staff ?? raw.workers ?? raw.osoby;
-                if (Array.isArray(rawTeam)) {
-                    team = rawTeam.map(p => String(p || '').trim()).filter(Boolean);
-                } else if (typeof rawTeam === 'string' && rawTeam.trim()) {
-                    team = rawTeam.split(/[\n,;]+/).map(p => p.trim()).filter(Boolean);
-                }
+                    const rawTeam = raw.team ?? raw.crew ?? raw.people ?? raw.sklad ?? raw.staff ?? raw.workers ?? raw.members ?? raw.osoby;
+                    if (Array.isArray(rawTeam)) {
+                        team = rawTeam.map(p => String(p || '').trim()).filter(Boolean);
+                    } else if (typeof rawTeam === 'string' && rawTeam.trim()) {
+                        team = rawTeam.split(/[\n,;]+/).map(p => p.trim()).filter(Boolean);
+                    }
 
-                const tasks = String(raw.tasks ?? raw.prace ?? raw.work ?? raw.description ?? raw.opis ?? raw.notes ?? '').trim();
+                    tasks = String(raw.tasks ?? raw.prace ?? raw.work ?? raw.description ?? raw.opis ?? raw.notes ?? '').trim();
+                }
 
                 return {
                     id: raw.id ? String(raw.id) : generateId(),
                     date: date,
-                    type: type,
+                    status: status,
                     start: start,
                     end: end,
-                    team: type === 'work' ? team : [],
-                    tasks: tasks
+                    team: team,
+                    tasks: tasks,
+                    leaveType: leaveType,
+                    leaveNote: leaveNote
                 };
             }
 
@@ -2177,10 +2424,10 @@
                     );
                     if (entryKey) rawEntries = parsed[entryKey];
 
-                    const ownerKey = ['owner', 'name', 'worker', 'userName', 'ownerName', 'workerName', 'employee', 'osoba', 'imie'].find(
+                    const nameKey = ['owner', 'name', 'worker', 'userName', 'ownerName', 'workerName', 'employee', 'osoba', 'imie'].find(
                         k => typeof parsed[k] === 'string' && parsed[k].trim() !== ''
                     );
-                    if (ownerKey) owner = parsed[ownerKey].trim();
+                    if (nameKey) owner = parsed[nameKey].trim();
 
                     const peopleKey = ['people', 'crew', 'staff', 'sklad', 'workers', 'savedPeople', 'persons', 'team', 'members'].find(
                         k => Array.isArray(parsed[k])
@@ -2259,8 +2506,8 @@
                                 `Znaleziono ${normalized.entries.length} wpisów. W tabeli są już zapisane dni — wybierz sposób wczytania:`,
                                 [
                                     { label: 'Anuluj', cls: 'btn-tonal' },
-                                    { label: 'Dopisz', cls: 'btn-share', onClick: function () { applyImportedData(normalized, 'append'); } },
-                                    { label: 'Zastąp', cls: 'btn-danger', onClick: function () { applyImportedData(normalized, 'replace'); } }
+                                    { label: 'Dopisz do obecnych', cls: 'btn-share', onClick: function () { applyImportedData(normalized, 'append'); } },
+                                    { label: 'Zastąp obecne', cls: 'btn-danger', onClick: function () { applyImportedData(normalized, 'replace'); } }
                                 ]
                             );
                         } else {
@@ -2318,7 +2565,6 @@
                 }
             }
 
-            /* Wykrywa okres do prawej części nagłówka PDF, np. "Listopad 2026" lub "Październik – Listopad 2026" */
             function detectMonthYearLabel(sorted) {
                 if (!sorted || sorted.length === 0) {
                     const now = new Date();
@@ -2387,7 +2633,7 @@
                 };
 
                 // Minimalny jednowierszowy nagłówek:
-                // Lewa: Imię i nazwisko | Środek (bold): KARTA PRACY | Prawa: Listopad 2026
+                // Lewa: Imię i nazwisko | Środek (bold): KARTA PRACY | Prawa: Miesiąc Rok
                 const headerY = 13;
                 const ownerText = state.owner.trim();
                 const periodText = detectMonthYearLabel(sorted);
@@ -2408,38 +2654,36 @@
                 doc.setFontSize(10.5);
                 doc.text(txt(periodText), pageWidth - marginX, headerY, { align: 'right' });
 
-                // Przygotowanie wierszy tabeli
+                // Wiersze tabeli + sumowanie
                 let totalHours = 0;
-                let uwCount = 0;
-                let uoCount = 0;
-                let l4Count = 0;
+                const leaveCounts = {};
 
                 const bodyRows = sorted.map(function (entry) {
-                    const type = entry.type || 'work';
-                    const isWork = type === 'work';
-                    let hoursCell = type;
-                    let crewCell = '';
-
+                    const isWork = entry.status !== 'leave';
                     if (isWork) {
                         const hrs = calcHours(entry.start, entry.end);
                         totalHours += hrs;
-                        hoursCell = `${formatSingleTime(entry.start)} - ${formatSingleTime(entry.end)} (${formatHours(hrs, true)})`;
-                        crewCell = Array.isArray(entry.team) && entry.team.length ? entry.team.join('\n') : '';
+                        const hoursCell = `${formatSingleTime(entry.start)} - ${formatSingleTime(entry.end)} (${formatHours(hrs, true)})`;
+                        const crewCell = Array.isArray(entry.team) && entry.team.length ? entry.team.join('\n') : '';
+                        return [
+                            txt(formatDatePL(entry.date)),
+                            txt(hoursCell),
+                            txt(crewCell),
+                            txt(entry.tasks || '')
+                        ];
                     } else {
-                        if (type === 'UW') uwCount += 1;
-                        if (type === 'UO') uoCount += 1;
-                        if (type === 'L4') l4Count += 1;
+                        const code = LEAVE_LABEL_MAP[entry.leaveType] ? entry.leaveType : 'Inne';
+                        leaveCounts[code] = (leaveCounts[code] || 0) + 1;
+                        return [
+                            txt(formatDatePL(entry.date)),
+                            txt(code),
+                            txt('—'),
+                            txt(getLeaveDisplayText(entry))
+                        ];
                     }
-
-                    return [
-                        txt(formatDatePL(entry.date)),
-                        txt(hoursCell),
-                        txt(crewCell),
-                        txt(entry.tasks || '')
-                    ];
                 });
 
-                // Klasyczna czarno-biała tabela jak papierowa karta pracy
+                // Klasyczna czarno-biała tabela z wyraźną ciemną siatką (#222222, 0.25mm)
                 if (typeof doc.autoTable === 'function') {
                     doc.autoTable({
                         startY: 17,
@@ -2457,7 +2701,7 @@
                             cellPadding: 2.2,
                             fillColor: [255, 255, 255],
                             textColor: [0, 0, 0],
-                            lineColor: [40, 40, 40],
+                            lineColor: [34, 34, 34],
                             lineWidth: 0.25,
                             valign: 'top'
                         },
@@ -2467,7 +2711,7 @@
                             fontStyle: 'bold',
                             halign: 'center',
                             valign: 'middle',
-                            lineColor: [40, 40, 40],
+                            lineColor: [34, 34, 34],
                             lineWidth: 0.25
                         },
                         columnStyles: {
@@ -2480,17 +2724,24 @@
                     });
                 }
 
-                // Zwarty wiersz podsumowania na dole (BEZ daty i podpisu pracownika)
+                // Zwarte podsumowanie bezpośrednio pod tabelą (BEZ daty i podpisu)
                 const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 6 : 24;
-                const summaryParts = [`Suma godzin: ${formatHours(totalHours, false)}`];
-                if (uwCount > 0) summaryParts.push(`UW: ${uwCount}`);
-                if (uoCount > 0) summaryParts.push(`UO: ${uoCount}`);
-                if (l4Count > 0) summaryParts.push(`L4: ${l4Count}`);
+                const leaveSummary = [];
+                LEAVE_OPTIONS.forEach(function (opt) {
+                    if (leaveCounts[opt.code]) {
+                        leaveSummary.push(`${opt.code}: ${leaveCounts[opt.code]}`);
+                    }
+                });
+
+                let summaryLine = `Suma godzin: ${formatHours(totalHours, false)}`;
+                if (leaveSummary.length > 0) {
+                    summaryLine += '   |   ' + leaveSummary.join(', ');
+                }
 
                 doc.setFont(fontName, 'bold');
                 doc.setFontSize(10);
                 doc.setTextColor(0, 0, 0);
-                doc.text(txt(summaryParts.join('   |   ')), marginX, finalY);
+                doc.text(txt(summaryLine), marginX, finalY);
 
                 const safeOwner = ownerText
                     ? '_' + stripPolish(ownerText).replace(/[^a-zA-Z0-9]+/g, '_')
@@ -2519,7 +2770,7 @@
                                 title: 'Karta Pracy',
                                 files: [file]
                             });
-                            showToast('Udostępniono plik.');
+                            showToast('Udostępniono kartę pracy.');
                             return;
                         }
                     }
@@ -2532,7 +2783,7 @@
                         showToast('Brak biblioteki PDF offline — otwieram drukowanie.', true);
                         window.print();
                     } else {
-                        showToast('Nie udało się wygenerować PDF.', true);
+                        showToast('Nie udało się wygenerować pliku.', true);
                     }
                 } finally {
                     btn.disabled = false;
@@ -2573,9 +2824,9 @@
 
             els.repeatLastBtn.addEventListener('click', repeatLastEntry);
 
-            els.statusBtns.forEach(function (btn) {
+            els.modeBtns.forEach(function (btn) {
                 btn.addEventListener('click', function () {
-                    setStatus(btn.dataset.status, true);
+                    setMode(btn.dataset.mode);
                 });
             });
 
@@ -2639,11 +2890,11 @@
 
             els.clearAllBtn.addEventListener('click', function () {
                 if (state.entries.length === 0) {
-                    showToast('Tabela jest już pusta.');
+                    showToast('Karta jest już pusta.');
                     return;
                 }
                 openModal(
-                    'Wyczyść wszystkie wpisy',
+                    'Wyczyść kartę',
                     `Czy na pewno usunąć wszystkie wpisy (${state.entries.length})? Lista osób oraz imię i nazwisko zostaną zachowane.`,
                     [
                         { label: 'Anuluj', cls: 'btn-tonal' },
@@ -2655,7 +2906,7 @@
                                 saveEntries();
                                 resetForm(true);
                                 renderEntries();
-                                showToast('Wyczyszczono wszystkie wpisy.');
+                                showToast('Wyczyszczono kartę.');
                             }
                         }
                     ]
@@ -2673,23 +2924,26 @@
             });
 
             /* =========================================================
-               START APLIKACJI
+               INICJALIZACJA APLIKACJI
                ========================================================= */
             loadState();
             applyTheme(state.theme);
             els.ownerName.value = state.owner;
             populateTimeSelects();
             buildQuickEndTiles();
+            buildLeaveTiles();
             resetForm(false);
             renderEntries();
         });
     </script>
+
+    <!-- Bezpieczna rejestracja Service Workera (GitHub Pages / HTTPS) -->
     <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js');
-    });
-  }
-</script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
+        }
+    </script>
 </body>
 </html>
