@@ -1,9 +1,8 @@
-const CACHE_NAME = 'karta-pracy-v1';
+const CACHE_NAME = 'karta-pracy-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon.svg',
   './icon-192.png',
   './icon-512.png'
 ];
@@ -31,7 +30,6 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // Network-first dla index.html, zeby poprawki z GitHuba wskakiwaly od razu
   if (event.request.mode === 'navigate' || url.pathname.endsWith('index.html')) {
     event.respondWith(
       fetch(event.request)
@@ -45,7 +43,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first z dogrywaniem w tle (obejmuje tez CDN: jsPDF, AutoTable, czcionki)
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
