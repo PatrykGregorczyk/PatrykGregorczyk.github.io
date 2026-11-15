@@ -1,0 +1,2695 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="theme-color" content="#1e293b">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karta Pracy</title>
+
+    <!-- Czcionka Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Biblioteki do generowania PDF (jsPDF + AutoTable) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+
+    <style>
+        /* =========================================================
+           ANDROID 15 / MATERIAL YOU – TRYB DZIENNY I NOCNY
+           Kompaktowy układ, wysoka gęstość treści, zero glow
+           ========================================================= */
+        :root {
+            --bg-page: #eef5f1;
+            --bg-topbar: #d7efe0;
+            --bg-card: #ffffff;
+            --bg-field: #f1f5f9;
+            --bg-field-hover: #e6edf4;
+            --bg-tile: #eef3f7;
+            --bg-tile-hover: #e1eaf1;
+            --bg-chip: #eef2f6;
+            --bg-chip-hover: #e2e8f0;
+            --bg-table-head: #f4f7f5;
+            --bg-row-hover: #f6faf7;
+            --bg-icon-btn: rgba(255, 255, 255, 0.9);
+            --bg-icon-btn-hover: #ffffff;
+
+            --text-main: #111c24;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --divider: rgba(15, 23, 42, 0.08);
+            --field-border: rgba(15, 23, 42, 0.09);
+
+            --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.04);
+            --shadow-btn: 0 2px 5px rgba(15, 23, 42, 0.14);
+            --shadow-btn-active: 0 1px 2px rgba(15, 23, 42, 0.16);
+
+            /* Zróżnicowana paleta przycisków */
+            --c-save: #2e9e5b;
+            --c-save-hover: #25874c;
+            --c-share: #3b6ef5;
+            --c-share-hover: #2c5be0;
+            --c-pdf: #0d9488;
+            --c-pdf-hover: #0a7d73;
+            --c-import: #6d28d9;
+            --c-import-hover: #5b21b6;
+            --c-export: #d97706;
+            --c-export-hover: #b86304;
+            --c-repeat-bg: #fef3c7;
+            --c-repeat-txt: #92400e;
+            --c-repeat-hover: #fde68a;
+            --c-danger: #dc2626;
+            --c-danger-hover: #b91c1c;
+
+            /* Statusy dnia */
+            --st-work: #2e9e5b;
+            --st-uw: #2563eb;
+            --st-uo: #7c3aed;
+            --st-l4: #dc2626;
+
+            --tile-active: #0d9488;
+            --chip-active: #3b6ef5;
+            --badge-hours-bg: #dff4e8;
+            --badge-hours-txt: #166534;
+
+            --radius-card: 16px;
+            --radius-btn: 11px;
+            --radius-field: 11px;
+            --ctrl-h: 34px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #0f1419;
+            --bg-topbar: #152129;
+            --bg-card: #182028;
+            --bg-field: #222c36;
+            --bg-field-hover: #2a3642;
+            --bg-tile: #222c36;
+            --bg-tile-hover: #2c3947;
+            --bg-chip: #222c36;
+            --bg-chip-hover: #2c3947;
+            --bg-table-head: #1e2832;
+            --bg-row-hover: #1e2833;
+            --bg-icon-btn: #222c36;
+            --bg-icon-btn-hover: #2c3947;
+
+            --text-main: #edf2f7;
+            --text-secondary: #a8b7c7;
+            --text-muted: #7c8d9e;
+            --divider: rgba(255, 255, 255, 0.07);
+            --field-border: rgba(255, 255, 255, 0.08);
+
+            --shadow-card: 0 3px 10px rgba(0, 0, 0, 0.28);
+            --shadow-btn: 0 2px 6px rgba(0, 0, 0, 0.34);
+            --shadow-btn-active: 0 1px 2px rgba(0, 0, 0, 0.36);
+
+            --c-save: #288c50;
+            --c-save-hover: #2ea15c;
+            --c-share: #3563db;
+            --c-share-hover: #4271ed;
+            --c-pdf: #0d8278;
+            --c-pdf-hover: #11998e;
+            --c-import: #6f35d4;
+            --c-import-hover: #7f43e8;
+            --c-export: #c46b06;
+            --c-export-hover: #d97706;
+            --c-repeat-bg: rgba(217, 119, 6, 0.22);
+            --c-repeat-txt: #fcd34d;
+            --c-repeat-hover: rgba(217, 119, 6, 0.34);
+            --c-danger: #c72828;
+            --c-danger-hover: #dc2626;
+
+            --tile-active: #0d8278;
+            --chip-active: #3563db;
+            --badge-hours-bg: rgba(46, 158, 91, 0.22);
+            --badge-hours-txt: #6ee7a8;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-family: var(--font);
+            font-size: 13.5px;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            transition: background-color 0.18s ease, color 0.18s ease;
+        }
+
+        button, input, select, textarea {
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: background-color 0.14s ease, color 0.14s ease, transform 0.08s ease, box-shadow 0.14s ease;
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--c-share);
+            outline-offset: 2px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================================================
+           GÓRNY PASEK: IMIĘ + MOTYW ORAZ 4 PRZYCISKI W 1 LINII
+           ========================================================= */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: var(--bg-topbar);
+            border-bottom: 1px solid var(--divider);
+        }
+
+        .topbar-inner {
+            width: 100%;
+            max-width: 1520px;
+            margin: 0 auto;
+            padding: 8px clamp(10px, 2vw, 18px);
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .topbar-row-1 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .owner-input {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: var(--ctrl-h);
+            padding: 0 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--field-border);
+            border-radius: var(--radius-field);
+            color: var(--text-main);
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .owner-input::placeholder {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .theme-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--bg-icon-btn);
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+        }
+
+        .theme-btn:hover {
+            background: var(--bg-icon-btn-hover);
+        }
+
+        /* Dokładnie 4 przyciski w jednej linii */
+        .topbar-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 6px;
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .topbar-inner {
+                flex-direction: row;
+                align-items: center;
+                gap: 12px;
+            }
+            .topbar-row-1 {
+                flex: 1 1 auto;
+                max-width: 440px;
+            }
+            .topbar-actions-grid {
+                width: auto;
+                min-width: 400px;
+                margin-left: auto;
+            }
+        }
+
+        .btn {
+            height: 34px;
+            padding: 0 10px;
+            border-radius: var(--radius-btn);
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap;
+            color: #ffffff;
+            box-shadow: var(--shadow-btn);
+            min-width: 0;
+        }
+
+        .topbar-actions-grid .btn {
+            padding: 0 4px;
+            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-actions-grid .btn svg {
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 375px) {
+            .topbar-actions-grid {
+                gap: 5px;
+            }
+            .topbar-actions-grid .btn {
+                font-size: 11.5px;
+                gap: 3px;
+                padding: 0 3px;
+            }
+        }
+
+        .btn:active:not(:disabled) {
+            box-shadow: var(--shadow-btn-active);
+        }
+
+        .btn-save { background: var(--c-save); }
+        .btn-save:hover:not(:disabled) { background: var(--c-save-hover); }
+
+        .btn-share { background: var(--c-share); }
+        .btn-share:hover:not(:disabled) { background: var(--c-share-hover); }
+
+        .btn-pdf { background: var(--c-pdf); }
+        .btn-pdf:hover:not(:disabled) { background: var(--c-pdf-hover); }
+
+        .btn-import { background: var(--c-import); }
+        .btn-import:hover:not(:disabled) { background: var(--c-import-hover); }
+
+        .btn-export { background: var(--c-export); }
+        .btn-export:hover:not(:disabled) { background: var(--c-export-hover); }
+
+        .btn-danger { background: var(--c-danger); }
+        .btn-danger:hover:not(:disabled) { background: var(--c-danger-hover); }
+
+        .btn-tonal {
+            background: var(--bg-field);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+        .btn-tonal:hover:not(:disabled) {
+            background: var(--bg-field-hover);
+        }
+
+        /* =========================================================
+           UKŁAD GŁÓWNY: 1 KOLUMNA TELEFON, 2 KOLUMNY >= 900px
+           ========================================================= */
+        .layout {
+            width: 100%;
+            max-width: 1520px;
+            margin: 0 auto;
+            padding: 10px clamp(8px, 1.8vw, 18px) 24px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+            align-items: start;
+        }
+
+        @media (min-width: 900px) {
+            .layout {
+                grid-template-columns: clamp(340px, 34vw, 430px) minmax(0, 1fr);
+            }
+            .form-col {
+                position: sticky;
+                top: 62px;
+            }
+        }
+
+        .form-col,
+        .list-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 12px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .card-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+
+        .edit-pill {
+            display: none;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: var(--c-share);
+            color: #ffffff;
+            font-size: 10.5px;
+            font-weight: 700;
+        }
+        .edit-pill.visible {
+            display: inline-block;
+        }
+
+        .btn-repeat-inline {
+            height: 28px;
+            padding: 0 9px;
+            border-radius: 9px;
+            background: var(--c-repeat-bg);
+            color: var(--c-repeat-txt);
+            font-size: 11.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-repeat-inline:hover {
+            background: var(--c-repeat-hover);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: var(--divider);
+            margin: 10px 0;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .field-ctrl {
+            width: 100%;
+            height: var(--ctrl-h);
+            padding: 0 10px;
+            background: var(--bg-field);
+            border: 1px solid var(--field-border);
+            border-radius: var(--radius-field);
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .field-ctrl:hover {
+            background: var(--bg-field-hover);
+        }
+
+        /* =========================================================
+           DATA + PRZEŁĄCZNIK STATUSU DNIA
+           ========================================================= */
+        .date-status-grid {
+            display: grid;
+            grid-template-columns: minmax(126px, 43%) minmax(0, 1fr);
+            gap: 8px;
+            align-items: end;
+        }
+
+        @media (max-width: 350px) {
+            .date-status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .status-segment {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 4px;
+            padding: 3px;
+            background: var(--bg-field);
+            border-radius: var(--radius-field);
+        }
+
+        .status-btn {
+            height: 28px;
+            padding: 0 2px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-btn:hover:not(.active) {
+            background: var(--bg-tile-hover);
+            color: var(--text-main);
+        }
+
+        .status-btn.active {
+            color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+        }
+        .status-btn.active[data-status="work"] { background: var(--st-work); }
+        .status-btn.active[data-status="UW"]   { background: var(--st-uw); }
+        .status-btn.active[data-status="UO"]   { background: var(--st-uo); }
+        .status-btn.active[data-status="L4"]   { background: var(--st-l4); }
+
+        /* =========================================================
+           GODZINY PRACY + 12 KAFELKÓW SZYBKIEGO KOŃCA (14:30-20:00)
+           ========================================================= */
+        .time-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+            gap: 8px;
+            align-items: end;
+            margin-bottom: 9px;
+        }
+
+        .duration-pill {
+            height: var(--ctrl-h);
+            min-width: 66px;
+            padding: 0 10px;
+            border-radius: var(--radius-field);
+            background: var(--badge-hours-bg);
+            color: var(--badge-hours-txt);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.05;
+        }
+
+        .duration-pill.night {
+            background: rgba(124, 58, 237, 0.16);
+            color: #7c3aed;
+        }
+        [data-theme="dark"] .duration-pill.night {
+            background: rgba(124, 58, 237, 0.28);
+            color: #c4b5fd;
+        }
+
+        .duration-val {
+            font-size: 13px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .duration-sub {
+            font-size: 9.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .quick-end-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 5px;
+        }
+
+        @media (max-width: 390px) {
+            .quick-end-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        .end-tile {
+            height: 30px;
+            padding: 0 2px;
+            border-radius: 9px;
+            background: var(--bg-tile);
+            color: var(--text-main);
+            font-size: 11.5px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .end-tile:hover:not(.active) {
+            background: var(--bg-tile-hover);
+        }
+
+        .end-tile.active {
+            background: var(--tile-active);
+            color: #ffffff;
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(13, 148, 136, 0.26);
+        }
+
+        /* =========================================================
+           SKŁAD OSOBOWY
+           ========================================================= */
+        .crew-add-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .btn-add-person {
+            width: var(--ctrl-h);
+            height: var(--ctrl-h);
+            flex-shrink: 0;
+            padding: 0;
+            border-radius: var(--radius-btn);
+            background: var(--c-share);
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-btn);
+        }
+
+        .btn-add-person:hover {
+            background: var(--c-share-hover);
+        }
+
+        .crew-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-height: 24px;
+            align-items: center;
+        }
+
+        .crew-empty {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .person-chip {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            background: var(--bg-chip);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .person-chip:hover:not(.active) {
+            background: var(--bg-chip-hover);
+        }
+
+        .person-chip.active {
+            background: var(--chip-active);
+            color: #ffffff;
+            box-shadow: 0 2px 5px rgba(59, 110, 245, 0.22);
+        }
+
+        .person-toggle {
+            height: 28px;
+            padding: 0 8px 0 11px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: inherit;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .person-del {
+            width: 24px;
+            height: 28px;
+            padding: 0 4px 0 0;
+            color: inherit;
+            opacity: 0.72;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .person-del:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.14);
+        }
+
+        /* =========================================================
+           WYKONANE PRACE I ZAPIS
+           ========================================================= */
+        .tasks-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .btn-text-clear {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 2px 6px;
+            border-radius: 7px;
+        }
+
+        .btn-text-clear:hover {
+            color: var(--c-danger);
+            background: var(--bg-field);
+        }
+
+        .tasks-textarea {
+            width: 100%;
+            min-height: 76px;
+            padding: 8px 10px;
+            background: var(--bg-field);
+            border: 1px solid var(--field-border);
+            border-radius: var(--radius-field);
+            color: var(--text-main);
+            font-size: 13px;
+            line-height: 1.42;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .tasks-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .form-actions .btn-save {
+            flex: 1;
+            height: 36px;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+
+        .form-actions .btn-save.editing {
+            background: var(--c-share);
+        }
+
+        .form-actions .btn-save.editing:hover {
+            background: var(--c-share-hover);
+        }
+
+        .form-actions .btn-tonal {
+            height: 36px;
+            padding: 0 12px;
+        }
+
+        /* =========================================================
+           KARTA TABELI: PODSUMOWANIE + KOMPAKTOWA TABELA
+           ========================================================= */
+        .table-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .summary-bar {
+            padding: 10px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-bottom: 1px solid var(--divider);
+        }
+
+        .summary-pills {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-pill {
+            height: 27px;
+            padding: 0 9px;
+            border-radius: 999px;
+            background: var(--bg-field);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-pill strong {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .stat-pill.hours strong { color: var(--c-save); }
+        .stat-pill.uw strong { color: var(--st-uw); }
+        .stat-pill.uo strong { color: var(--st-uo); }
+        .stat-pill.l4 strong { color: var(--st-l4); }
+
+        .btn-clear-all {
+            height: 27px;
+            padding: 0 10px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 600;
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--c-danger);
+        }
+
+        .btn-clear-all:hover {
+            background: var(--c-danger);
+            color: #ffffff;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .entries-table thead th {
+            background: var(--bg-table-head);
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 8px 5px;
+            border-bottom: 1px solid var(--divider);
+            white-space: nowrap;
+        }
+
+        .entries-table tbody td {
+            padding: 7px 5px;
+            vertical-align: top;
+            font-size: 12.5px;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--divider);
+        }
+
+        .entries-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .entries-table tbody tr:hover {
+            background: var(--bg-row-hover);
+        }
+
+        /* Kolumna Data: 2 wiersze, wyśrodkowana */
+        .col-date {
+            width: 1%;
+            white-space: nowrap;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.22;
+        }
+
+        .date-day-month {
+            display: block;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .date-year {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        /* Kolumna Godz.: 3 wiersze, wyśrodkowana */
+        .col-hours {
+            width: 1%;
+            white-space: nowrap;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.22;
+        }
+
+        .time-start-txt {
+            display: block;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .time-end-txt {
+            display: block;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .hours-chip {
+            display: inline-block;
+            margin-top: 2px;
+            padding: 1px 6px;
+            border-radius: 6px;
+            background: var(--badge-hours-bg);
+            color: var(--badge-hours-txt);
+            font-size: 10.5px;
+            font-weight: 700;
+        }
+
+        .leave-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .leave-UW { background: var(--st-uw); }
+        .leave-UO { background: var(--st-uo); }
+        .leave-L4 { background: var(--st-l4); }
+
+        /* Kolumna Skład: pionowo */
+        .col-crew {
+            width: 1%;
+            min-width: 46px;
+            max-width: 82px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: pre-line;
+            line-height: 1.3;
+            font-size: 12px;
+        }
+
+        /* Kolumna Prace: cała pozostała szerokość */
+        .col-tasks {
+            width: 100%;
+            white-space: pre-line;
+            word-break: break-word;
+            line-height: 1.36;
+        }
+
+        /* Kolumna Akcje: pionowo 26x26px */
+        .col-actions {
+            width: 1%;
+            white-space: nowrap;
+            text-align: center;
+            vertical-align: middle !important;
+            padding-left: 3px !important;
+            padding-right: 4px !important;
+        }
+
+        .row-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row-icon-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-field);
+            color: var(--text-secondary);
+        }
+
+        .row-icon-btn.edit:hover {
+            background: var(--c-share);
+            color: #ffffff;
+        }
+
+        .row-icon-btn.del:hover {
+            background: var(--c-danger);
+            color: #ffffff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 28px 14px !important;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .empty-state strong {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+            font-size: 13.5px;
+        }
+
+        @media (max-width: 520px) {
+            .entries-table thead th,
+            .entries-table tbody td {
+                padding: 6px 4px;
+                font-size: 12px;
+            }
+            .entries-table thead th {
+                font-size: 10px;
+            }
+            .date-year {
+                font-size: 10px;
+            }
+            .col-crew {
+                min-width: 42px;
+                max-width: 68px;
+                font-size: 11.5px;
+            }
+        }
+
+        /* =========================================================
+           TOAST I MODAL (DOMYŚLNIE DISPLAY: NONE)
+           ========================================================= */
+        .toast {
+            position: fixed;
+            bottom: 14px;
+            right: 14px;
+            max-width: calc(100vw - 28px);
+            padding: 9px 14px;
+            border-radius: 12px;
+            background: #1e293b;
+            color: #ffffff;
+            font-size: 12.5px;
+            font-weight: 600;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+            z-index: 60;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+
+        [data-theme="dark"] .toast {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background: var(--c-danger);
+            color: #ffffff;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.54);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 390px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+        }
+
+        .modal-title {
+            margin: 0 0 6px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            margin: 0 0 14px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        /* Fallback drukowania offline */
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            .topbar-actions-grid, .theme-btn, .form-col, .btn-clear-all, .col-actions, .toast, .modal-backdrop {
+                display: none !important;
+            }
+            .topbar { position: static; background: #ffffff !important; border-bottom: 1px solid #000; }
+            .owner-input { border: none !important; box-shadow: none !important; padding: 0 !important; }
+            .layout { display: block; padding: 8px 0; }
+            .table-card { box-shadow: none !important; border-radius: 0 !important; }
+            .entries-table th, .entries-table td { border: 1px solid #000 !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- GÓRNY PASEK: IMIĘ I NAZWISKO + MOTYW + 4 PRZYCISKI W 1 LINII -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="topbar-row-1">
+                <input
+                    type="text"
+                    id="owner-name"
+                    class="owner-input"
+                    placeholder="Imię i nazwisko"
+                    autocomplete="name"
+                    aria-label="Imię i nazwisko"
+                >
+
+                <button type="button" id="theme-toggle-btn" class="theme-btn" title="Zmień tryb dzienny / nocny" aria-label="Zmień tryb dzienny lub nocny">
+                    <svg id="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="icon-sun" class="hidden" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="topbar-actions-grid">
+                <button type="button" id="share-pdf-btn" class="btn btn-share" title="Wyślij kartę">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    <span>Wyślij</span>
+                </button>
+
+                <button type="button" id="download-pdf-btn" class="btn btn-pdf" title="Pobierz kartę">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Pobierz</span>
+                </button>
+
+                <button type="button" id="import-json-btn" class="btn btn-import" title="Importuj dane">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Import</span>
+                </button>
+
+                <button type="button" id="export-json-btn" class="btn btn-export" title="Eksportuj kopię zapasową">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Eksport</span>
+                </button>
+
+                <input type="file" id="import-json-input" accept=".json,application/json" class="hidden">
+            </div>
+        </div>
+    </header>
+
+    <!-- GŁÓWNY UKŁAD STRONY -->
+    <main class="layout">
+
+        <!-- FORMULARZ WPISU -->
+        <form class="form-col" id="entry-form" novalidate>
+            <input type="hidden" id="edit-id" value="">
+
+            <section class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap">
+                        <h2 class="card-title" id="form-title">Nowy wpis</h2>
+                        <span class="edit-pill" id="edit-pill">Edycja</span>
+                    </div>
+
+                    <button type="button" id="repeat-last-btn" class="btn-repeat-inline" title="Skopiuj dane z ostatniego wpisu">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span>Powtórz ostatni</span>
+                    </button>
+                </div>
+
+                <!-- Data + Status dnia -->
+                <div class="date-status-grid">
+                    <div>
+                        <label class="field-label" for="entry-date">Data</label>
+                        <input type="date" id="entry-date" class="field-ctrl" required>
+                    </div>
+                    <div>
+                        <span class="field-label">Status</span>
+                        <div class="status-segment" role="group" aria-label="Status dnia">
+                            <button type="button" class="status-btn active" data-status="work">Praca</button>
+                            <button type="button" class="status-btn" data-status="UW">UW</button>
+                            <button type="button" class="status-btn" data-status="UO">UO</button>
+                            <button type="button" class="status-btn" data-status="L4">L4</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sekcje widoczne wyłącznie dla statusu "Praca" -->
+                <div id="work-only-section">
+                    <div class="section-divider"></div>
+
+                    <!-- Godziny pracy: pełna doba 00:00 - 24:00 co 30 min -->
+                    <div class="time-row">
+                        <div>
+                            <label class="field-label" for="time-start">Od</label>
+                            <select id="time-start" class="field-ctrl"></select>
+                        </div>
+                        <div>
+                            <label class="field-label" for="time-end">Do</label>
+                            <select id="time-end" class="field-ctrl"></select>
+                        </div>
+                        <div class="duration-pill" id="duration-pill">
+                            <span class="duration-val" id="duration-val">8 h</span>
+                            <span class="duration-sub" id="duration-sub">Czas</span>
+                        </div>
+                    </div>
+
+                    <!-- Szybki koniec: dokładnie 12 kafelków 14:30 - 20:00 -->
+                    <span class="field-label">Szybki koniec</span>
+                    <div class="quick-end-grid" id="quick-end-grid"></div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Skład -->
+                    <label class="field-label" for="person-input">Skład</label>
+                    <div class="crew-add-row">
+                        <input
+                            type="text"
+                            id="person-input"
+                            class="field-ctrl"
+                            placeholder="Dodaj osobę..."
+                            autocomplete="off"
+                        >
+                        <!-- Przycisk WYŁĄCZNIE z ikoną SVG user-plus -->
+                        <button
+                            type="button"
+                            id="add-person-btn"
+                            class="btn-add-person"
+                            title="Dodaj osobę"
+                            aria-label="Dodaj osobę"
+                        >
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="crew-chips" id="crew-chips"></div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Wykonane prace -->
+                <div class="tasks-head">
+                    <label class="field-label" for="entry-tasks" id="tasks-label" style="margin:0;">Wykonane prace</label>
+                    <button type="button" id="clear-tasks-btn" class="btn-text-clear">Wyczyść</button>
+                </div>
+                <textarea
+                    id="entry-tasks"
+                    class="tasks-textarea"
+                    rows="3"
+                    placeholder="Wpisz wykonane prace lub podyktuj z klawiatury..."
+                ></textarea>
+
+                <!-- Zapis / Edycja -->
+                <div class="form-actions">
+                    <button type="button" id="cancel-edit-btn" class="btn btn-tonal hidden">Anuluj</button>
+                    <button type="submit" id="submit-btn" class="btn btn-save">Dodaj wpis</button>
+                </div>
+            </section>
+        </form>
+
+        <!-- TABELA WPISÓW -->
+        <section class="list-col">
+            <div class="table-card">
+                <div class="summary-bar">
+                    <div class="summary-pills">
+                        <span class="stat-pill hours">Suma: <strong id="stat-hours">0 h</strong></span>
+                        <span class="stat-pill">Dni: <strong id="stat-days">0</strong></span>
+                        <span class="stat-pill uw hidden" id="stat-uw-wrap">UW: <strong id="stat-uw">0</strong></span>
+                        <span class="stat-pill uo hidden" id="stat-uo-wrap">UO: <strong id="stat-uo">0</strong></span>
+                        <span class="stat-pill l4 hidden" id="stat-l4-wrap">L4: <strong id="stat-l4">0</strong></span>
+                    </div>
+
+                    <button type="button" id="clear-all-btn" class="btn-clear-all" title="Usuń wszystkie wpisy">Wyczyść</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="entries-table" aria-label="Lista wpisów">
+                        <thead>
+                            <tr>
+                                <th class="col-date">Data</th>
+                                <th class="col-hours">Godz.</th>
+                                <th class="col-crew">Skład</th>
+                                <th class="col-tasks">Prace</th>
+                                <th class="col-actions" aria-label="Akcje"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="entries-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- POWIADOMIENIE TOAST -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- MODAL POTWIERDZEŃ I IMPORTU -->
+    <div id="app-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-card">
+            <h3 class="modal-title" id="modal-title">Potwierdzenie</h3>
+            <p class="modal-body" id="modal-body"></p>
+            <div class="modal-actions" id="modal-actions"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            'use strict';
+
+            /* =========================================================
+               KLUCZE LOCALSTORAGE (CZYSTY START) I STAŁE
+               ========================================================= */
+            const STORAGE_KEYS = {
+                entries: 'godzinowki_v5_entries',
+                people: 'godzinowki_v5_people',
+                owner: 'godzinowki_v5_owner',
+                theme: 'godzinowki_v5_theme'
+            };
+
+            const LEAVE_DESCRIPTIONS = {
+                UW: 'Urlop wypoczynkowy',
+                UO: 'Urlop okolicznościowy',
+                L4: 'Zwolnienie lekarskie (L4)'
+            };
+
+            const QUICK_END_TIMES = [
+                '14:30', '15:00', '15:30', '16:00', '16:30', '17:00',
+                '17:30', '18:00', '18:30', '19:00', '19:30', '20:00'
+            ];
+
+            const MONTHS_PL = [
+                'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
+                'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'
+            ];
+
+            /* =========================================================
+               ELEMENTY DOM
+               ========================================================= */
+            const els = {
+                ownerName: document.getElementById('owner-name'),
+                themeToggleBtn: document.getElementById('theme-toggle-btn'),
+                iconMoon: document.getElementById('icon-moon'),
+                iconSun: document.getElementById('icon-sun'),
+                sharePdfBtn: document.getElementById('share-pdf-btn'),
+                downloadPdfBtn: document.getElementById('download-pdf-btn'),
+                importJsonBtn: document.getElementById('import-json-btn'),
+                exportJsonBtn: document.getElementById('export-json-btn'),
+                importJsonInput: document.getElementById('import-json-input'),
+
+                entryForm: document.getElementById('entry-form'),
+                editId: document.getElementById('edit-id'),
+                formTitle: document.getElementById('form-title'),
+                editPill: document.getElementById('edit-pill'),
+                repeatLastBtn: document.getElementById('repeat-last-btn'),
+                entryDate: document.getElementById('entry-date'),
+                statusBtns: Array.from(document.querySelectorAll('.status-btn')),
+
+                workOnlySection: document.getElementById('work-only-section'),
+                timeStart: document.getElementById('time-start'),
+                timeEnd: document.getElementById('time-end'),
+                durationPill: document.getElementById('duration-pill'),
+                durationVal: document.getElementById('duration-val'),
+                durationSub: document.getElementById('duration-sub'),
+                quickEndGrid: document.getElementById('quick-end-grid'),
+
+                personInput: document.getElementById('person-input'),
+                addPersonBtn: document.getElementById('add-person-btn'),
+                crewChips: document.getElementById('crew-chips'),
+
+                tasksLabel: document.getElementById('tasks-label'),
+                clearTasksBtn: document.getElementById('clear-tasks-btn'),
+                entryTasks: document.getElementById('entry-tasks'),
+                cancelEditBtn: document.getElementById('cancel-edit-btn'),
+                submitBtn: document.getElementById('submit-btn'),
+
+                statHours: document.getElementById('stat-hours'),
+                statDays: document.getElementById('stat-days'),
+                statUwWrap: document.getElementById('stat-uw-wrap'),
+                statUw: document.getElementById('stat-uw'),
+                statUoWrap: document.getElementById('stat-uo-wrap'),
+                statUo: document.getElementById('stat-uo'),
+                statL4Wrap: document.getElementById('stat-l4-wrap'),
+                statL4: document.getElementById('stat-l4'),
+                clearAllBtn: document.getElementById('clear-all-btn'),
+                entriesTbody: document.getElementById('entries-tbody'),
+
+                toast: document.getElementById('toast'),
+                modal: document.getElementById('app-modal'),
+                modalTitle: document.getElementById('modal-title'),
+                modalBody: document.getElementById('modal-body'),
+                modalActions: document.getElementById('modal-actions')
+            };
+
+            /* =========================================================
+               STAN APLIKACJI
+               ========================================================= */
+            const state = {
+                entries: [],
+                people: [],
+                selectedTeam: [],
+                owner: '',
+                status: 'work',
+                theme: 'light'
+            };
+
+            let toastTimer = null;
+            let cachedFonts = null;
+
+            /* =========================================================
+               LOCALSTORAGE I MOTYW
+               ========================================================= */
+            function storageGet(key, fallback) {
+                try {
+                    const val = localStorage.getItem(key);
+                    return val !== null ? val : fallback;
+                } catch (e) {
+                    return fallback;
+                }
+            }
+
+            function storageSet(key, val) {
+                try {
+                    localStorage.setItem(key, val);
+                } catch (e) {
+                    // Ignoruj ograniczenia przeglądarki
+                }
+            }
+
+            function loadState() {
+                try {
+                    const parsed = JSON.parse(storageGet(STORAGE_KEYS.entries, '[]'));
+                    state.entries = Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    state.entries = [];
+                }
+
+                try {
+                    const parsedPeople = JSON.parse(storageGet(STORAGE_KEYS.people, '[]'));
+                    state.people = Array.isArray(parsedPeople)
+                        ? parsedPeople.filter(p => typeof p === 'string' && p.trim() !== '')
+                        : [];
+                } catch (e) {
+                    state.people = [];
+                }
+
+                state.owner = storageGet(STORAGE_KEYS.owner, '');
+
+                const savedTheme = storageGet(STORAGE_KEYS.theme, 'light');
+                state.theme = savedTheme === 'dark' ? 'dark' : 'light';
+            }
+
+            function saveEntries() {
+                storageSet(STORAGE_KEYS.entries, JSON.stringify(state.entries));
+            }
+
+            function savePeople() {
+                storageSet(STORAGE_KEYS.people, JSON.stringify(state.people));
+            }
+
+            function saveOwner() {
+                storageSet(STORAGE_KEYS.owner, state.owner);
+            }
+
+            function applyTheme(theme) {
+                state.theme = theme === 'dark' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', state.theme);
+                storageSet(STORAGE_KEYS.theme, state.theme);
+
+                if (state.theme === 'dark') {
+                    els.iconMoon.classList.add('hidden');
+                    els.iconSun.classList.remove('hidden');
+                } else {
+                    els.iconMoon.classList.remove('hidden');
+                    els.iconSun.classList.add('hidden');
+                }
+            }
+
+            /* =========================================================
+               NARZĘDZIA POMOCNICZE (CZAS, DATY, HTML, TOAST, MODAL)
+               ========================================================= */
+            function escapeHtml(str) {
+                return String(str == null ? '' : str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function generateId() {
+                return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+            }
+
+            function getTodayISO() {
+                const d = new Date();
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${y}-${m}-${day}`;
+            }
+
+            function parseMinutes(timeStr) {
+                if (!timeStr || typeof timeStr !== 'string') return 0;
+                const parts = timeStr.split(':');
+                const h = parseInt(parts[0], 10);
+                const m = parseInt(parts[1] || '0', 10);
+                if (isNaN(h) || isNaN(m)) return 0;
+                return h * 60 + m;
+            }
+
+            /* Obsługa zmian nocnych: gdy koniec <= start (np. 22:00-06:00 = 8h, 00:00-00:00 = 24h) */
+            function calcHours(start, end) {
+                const s = parseMinutes(start);
+                const e = parseMinutes(end);
+                let diff = e - s;
+                if (diff <= 0) diff += 24 * 60;
+                return Math.round((diff / 60) * 100) / 100;
+            }
+
+            function isNightShift(start, end) {
+                return parseMinutes(end) <= parseMinutes(start);
+            }
+
+            function formatHours(hours, compact) {
+                const val = Math.round((Number(hours) || 0) * 100) / 100;
+                const str = String(val);
+                return compact ? `${str}h` : `${str} h`;
+            }
+
+            function formatDatePL(iso) {
+                if (!iso) return '';
+                const p = String(iso).split('-');
+                return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : String(iso);
+            }
+
+            function formatDateStackedHtml(iso) {
+                if (!iso) return '';
+                const p = String(iso).split('-');
+                if (p.length === 3) {
+                    return `<span class="date-day-month">${escapeHtml(p[2] + '.' + p[1])}</span><span class="date-year">${escapeHtml(p[0])}</span>`;
+                }
+                return `<span class="date-day-month">${escapeHtml(iso)}</span>`;
+            }
+
+            function formatSingleTime(t) {
+                if (!t) return '';
+                if (t === '00:00' || t === '24:00') return t;
+                return t.startsWith('0') ? t.slice(1) : t;
+            }
+
+            function showToast(msg, isError) {
+                els.toast.textContent = msg;
+                els.toast.classList.toggle('error', Boolean(isError));
+                els.toast.classList.add('visible');
+                if (toastTimer) clearTimeout(toastTimer);
+                toastTimer = setTimeout(function () {
+                    els.toast.classList.remove('visible');
+                }, 2600);
+            }
+
+            function closeModal() {
+                els.modal.classList.remove('open');
+                els.modalActions.innerHTML = '';
+            }
+
+            function openModal(title, body, buttons) {
+                els.modalTitle.textContent = title;
+                els.modalBody.textContent = body;
+                els.modalActions.innerHTML = '';
+
+                buttons.forEach(function (cfg) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn ' + (cfg.cls || 'btn-tonal');
+                    btn.textContent = cfg.label;
+                    btn.addEventListener('click', function () {
+                        closeModal();
+                        if (typeof cfg.onClick === 'function') cfg.onClick();
+                    });
+                    els.modalActions.appendChild(btn);
+                });
+
+                els.modal.classList.add('open');
+            }
+
+            /* =========================================================
+               GODZINY (00:00-24:00 CO 30 MIN) I 12 KAFELKÓW (14:30-20:00)
+               ========================================================= */
+            function populateTimeSelects() {
+                const options = [];
+                for (let mins = 0; mins <= 24 * 60; mins += 30) {
+                    const h = String(Math.floor(mins / 60)).padStart(2, '0');
+                    const m = String(mins % 60).padStart(2, '0');
+                    const val = `${h}:${m}`;
+                    options.push(`<option value="${val}">${val}</option>`);
+                }
+                const html = options.join('');
+                els.timeStart.innerHTML = html;
+                els.timeEnd.innerHTML = html;
+                els.timeStart.value = '07:00';
+                els.timeEnd.value = '15:00';
+            }
+
+            function buildQuickEndTiles() {
+                els.quickEndGrid.innerHTML = '';
+                QUICK_END_TIMES.forEach(function (timeVal) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'end-tile';
+                    btn.dataset.time = timeVal;
+                    btn.textContent = timeVal;
+                    btn.addEventListener('click', function () {
+                        els.timeEnd.value = timeVal;
+                        updateDurationDisplay();
+                        syncQuickEndHighlight();
+                    });
+                    els.quickEndGrid.appendChild(btn);
+                });
+            }
+
+            function syncQuickEndHighlight() {
+                const endVal = els.timeEnd.value;
+                els.quickEndGrid.querySelectorAll('.end-tile').forEach(function (tile) {
+                    tile.classList.toggle('active', tile.dataset.time === endVal);
+                });
+            }
+
+            function updateDurationDisplay() {
+                const start = els.timeStart.value;
+                const end = els.timeEnd.value;
+                const hrs = calcHours(start, end);
+                const night = isNightShift(start, end);
+
+                els.durationVal.textContent = formatHours(hrs, false);
+                els.durationPill.classList.toggle('night', night);
+                els.durationSub.textContent = night ? 'Nocka' : 'Czas';
+            }
+
+            /* =========================================================
+               STATUS DNIA (PRACA / UW / UO / L4)
+               ========================================================= */
+            function setStatus(newStatus, autoFillTasks) {
+                const prevStatus = state.status;
+                state.status = newStatus;
+
+                els.statusBtns.forEach(function (btn) {
+                    btn.classList.toggle('active', btn.dataset.status === newStatus);
+                });
+
+                const isWork = newStatus === 'work';
+                els.workOnlySection.classList.toggle('hidden', !isWork);
+                els.tasksLabel.textContent = isWork ? 'Wykonane prace' : 'Opis / uwagi';
+
+                if (autoFillTasks) {
+                    const currentText = els.entryTasks.value.trim();
+                    const prevAuto = LEAVE_DESCRIPTIONS[prevStatus] || '';
+                    const knownAuto = Object.values(LEAVE_DESCRIPTIONS);
+                    if (!isWork) {
+                        if (currentText === '' || currentText === prevAuto || knownAuto.includes(currentText)) {
+                            els.entryTasks.value = LEAVE_DESCRIPTIONS[newStatus] || newStatus;
+                        }
+                    } else if (knownAuto.includes(currentText)) {
+                        els.entryTasks.value = '';
+                    }
+                }
+            }
+
+            /* =========================================================
+               SKŁAD OSOBOWY
+               ========================================================= */
+            function renderCrewChips() {
+                els.crewChips.innerHTML = '';
+
+                if (state.people.length === 0) {
+                    const span = document.createElement('span');
+                    span.className = 'crew-empty';
+                    span.textContent = 'Brak zapisanych osób — wpisz imię powyżej.';
+                    els.crewChips.appendChild(span);
+                    return;
+                }
+
+                state.people.forEach(function (person) {
+                    const isSelected = state.selectedTeam.includes(person);
+
+                    const chip = document.createElement('div');
+                    chip.className = 'person-chip' + (isSelected ? ' active' : '');
+
+                    const toggleBtn = document.createElement('button');
+                    toggleBtn.type = 'button';
+                    toggleBtn.className = 'person-toggle';
+                    toggleBtn.textContent = person;
+                    toggleBtn.setAttribute('aria-pressed', String(isSelected));
+                    toggleBtn.addEventListener('click', function () {
+                        if (state.selectedTeam.includes(person)) {
+                            state.selectedTeam = state.selectedTeam.filter(p => p !== person);
+                        } else {
+                            state.selectedTeam.push(person);
+                        }
+                        renderCrewChips();
+                    });
+
+                    const delBtn = document.createElement('button');
+                    delBtn.type = 'button';
+                    delBtn.className = 'person-del';
+                    delBtn.title = `Usuń ${person} z listy`;
+                    delBtn.setAttribute('aria-label', `Usuń ${person} z listy`);
+                    delBtn.textContent = '×';
+                    delBtn.addEventListener('click', function (ev) {
+                        ev.stopPropagation();
+                        state.people = state.people.filter(p => p !== person);
+                        state.selectedTeam = state.selectedTeam.filter(p => p !== person);
+                        savePeople();
+                        renderCrewChips();
+                        showToast(`Usunięto: ${person}`);
+                    });
+
+                    chip.appendChild(toggleBtn);
+                    chip.appendChild(delBtn);
+                    els.crewChips.appendChild(chip);
+                });
+            }
+
+            function addPersonFromInput() {
+                const name = els.personInput.value.trim();
+                if (!name) {
+                    els.personInput.focus();
+                    return;
+                }
+
+                const existing = state.people.find(p => p.toLowerCase() === name.toLowerCase());
+                if (existing) {
+                    if (!state.selectedTeam.includes(existing)) {
+                        state.selectedTeam.push(existing);
+                    }
+                    els.personInput.value = '';
+                    renderCrewChips();
+                    return;
+                }
+
+                state.people.push(name);
+                state.selectedTeam.push(name);
+                savePeople();
+                els.personInput.value = '';
+                renderCrewChips();
+            }
+
+            /* =========================================================
+               TABELA I PODSUMOWANIE
+               ========================================================= */
+            function getSortedEntries() {
+                return state.entries.slice().sort(function (a, b) {
+                    const da = a.date || '';
+                    const db = b.date || '';
+                    if (da !== db) return da.localeCompare(db);
+                    return (a.start || '').localeCompare(b.start || '');
+                });
+            }
+
+            function renderEntries() {
+                const sorted = getSortedEntries();
+                let totalHours = 0;
+                let workDays = 0;
+                let uwCount = 0;
+                let uoCount = 0;
+                let l4Count = 0;
+
+                els.entriesTbody.innerHTML = '';
+
+                if (sorted.length === 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = '<td colspan="5" class="empty-state"><strong>Brak wpisów</strong>Dodaj pierwszy dzień w formularzu lub użyj przycisku Import.</td>';
+                    els.entriesTbody.appendChild(tr);
+                } else {
+                    const frag = document.createDocumentFragment();
+
+                    sorted.forEach(function (entry) {
+                        const type = entry.type || 'work';
+                        const isWork = type === 'work';
+                        let hrs = 0;
+
+                        if (isWork) {
+                            hrs = calcHours(entry.start, entry.end);
+                            totalHours += hrs;
+                            workDays += 1;
+                        } else if (type === 'UW') {
+                            uwCount += 1;
+                        } else if (type === 'UO') {
+                            uoCount += 1;
+                        } else if (type === 'L4') {
+                            l4Count += 1;
+                        }
+
+                        const hoursHtml = isWork
+                            ? `<span class="time-start-txt">${escapeHtml(formatSingleTime(entry.start))}</span><strong class="time-end-txt">${escapeHtml(formatSingleTime(entry.end))}</strong><span class="hours-chip">${escapeHtml(formatHours(hrs, true))}</span>`
+                            : `<span class="leave-badge leave-${escapeHtml(type)}">${escapeHtml(type)}</span>`;
+
+                        const crewText = isWork && Array.isArray(entry.team) && entry.team.length
+                            ? entry.team.join('\n')
+                            : '–';
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="col-date">${formatDateStackedHtml(entry.date)}</td>
+                            <td class="col-hours">${hoursHtml}</td>
+                            <td class="col-crew">${escapeHtml(crewText)}</td>
+                            <td class="col-tasks">${escapeHtml(entry.tasks || '')}</td>
+                            <td class="col-actions">
+                                <div class="row-btns">
+                                    <button type="button" class="row-icon-btn edit" data-action="edit" data-id="${escapeHtml(entry.id)}" title="Edytuj" aria-label="Edytuj wpis">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                    </button>
+                                    <button type="button" class="row-icon-btn del" data-action="delete" data-id="${escapeHtml(entry.id)}" title="Usuń" aria-label="Usuń wpis">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        frag.appendChild(tr);
+                    });
+
+                    els.entriesTbody.appendChild(frag);
+                }
+
+                els.statHours.textContent = formatHours(totalHours, false);
+                els.statDays.textContent = String(workDays);
+
+                els.statUw.textContent = String(uwCount);
+                els.statUwWrap.classList.toggle('hidden', uwCount === 0);
+
+                els.statUo.textContent = String(uoCount);
+                els.statUoWrap.classList.toggle('hidden', uoCount === 0);
+
+                els.statL4.textContent = String(l4Count);
+                els.statL4Wrap.classList.toggle('hidden', l4Count === 0);
+            }
+
+            /* =========================================================
+               ZAPIS, EDYCJA I POWTARZANIE OSTATNIEGO WPISU
+               ========================================================= */
+            function resetForm(keepTeam) {
+                els.editId.value = '';
+                els.formTitle.textContent = 'Nowy wpis';
+                els.editPill.classList.remove('visible');
+                els.submitBtn.textContent = 'Dodaj wpis';
+                els.submitBtn.classList.remove('editing');
+                els.cancelEditBtn.classList.add('hidden');
+
+                els.entryDate.value = getTodayISO();
+                setStatus('work', false);
+                els.timeStart.value = '07:00';
+                els.timeEnd.value = '15:00';
+                updateDurationDisplay();
+                syncQuickEndHighlight();
+                els.entryTasks.value = '';
+
+                if (!keepTeam) {
+                    state.selectedTeam = [];
+                }
+                renderCrewChips();
+            }
+
+            function startEditEntry(id) {
+                const entry = state.entries.find(e => e.id === id);
+                if (!entry) return;
+
+                els.editId.value = entry.id;
+                els.formTitle.textContent = 'Edycja wpisu';
+                els.editPill.classList.add('visible');
+                els.submitBtn.textContent = 'Zapisz zmiany';
+                els.submitBtn.classList.add('editing');
+                els.cancelEditBtn.classList.remove('hidden');
+
+                els.entryDate.value = entry.date || getTodayISO();
+                const type = entry.type || 'work';
+                setStatus(type, false);
+
+                if (type === 'work') {
+                    els.timeStart.value = entry.start || '07:00';
+                    els.timeEnd.value = entry.end || '15:00';
+                    updateDurationDisplay();
+                    syncQuickEndHighlight();
+
+                    const team = Array.isArray(entry.team) ? entry.team.slice() : [];
+                    team.forEach(function (person) {
+                        if (person && !state.people.includes(person)) {
+                            state.people.push(person);
+                        }
+                    });
+                    savePeople();
+                    state.selectedTeam = team;
+                    renderCrewChips();
+                }
+
+                els.entryTasks.value = entry.tasks || '';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function handleFormSubmit(ev) {
+                ev.preventDefault();
+
+                const date = els.entryDate.value;
+                if (!date) {
+                    showToast('Wybierz datę.', true);
+                    els.entryDate.focus();
+                    return;
+                }
+
+                const type = state.status;
+                const isWork = type === 'work';
+                let start = '';
+                let end = '';
+                let team = [];
+
+                if (isWork) {
+                    start = els.timeStart.value;
+                    end = els.timeEnd.value;
+                    team = state.selectedTeam.slice();
+                }
+
+                let tasks = els.entryTasks.value.trim();
+                if (!isWork && !tasks) {
+                    tasks = LEAVE_DESCRIPTIONS[type] || type;
+                }
+
+                const editingId = els.editId.value;
+                if (editingId) {
+                    const idx = state.entries.findIndex(e => e.id === editingId);
+                    if (idx !== -1) {
+                        state.entries[idx] = {
+                            id: editingId,
+                            date: date,
+                            type: type,
+                            start: start,
+                            end: end,
+                            team: team,
+                            tasks: tasks
+                        };
+                    }
+                    saveEntries();
+                    renderEntries();
+                    resetForm(true);
+                    showToast('Zapisano zmiany.');
+                } else {
+                    state.entries.push({
+                        id: generateId(),
+                        date: date,
+                        type: type,
+                        start: start,
+                        end: end,
+                        team: team,
+                        tasks: tasks
+                    });
+                    saveEntries();
+                    renderEntries();
+                    resetForm(true);
+                    showToast('Dodano wpis.');
+                }
+            }
+
+            function repeatLastEntry() {
+                const sorted = getSortedEntries();
+                if (sorted.length === 0) {
+                    showToast('Brak zapisanego wpisu do powtórzenia.', true);
+                    return;
+                }
+
+                const last = sorted[sorted.length - 1];
+                const keepDate = els.entryDate.value || getTodayISO();
+
+                if (els.editId.value) {
+                    resetForm(false);
+                }
+                els.entryDate.value = keepDate;
+
+                const type = last.type || 'work';
+                setStatus(type, false);
+
+                if (type === 'work') {
+                    els.timeStart.value = last.start || '07:00';
+                    els.timeEnd.value = last.end || '15:00';
+                    updateDurationDisplay();
+                    syncQuickEndHighlight();
+
+                    const team = Array.isArray(last.team) ? last.team.slice() : [];
+                    team.forEach(function (person) {
+                        if (person && !state.people.includes(person)) {
+                            state.people.push(person);
+                        }
+                    });
+                    savePeople();
+                    state.selectedTeam = team;
+                    renderCrewChips();
+                }
+
+                els.entryTasks.value = last.tasks || '';
+                showToast(`Skopiowano wpis z ${formatDatePL(last.date)}.`);
+            }
+
+            /* =========================================================
+               EKSPORT I KOMPATYBILNY WSTECZNIE IMPORT JSON
+               ========================================================= */
+            function exportJSON() {
+                try {
+                    const payload = {
+                        app: 'Karta Pracy',
+                        version: 5,
+                        exportedAt: new Date().toISOString(),
+                        owner: state.owner,
+                        people: state.people,
+                        entries: getSortedEntries()
+                    };
+
+                    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `karta_pracy_${getTodayISO()}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+                    showToast('Zapisano kopię zapasową.');
+                } catch (e) {
+                    showToast('Nie udało się wyeksportować danych.', true);
+                }
+            }
+
+            function normalizeDateToISO(rawDate) {
+                if (!rawDate) return '';
+                const s = String(rawDate).trim();
+                if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+                const m = s.match(/^(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{2,4})$/);
+                if (m) {
+                    const d = m[1].padStart(2, '0');
+                    const mo = m[2].padStart(2, '0');
+                    let y = m[3];
+                    if (y.length === 2) y = '20' + y;
+                    return `${y}-${mo}-${d}`;
+                }
+                return '';
+            }
+
+            function normalizeTimeToHHMM(rawTime) {
+                if (!rawTime) return '';
+                const s = String(rawTime).trim().replace(',', ':').replace('.', ':');
+                if (/^\d{1,2}$/.test(s)) {
+                    const hh = Math.min(24, Math.max(0, parseInt(s, 10)));
+                    return String(hh).padStart(2, '0') + ':00';
+                }
+                const m = s.match(/^(\d{1,2}):(\d{1,2})$/);
+                if (m) {
+                    const hh = Math.min(24, Math.max(0, parseInt(m[1], 10)));
+                    const rawMin = parseInt(m[2], 10);
+                    const mm = rawMin >= 15 && rawMin < 45 ? '30' : '00';
+                    return String(hh).padStart(2, '0') + ':' + (hh === 24 ? '00' : mm);
+                }
+                return '';
+            }
+
+            function normalizeImportedEntry(raw) {
+                if (!raw || typeof raw !== 'object') return null;
+
+                const date = normalizeDateToISO(raw.date || raw.data || raw.day || raw.dzien);
+                if (!date) return null;
+
+                let type = String(raw.type || raw.status || raw.dayType || 'work').trim();
+                const upper = type.toUpperCase();
+                if (upper === 'UW' || upper === 'UO' || upper === 'L4') {
+                    type = upper;
+                } else {
+                    type = 'work';
+                }
+
+                let start = normalizeTimeToHHMM(raw.start || raw.startTime || raw.od || raw.from);
+                let end = normalizeTimeToHHMM(raw.end || raw.endTime || raw.do || raw.to);
+
+                const range = raw.hours || raw.godziny || raw.timeRange;
+                if ((!start || !end) && typeof range === 'string') {
+                    const parts = range.split(/[-–—]/);
+                    if (parts.length === 2) {
+                        if (!start) start = normalizeTimeToHHMM(parts[0]);
+                        if (!end) end = normalizeTimeToHHMM(parts[1]);
+                    }
+                }
+
+                if (type === 'work') {
+                    if (!start) start = '07:00';
+                    if (!end) end = '15:00';
+                } else {
+                    start = '';
+                    end = '';
+                }
+
+                let team = [];
+                const rawTeam = raw.team ?? raw.crew ?? raw.people ?? raw.sklad ?? raw.staff ?? raw.workers ?? raw.osoby;
+                if (Array.isArray(rawTeam)) {
+                    team = rawTeam.map(p => String(p || '').trim()).filter(Boolean);
+                } else if (typeof rawTeam === 'string' && rawTeam.trim()) {
+                    team = rawTeam.split(/[\n,;]+/).map(p => p.trim()).filter(Boolean);
+                }
+
+                const tasks = String(raw.tasks ?? raw.prace ?? raw.work ?? raw.description ?? raw.opis ?? raw.notes ?? '').trim();
+
+                return {
+                    id: raw.id ? String(raw.id) : generateId(),
+                    date: date,
+                    type: type,
+                    start: start,
+                    end: end,
+                    team: type === 'work' ? team : [],
+                    tasks: tasks
+                };
+            }
+
+            function parseImportedPayload(parsed) {
+                let rawEntries = [];
+                let owner = '';
+                let people = [];
+
+                if (Array.isArray(parsed)) {
+                    rawEntries = parsed;
+                } else if (parsed && typeof parsed === 'object') {
+                    const entryKey = ['entries', 'days', 'rows', 'wpisy', 'records', 'logs', 'items', 'data'].find(
+                        k => Array.isArray(parsed[k])
+                    );
+                    if (entryKey) rawEntries = parsed[entryKey];
+
+                    const ownerKey = ['owner', 'name', 'worker', 'userName', 'ownerName', 'workerName', 'employee', 'osoba', 'imie'].find(
+                        k => typeof parsed[k] === 'string' && parsed[k].trim() !== ''
+                    );
+                    if (ownerKey) owner = parsed[ownerKey].trim();
+
+                    const peopleKey = ['people', 'crew', 'staff', 'sklad', 'workers', 'savedPeople', 'persons', 'team', 'members'].find(
+                        k => Array.isArray(parsed[k])
+                    );
+                    if (peopleKey) {
+                        people = parsed[peopleKey].map(p => String(p || '').trim()).filter(Boolean);
+                    }
+                }
+
+                const entries = rawEntries.map(normalizeImportedEntry).filter(Boolean);
+
+                entries.forEach(function (entry) {
+                    if (Array.isArray(entry.team)) {
+                        entry.team.forEach(function (person) {
+                            if (person && !people.includes(person)) {
+                                people.push(person);
+                            }
+                        });
+                    }
+                });
+
+                return { entries: entries, owner: owner, people: people };
+            }
+
+            function applyImportedData(data, mode) {
+                if (mode === 'replace') {
+                    state.entries = data.entries.map(e => Object.assign({}, e, { id: generateId() }));
+                    if (data.owner) {
+                        state.owner = data.owner;
+                        els.ownerName.value = state.owner;
+                        saveOwner();
+                    }
+                    if (data.people.length > 0) {
+                        state.people = data.people.slice();
+                        state.selectedTeam = state.selectedTeam.filter(p => state.people.includes(p));
+                        savePeople();
+                    }
+                } else {
+                    const appended = data.entries.map(e => Object.assign({}, e, { id: generateId() }));
+                    state.entries = state.entries.concat(appended);
+                    if (!state.owner && data.owner) {
+                        state.owner = data.owner;
+                        els.ownerName.value = state.owner;
+                        saveOwner();
+                    }
+                    data.people.forEach(function (p) {
+                        if (!state.people.includes(p)) {
+                            state.people.push(p);
+                        }
+                    });
+                    savePeople();
+                }
+
+                saveEntries();
+                renderCrewChips();
+                renderEntries();
+                showToast(`Zaimportowano ${data.entries.length} wpisów.`);
+            }
+
+            function handleImportFile(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function () {
+                    try {
+                        const parsed = JSON.parse(String(reader.result || ''));
+                        const normalized = parseImportedPayload(parsed);
+
+                        if (normalized.entries.length === 0 && !normalized.owner && normalized.people.length === 0) {
+                            showToast('Plik nie zawiera rozpoznawalnych danych.', true);
+                            return;
+                        }
+
+                        if (state.entries.length > 0) {
+                            openModal(
+                                'Import danych',
+                                `Znaleziono ${normalized.entries.length} wpisów. W tabeli są już zapisane dni — wybierz sposób wczytania:`,
+                                [
+                                    { label: 'Anuluj', cls: 'btn-tonal' },
+                                    { label: 'Dopisz', cls: 'btn-share', onClick: function () { applyImportedData(normalized, 'append'); } },
+                                    { label: 'Zastąp', cls: 'btn-danger', onClick: function () { applyImportedData(normalized, 'replace'); } }
+                                ]
+                            );
+                        } else {
+                            applyImportedData(normalized, 'replace');
+                        }
+                    } catch (err) {
+                        showToast('Błąd odczytu pliku kopii.', true);
+                    }
+                };
+                reader.onerror = function () {
+                    showToast('Nie udało się odczytać pliku.', true);
+                };
+                reader.readAsText(file, 'utf-8');
+            }
+
+            /* =========================================================
+               KLASYCZNY, CZARNO-BIAŁY PDF Z JEDNOWIERSZOWYM NAGŁÓWKIEM
+               ========================================================= */
+            function stripPolish(text) {
+                const map = {
+                    'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+                    'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N', 'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
+                };
+                return String(text || '').replace(/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g, ch => map[ch] || ch);
+            }
+
+            async function fetchFontBase64(url) {
+                const resp = await fetch(url);
+                if (!resp.ok) return null;
+                const buf = await resp.arrayBuffer();
+                const bytes = new Uint8Array(buf);
+                let binary = '';
+                const chunk = 0x8000;
+                for (let i = 0; i < bytes.length; i += chunk) {
+                    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+                }
+                return btoa(binary);
+            }
+
+            async function loadRobotoFonts() {
+                if (cachedFonts) return cachedFonts;
+                try {
+                    const base = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/';
+                    const [regular, bold] = await Promise.all([
+                        fetchFontBase64(base + 'Roboto-Regular.ttf'),
+                        fetchFontBase64(base + 'Roboto-Medium.ttf')
+                    ]);
+                    if (regular) {
+                        cachedFonts = { regular: regular, bold: bold || regular };
+                        return cachedFonts;
+                    }
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            /* Wykrywa okres do prawej części nagłówka PDF, np. "Listopad 2026" lub "Październik – Listopad 2026" */
+            function detectMonthYearLabel(sorted) {
+                if (!sorted || sorted.length === 0) {
+                    const now = new Date();
+                    return `${MONTHS_PL[now.getMonth()]} ${now.getFullYear()}`;
+                }
+
+                const ymList = [];
+                sorted.forEach(function (entry) {
+                    const m = String(entry.date || '').match(/^(\d{4})-(\d{2})-/);
+                    if (m) {
+                        const key = `${m[1]}-${m[2]}`;
+                        if (!ymList.includes(key)) ymList.push(key);
+                    }
+                });
+
+                if (ymList.length === 0) {
+                    const now = new Date();
+                    return `${MONTHS_PL[now.getMonth()]} ${now.getFullYear()}`;
+                }
+
+                const first = ymList[0].split('-');
+                const last = ymList[ymList.length - 1].split('-');
+                const fY = first[0];
+                const fM = parseInt(first[1], 10) - 1;
+                const lY = last[0];
+                const lM = parseInt(last[1], 10) - 1;
+
+                if (ymList.length === 1) {
+                    return `${MONTHS_PL[fM]} ${fY}`;
+                }
+                if (fY === lY) {
+                    return `${MONTHS_PL[fM]} – ${MONTHS_PL[lM]} ${fY}`;
+                }
+                return `${MONTHS_PL[fM]} ${fY} – ${MONTHS_PL[lM]} ${lY}`;
+            }
+
+            async function buildPdfDocument() {
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    throw new Error('NO_JSPDF');
+                }
+
+                const sorted = getSortedEntries();
+                const jsPDFCtor = window.jspdf.jsPDF;
+                const doc = new jsPDFCtor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const pageWidth = doc.internal.pageSize.getWidth(); // 210mm
+                const marginX = 10;
+
+                const fonts = await loadRobotoFonts();
+                let useUnicode = false;
+                if (fonts && fonts.regular) {
+                    try {
+                        doc.addFileToVFS('Roboto-Regular.ttf', fonts.regular);
+                        doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+                        doc.addFileToVFS('Roboto-Bold.ttf', fonts.bold);
+                        doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
+                        doc.setFont('Roboto', 'normal');
+                        useUnicode = true;
+                    } catch (e) {
+                        useUnicode = false;
+                    }
+                }
+
+                const fontName = useUnicode ? 'Roboto' : 'helvetica';
+                const txt = function (s) {
+                    return useUnicode ? String(s || '') : stripPolish(s);
+                };
+
+                // Minimalny jednowierszowy nagłówek:
+                // Lewa: Imię i nazwisko | Środek (bold): KARTA PRACY | Prawa: Listopad 2026
+                const headerY = 13;
+                const ownerText = state.owner.trim();
+                const periodText = detectMonthYearLabel(sorted);
+
+                doc.setTextColor(0, 0, 0);
+
+                if (ownerText) {
+                    doc.setFont(fontName, 'normal');
+                    doc.setFontSize(10.5);
+                    doc.text(txt(ownerText), marginX, headerY, { align: 'left' });
+                }
+
+                doc.setFont(fontName, 'bold');
+                doc.setFontSize(12);
+                doc.text(txt('KARTA PRACY'), pageWidth / 2, headerY, { align: 'center' });
+
+                doc.setFont(fontName, 'normal');
+                doc.setFontSize(10.5);
+                doc.text(txt(periodText), pageWidth - marginX, headerY, { align: 'right' });
+
+                // Przygotowanie wierszy tabeli
+                let totalHours = 0;
+                let uwCount = 0;
+                let uoCount = 0;
+                let l4Count = 0;
+
+                const bodyRows = sorted.map(function (entry) {
+                    const type = entry.type || 'work';
+                    const isWork = type === 'work';
+                    let hoursCell = type;
+                    let crewCell = '';
+
+                    if (isWork) {
+                        const hrs = calcHours(entry.start, entry.end);
+                        totalHours += hrs;
+                        hoursCell = `${formatSingleTime(entry.start)} - ${formatSingleTime(entry.end)} (${formatHours(hrs, true)})`;
+                        crewCell = Array.isArray(entry.team) && entry.team.length ? entry.team.join('\n') : '';
+                    } else {
+                        if (type === 'UW') uwCount += 1;
+                        if (type === 'UO') uoCount += 1;
+                        if (type === 'L4') l4Count += 1;
+                    }
+
+                    return [
+                        txt(formatDatePL(entry.date)),
+                        txt(hoursCell),
+                        txt(crewCell),
+                        txt(entry.tasks || '')
+                    ];
+                });
+
+                // Klasyczna czarno-biała tabela jak papierowa karta pracy
+                if (typeof doc.autoTable === 'function') {
+                    doc.autoTable({
+                        startY: 17,
+                        head: [[
+                            txt('Data'),
+                            txt('Godziny pracy'),
+                            txt('Skład osobowy'),
+                            txt('Wykonane prace')
+                        ]],
+                        body: bodyRows,
+                        theme: 'grid',
+                        styles: {
+                            font: fontName,
+                            fontSize: 9,
+                            cellPadding: 2.2,
+                            fillColor: [255, 255, 255],
+                            textColor: [0, 0, 0],
+                            lineColor: [40, 40, 40],
+                            lineWidth: 0.25,
+                            valign: 'top'
+                        },
+                        headStyles: {
+                            fillColor: [242, 242, 242],
+                            textColor: [0, 0, 0],
+                            fontStyle: 'bold',
+                            halign: 'center',
+                            valign: 'middle',
+                            lineColor: [40, 40, 40],
+                            lineWidth: 0.25
+                        },
+                        columnStyles: {
+                            0: { cellWidth: 23, halign: 'center' },
+                            1: { cellWidth: 36, halign: 'center' },
+                            2: { cellWidth: 32, halign: 'left' },
+                            3: { cellWidth: 'auto', halign: 'left' }
+                        },
+                        margin: { left: marginX, right: marginX, bottom: 12 }
+                    });
+                }
+
+                // Zwarty wiersz podsumowania na dole (BEZ daty i podpisu pracownika)
+                const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 6 : 24;
+                const summaryParts = [`Suma godzin: ${formatHours(totalHours, false)}`];
+                if (uwCount > 0) summaryParts.push(`UW: ${uwCount}`);
+                if (uoCount > 0) summaryParts.push(`UO: ${uoCount}`);
+                if (l4Count > 0) summaryParts.push(`L4: ${l4Count}`);
+
+                doc.setFont(fontName, 'bold');
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                doc.text(txt(summaryParts.join('   |   ')), marginX, finalY);
+
+                const safeOwner = ownerText
+                    ? '_' + stripPolish(ownerText).replace(/[^a-zA-Z0-9]+/g, '_')
+                    : '';
+                const filename = `karta_pracy${safeOwner}_${getTodayISO()}.pdf`;
+
+                return { doc: doc, filename: filename };
+            }
+
+            async function handlePdfAction(mode) {
+                if (state.entries.length === 0) {
+                    showToast('Dodaj przynajmniej jeden wpis przed wygenerowaniem PDF.', true);
+                    return;
+                }
+
+                const btn = mode === 'share' ? els.sharePdfBtn : els.downloadPdfBtn;
+                btn.disabled = true;
+
+                try {
+                    const result = await buildPdfDocument();
+                    if (mode === 'share' && navigator.share) {
+                        const pdfBlob = result.doc.output('blob');
+                        const file = new File([pdfBlob], result.filename, { type: 'application/pdf' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                title: 'Karta Pracy',
+                                files: [file]
+                            });
+                            showToast('Udostępniono plik.');
+                            return;
+                        }
+                    }
+
+                    result.doc.save(result.filename);
+                    showToast('Pobrano kartę pracy.');
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                    if (err && err.message === 'NO_JSPDF') {
+                        showToast('Brak biblioteki PDF offline — otwieram drukowanie.', true);
+                        window.print();
+                    } else {
+                        showToast('Nie udało się wygenerować PDF.', true);
+                    }
+                } finally {
+                    btn.disabled = false;
+                }
+            }
+
+            /* =========================================================
+               PODPIĘCIE ZDARZEŃ
+               ========================================================= */
+            els.ownerName.addEventListener('input', function () {
+                state.owner = els.ownerName.value;
+                saveOwner();
+            });
+
+            els.themeToggleBtn.addEventListener('click', function () {
+                applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+            });
+
+            els.sharePdfBtn.addEventListener('click', function () {
+                handlePdfAction('share');
+            });
+
+            els.downloadPdfBtn.addEventListener('click', function () {
+                handlePdfAction('download');
+            });
+
+            els.importJsonBtn.addEventListener('click', function () {
+                els.importJsonInput.value = '';
+                els.importJsonInput.click();
+            });
+
+            els.importJsonInput.addEventListener('change', function () {
+                const file = els.importJsonInput.files && els.importJsonInput.files[0];
+                if (file) handleImportFile(file);
+            });
+
+            els.exportJsonBtn.addEventListener('click', exportJSON);
+
+            els.repeatLastBtn.addEventListener('click', repeatLastEntry);
+
+            els.statusBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    setStatus(btn.dataset.status, true);
+                });
+            });
+
+            els.timeStart.addEventListener('change', updateDurationDisplay);
+            els.timeEnd.addEventListener('change', function () {
+                updateDurationDisplay();
+                syncQuickEndHighlight();
+            });
+
+            els.addPersonBtn.addEventListener('click', addPersonFromInput);
+            els.personInput.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Enter') {
+                    ev.preventDefault();
+                    addPersonFromInput();
+                }
+            });
+
+            els.clearTasksBtn.addEventListener('click', function () {
+                els.entryTasks.value = '';
+                els.entryTasks.focus();
+            });
+
+            els.cancelEditBtn.addEventListener('click', function () {
+                resetForm(true);
+                showToast('Anulowano edycję.');
+            });
+
+            els.entryForm.addEventListener('submit', handleFormSubmit);
+
+            els.entriesTbody.addEventListener('click', function (ev) {
+                const btn = ev.target.closest('button[data-action]');
+                if (!btn) return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+
+                if (action === 'edit') {
+                    startEditEntry(id);
+                } else if (action === 'delete') {
+                    const entry = state.entries.find(e => e.id === id);
+                    if (!entry) return;
+                    openModal(
+                        'Usuń wpis',
+                        `Czy na pewno usunąć wpis z dnia ${formatDatePL(entry.date)}?`,
+                        [
+                            { label: 'Anuluj', cls: 'btn-tonal' },
+                            {
+                                label: 'Usuń',
+                                cls: 'btn-danger',
+                                onClick: function () {
+                                    state.entries = state.entries.filter(e => e.id !== id);
+                                    if (els.editId.value === id) resetForm(true);
+                                    saveEntries();
+                                    renderEntries();
+                                    showToast('Usunięto wpis.');
+                                }
+                            }
+                        ]
+                    );
+                }
+            });
+
+            els.clearAllBtn.addEventListener('click', function () {
+                if (state.entries.length === 0) {
+                    showToast('Tabela jest już pusta.');
+                    return;
+                }
+                openModal(
+                    'Wyczyść wszystkie wpisy',
+                    `Czy na pewno usunąć wszystkie wpisy (${state.entries.length})? Lista osób oraz imię i nazwisko zostaną zachowane.`,
+                    [
+                        { label: 'Anuluj', cls: 'btn-tonal' },
+                        {
+                            label: 'Wyczyść',
+                            cls: 'btn-danger',
+                            onClick: function () {
+                                state.entries = [];
+                                saveEntries();
+                                resetForm(true);
+                                renderEntries();
+                                showToast('Wyczyszczono wszystkie wpisy.');
+                            }
+                        }
+                    ]
+                );
+            });
+
+            els.modal.addEventListener('click', function (ev) {
+                if (ev.target === els.modal) closeModal();
+            });
+
+            document.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Escape' && els.modal.classList.contains('open')) {
+                    closeModal();
+                }
+            });
+
+            /* =========================================================
+               START APLIKACJI
+               ========================================================= */
+            loadState();
+            applyTheme(state.theme);
+            els.ownerName.value = state.owner;
+            populateTimeSelects();
+            buildQuickEndTiles();
+            resetForm(false);
+            renderEntries();
+        });
+    </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+</body>
+</html>

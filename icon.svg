@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#1e293b"/>
+  <!-- Bent Straw (Słomka) -->
+  <path d="M 152 392 L 196 206 L 306 184"
+        fill="none" stroke="#f8fafc" stroke-width="52"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Accordion bend stripes -->
+  <polygon points="155.2,257.0 209.7,269.9 212.2,259.2 157.7,246.3" fill="#14b8a6"/>
+  <polygon points="160.0,236.5 214.5,249.4 217.0,238.7 162.5,225.8" fill="#14b8a6"/>
+  <polygon points="215.9,173.5 226.9,228.4 237.7,226.2 226.7,171.3" fill="#14b8a6"/>
+  <!-- Hollow straw tip -->
+  <ellipse cx="306" cy="184" rx="12" ry="20" transform="rotate(-11.3 306 184)" fill="#0f172a"/>
+  <!-- Fiber optic light strands -->
+  <line x1="312" y1="174" x2="402" y2="126" stroke="#38bdf8" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="402" cy="126" r="11" fill="#38bdf8"/>
+  <line x1="316" y1="182" x2="420" y2="168" stroke="#4ade80" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="420" cy="168" r="11" fill="#4ade80"/>
+  <line x1="314" y1="190" x2="414" y2="212" stroke="#facc15" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="414" cy="212" r="11" fill="#facc15"/>
+  <line x1="308" y1="197" x2="388" y2="250" stroke="#fb923c" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="388" cy="250" r="11" fill="#fb923c"/>
+</svg>
