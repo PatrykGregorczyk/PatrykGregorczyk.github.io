@@ -24,6 +24,7 @@
       --text: #141c18;
       --text-muted: #52635a;
       --border: #d7e3dc;
+      --border-dashed: #94aea0;
       --input-bg: #f7faf8;
       --chip-bg: #e7f0eb;
       --chip-text: #1c2d25;
@@ -40,7 +41,7 @@
       --btn-repeat: #b45309;
       --btn-danger: #dc2626;
       --btn-off: #e11d48;
-      --row-alt: #f8fbf9;
+      --row-alt: #f3f7f5;
       --row-off: #fff5f5;
       --badge-h-bg: #dcfce7;
       --badge-h-text: #166534;
@@ -56,6 +57,7 @@
       --text: #edf3f7;
       --text-muted: #93a7b5;
       --border: #2a3a47;
+      --border-dashed: #4a6275;
       --input-bg: #121b22;
       --chip-bg: #23323e;
       --chip-text: #d7e4ec;
@@ -72,7 +74,7 @@
       --btn-repeat: #d97706;
       --btn-danger: #ef4444;
       --btn-off: #f43f5e;
-      --row-alt: #1c2831;
+      --row-alt: #1f2c36;
       --row-off: #2c1d22;
       --badge-h-bg: #143a2b;
       --badge-h-text: #6ee7b7;
@@ -571,16 +573,27 @@
       overflow-wrap: anywhere;
     }
 
-    .entries-table tbody tr:nth-child(even) {
+    /* Kolorowanie calymi dniami (grupa jednego dnia = jeden kolor) */
+    .entries-table tbody tr.day-even {
+      background: var(--surface);
+    }
+    .entries-table tbody tr.day-odd {
       background: var(--row-alt);
     }
     .entries-table tbody tr.is-off {
       background: var(--row-off);
     }
 
+    /* Przerywana kreska miedzy pozycjami w ramach tego samego dnia */
+    .entries-table tbody tr.same-day-mid td:not(.cell-date) {
+      border-bottom: 1px dashed var(--border-dashed);
+    }
+
     .cell-date {
       text-align: center;
       line-height: 1.15;
+      vertical-align: middle !important;
+      border-right: 1px solid var(--border);
     }
     .cell-date-dm {
       font-weight: 700;
@@ -589,6 +602,16 @@
     .cell-date-y {
       font-size: 10.5px;
       color: var(--text-muted);
+    }
+    .cell-date-sum {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 1px 4px;
+      border-radius: 5px;
+      background: var(--chip-bg);
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
     }
 
     .cell-hours {
@@ -1098,6 +1121,7 @@
         ownerName = localStorage.getItem(STORAGE_KEYS.owner) || '';
         const savedTheme = localStorage.getItem(STORAGE_KEYS.theme) || 'light';
         applyTheme(savedTheme);
+        sortEntries();
       }
 
       function saveStorage() {
@@ -1137,12 +1161,12 @@
       }
 
       function formatHoursShort(h) {
-        const n = Number(h) || 0;
-        return Number.isInteger(n) ? `${n}h` : `${n}h`;
+        const n = Math.round((Number(h) || 0) * 100) / 100;
+        return `${n}h`;
       }
 
       function formatHoursPL(h) {
-        const n = Number(h) || 0;
+        const n = Math.round((Number(h) || 0) * 100) / 100;
         return (Number.isInteger(n) ? String(n) : String(n).replace('.', ',')) + ' h';
       }
 
@@ -1298,6 +1322,32 @@
         renderOffGrid();
       }
 
+      function sortEntries() {
+        entries.sort((a, b) => {
+          const dc = (a.date || '').localeCompare(b.date || '');
+          if (dc !== 0) return dc;
+          const aOff = Boolean(a.status && a.status !== 'WORK');
+          const bOff = Boolean(b.status && b.status !== 'WORK');
+          if (aOff !== bOff) return aOff ? 1 : -1;
+          return timeToMinutes(a.start) - timeToMinutes(b.start);
+        });
+      }
+
+      function groupEntriesByDate() {
+        const groups = [];
+        const map = new Map();
+        entries.forEach((item) => {
+          const key = item.date || '';
+          if (!map.has(key)) {
+            const g = { date: key, items: [] };
+            map.set(key, g);
+            groups.push(g);
+          }
+          map.get(key).items.push(item);
+        });
+        return groups;
+      }
+
       function saveEntry() {
         const date = $('entryDate').value || todayISO();
         let entry;
@@ -1331,23 +1381,21 @@
           };
         }
 
+        const sameDayCountBefore = entries.filter((e) => e.date === date && e.id !== editingId).length;
+
         if (editingId) {
           const idx = entries.findIndex((e) => e.id === editingId);
           if (idx !== -1) entries[idx] = entry;
           showToast('Zapisano zmiany');
         } else {
           entries.push(entry);
-          showToast('Dodano wpis');
+          showToast(sameDayCountBefore > 0 ? 'Dodano kolejną pozycję w tym dniu' : 'Dodano wpis');
         }
 
         sortEntries();
         saveStorage();
         renderEntries();
         resetForm(true);
-      }
-
-      function sortEntries() {
-        entries.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
       }
 
       function startEdit(id) {
@@ -1429,81 +1477,110 @@
         $('emptyState').classList.toggle('hidden', entries.length > 0);
 
         let totalHours = 0;
-        let workDays = 0;
+        const workDatesSet = new Set();
         const offCounts = {};
 
-        entries.forEach((item) => {
-          const isOff = item.status && item.status !== 'WORK';
-          const tr = document.createElement('tr');
-          if (isOff) tr.className = 'is-off';
+        const groups = groupEntriesByDate();
 
-          // Date cell (DD.MM / YYYY)
-          const tdDate = document.createElement('td');
-          tdDate.className = 'cell-date';
-          const parts = (item.date || '').split('-');
-          const dm = parts.length === 3 ? `${parts[2]}.${parts[1]}` : (item.date || '—');
-          const yr = parts.length === 3 ? parts[0] : '';
-          tdDate.innerHTML = `<div class="cell-date-dm">${escapeHtml(dm)}</div><div class="cell-date-y">${escapeHtml(yr)}</div>`;
+        groups.forEach((group, groupIdx) => {
+          const dayToneClass = groupIdx % 2 === 0 ? 'day-even' : 'day-odd';
+          const isMulti = group.items.length > 1;
+          const dayWorkHours = group.items.reduce((sum, it) => {
+            if (it.status && it.status !== 'WORK') return sum;
+            const h = typeof it.hours === 'number' ? it.hours : calcHours(it.start, it.end);
+            return sum + h;
+          }, 0);
 
-          // Hours cell (Start / Bold End / Duration OR Off badge)
-          const tdHours = document.createElement('td');
-          tdHours.className = 'cell-hours';
-          if (isOff) {
-            const offMeta = OFF_TYPES.find((o) => o.code === item.status);
-            const shortCode = offMeta ? offMeta.short : item.status;
-            tdHours.innerHTML = `<span class="cell-off-badge">${escapeHtml(shortCode)}</span>`;
-            offCounts[shortCode] = (offCounts[shortCode] || 0) + 1;
-          } else {
-            const h = typeof item.hours === 'number' ? item.hours : calcHours(item.start, item.end);
-            totalHours += h;
-            workDays++;
-            tdHours.innerHTML = `
-              <div class="cell-h-start">${escapeHtml(stripLeadingZeroHour(item.start))}</div>
-              <div class="cell-h-end">${escapeHtml(stripLeadingZeroHour(item.end))}</div>
-              <div class="cell-h-badge">${escapeHtml(formatHoursShort(h))}</div>
-            `;
-          }
+          group.items.forEach((item, subIdx) => {
+            const isOff = Boolean(item.status && item.status !== 'WORK');
+            const isLastInDay = subIdx === group.items.length - 1;
 
-          // Team cell
-          const tdTeam = document.createElement('td');
-          tdTeam.className = 'cell-team';
-          tdTeam.textContent = isOff ? '—' : (Array.isArray(item.team) && item.team.length ? item.team.join(', ') : '—');
+            const tr = document.createElement('tr');
+            const classes = [dayToneClass];
+            if (isOff) classes.push('is-off');
+            if (isMulti && !isLastInDay) classes.push('same-day-mid');
+            tr.className = classes.join(' ');
 
-          // Work cell
-          const tdWork = document.createElement('td');
-          tdWork.className = 'cell-work';
-          tdWork.textContent = item.work || '—';
+            // Merged Date cell (only on first sub-row of the day)
+            if (subIdx === 0) {
+              const tdDate = document.createElement('td');
+              tdDate.className = 'cell-date';
+              if (isMulti) tdDate.rowSpan = group.items.length;
 
-          // Actions cell (vertical stack)
-          const tdAct = document.createElement('td');
-          tdAct.className = 'cell-act';
-          const stack = document.createElement('div');
-          stack.className = 'act-stack';
+              const parts = (group.date || '').split('-');
+              const dm = parts.length === 3 ? `${parts[2]}.${parts[1]}` : (group.date || '—');
+              const yr = parts.length === 3 ? parts[0] : '';
+              const sumBadge = (isMulti && dayWorkHours > 0)
+                ? `<div class="cell-date-sum">Σ ${escapeHtml(formatHoursShort(dayWorkHours))}</div>`
+                : '';
 
-          const editBtn = document.createElement('button');
-          editBtn.type = 'button';
-          editBtn.className = 'act-btn';
-          editBtn.title = 'Edytuj';
-          editBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-          editBtn.addEventListener('click', () => startEdit(item.id));
+              tdDate.innerHTML = `
+                <div class="cell-date-dm">${escapeHtml(dm)}</div>
+                <div class="cell-date-y">${escapeHtml(yr)}</div>
+                ${sumBadge}
+              `;
+              tr.appendChild(tdDate);
+            }
 
-          const delBtn = document.createElement('button');
-          delBtn.type = 'button';
-          delBtn.className = 'act-btn del';
-          delBtn.title = 'Usuń';
-          delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
-          delBtn.addEventListener('click', () => deleteEntry(item.id));
+            // Hours cell
+            const tdHours = document.createElement('td');
+            tdHours.className = 'cell-hours';
+            if (isOff) {
+              const offMeta = OFF_TYPES.find((o) => o.code === item.status);
+              const shortCode = offMeta ? offMeta.short : item.status;
+              tdHours.innerHTML = `<span class="cell-off-badge">${escapeHtml(shortCode)}</span>`;
+              offCounts[shortCode] = (offCounts[shortCode] || 0) + 1;
+            } else {
+              const h = typeof item.hours === 'number' ? item.hours : calcHours(item.start, item.end);
+              totalHours += h;
+              if (item.date) workDatesSet.add(item.date);
+              tdHours.innerHTML = `
+                <div class="cell-h-start">${escapeHtml(stripLeadingZeroHour(item.start))}</div>
+                <div class="cell-h-end">${escapeHtml(stripLeadingZeroHour(item.end))}</div>
+                <div class="cell-h-badge">${escapeHtml(formatHoursShort(h))}</div>
+              `;
+            }
 
-          stack.appendChild(editBtn);
-          stack.appendChild(delBtn);
-          tdAct.appendChild(stack);
+            // Team cell
+            const tdTeam = document.createElement('td');
+            tdTeam.className = 'cell-team';
+            tdTeam.textContent = isOff ? '—' : (Array.isArray(item.team) && item.team.length ? item.team.join(', ') : '—');
 
-          tr.appendChild(tdDate);
-          tr.appendChild(tdHours);
-          tr.appendChild(tdTeam);
-          tr.appendChild(tdWork);
-          tr.appendChild(tdAct);
-          tbody.appendChild(tr);
+            // Work cell
+            const tdWork = document.createElement('td');
+            tdWork.className = 'cell-work';
+            tdWork.textContent = item.work || '—';
+
+            // Separate Edit / Delete actions for each entry in the day
+            const tdAct = document.createElement('td');
+            tdAct.className = 'cell-act';
+            const stack = document.createElement('div');
+            stack.className = 'act-stack';
+
+            const editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'act-btn';
+            editBtn.title = 'Edytuj';
+            editBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+            editBtn.addEventListener('click', () => startEdit(item.id));
+
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'act-btn del';
+            delBtn.title = 'Usuń';
+            delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+            delBtn.addEventListener('click', () => deleteEntry(item.id));
+
+            stack.appendChild(editBtn);
+            stack.appendChild(delBtn);
+            tdAct.appendChild(stack);
+
+            tr.appendChild(tdHours);
+            tr.appendChild(tdTeam);
+            tr.appendChild(tdWork);
+            tr.appendChild(tdAct);
+            tbody.appendChild(tr);
+          });
         });
 
         // Summary badges
@@ -1518,7 +1595,7 @@
 
         const daysPill = document.createElement('span');
         daysPill.className = 'sum-pill';
-        daysPill.textContent = `Dni: ${workDays}`;
+        daysPill.textContent = `Dni: ${workDatesSet.size}`;
         badges.appendChild(daysPill);
 
         Object.entries(offCounts).forEach(([code, cnt]) => {
@@ -1540,7 +1617,7 @@
       /* ===== JSON EXPORT & BACKWARD-COMPATIBLE IMPORT ===== */
       function exportJson() {
         const payload = {
-          version: 5,
+          version: 6,
           exportedAt: new Date().toISOString(),
           owner: ownerName,
           people,
@@ -1678,7 +1755,7 @@
         showToast(`Zaimportowano: ${data.entries.length} wpisów`);
       }
 
-      /* ===== PDF GENERATION (Windows print-friendly + Roboto Regular & Bold) ===== */
+      /* ===== PDF GENERATION (Windows print-friendly + Roboto + grouped multi-entry days) ===== */
       async function fetchFontBase64(urls) {
         for (const url of urls) {
           try {
@@ -1792,15 +1869,20 @@
         doc.setLineWidth(0.45);
         doc.line(marginX, headerY + 3.2, pageW - marginX, headerY + 3.2);
 
-        // Przygotowanie wierszy
+        // Grupowanie wpisow po dacie
         let totalHours = 0;
-        let workDays = 0;
+        const workDatesSet = new Set();
         const offCounts = {};
+        const groups = groupEntriesByDate();
 
-        const bodyRows = entries.map((item) => {
-          const isOff = item.status && item.status !== 'WORK';
-          const parts = (item.date || '').split('-');
-          let dateDisplay = item.date || '';
+        const tableBody = [];
+        const rowMeta = [];
+
+        groups.forEach((group, groupIdx) => {
+          const isEvenGroup = groupIdx % 2 === 0;
+          const isMulti = group.items.length > 1;
+          const parts = (group.date || '').split('-');
+          let dateDisplay = group.date || '';
           let weekdayStr = '';
           if (parts.length === 3) {
             dateDisplay = `${parts[2]}.${parts[1]}.${parts[0]}`;
@@ -1808,50 +1890,74 @@
             if (!isNaN(dt.getTime())) weekdayStr = WEEKDAYS_PL[dt.getDay()];
           }
 
-          let hoursMain = '';
-          let hoursSub = '';
-          if (isOff) {
-            const offMeta = OFF_TYPES.find((o) => o.code === item.status);
-            const code = offMeta ? offMeta.short : item.status;
-            hoursMain = code;
-            offCounts[code] = (offCounts[code] || 0) + 1;
-          } else {
-            const h = typeof item.hours === 'number' ? item.hours : calcHours(item.start, item.end);
-            totalHours += h;
-            workDays++;
-            hoursMain = `${stripLeadingZeroHour(item.start)} – ${stripLeadingZeroHour(item.end)}`;
-            hoursSub = formatHoursPL(h);
-          }
+          const dayWorkHours = group.items.reduce((sum, it) => {
+            if (it.status && it.status !== 'WORK') return sum;
+            const h = typeof it.hours === 'number' ? it.hours : calcHours(it.start, it.end);
+            return sum + h;
+          }, 0);
 
-          const teamStr = isOff ? '—' : (Array.isArray(item.team) && item.team.length ? item.team.join('\n') : '—');
-          const workStr = item.work || '—';
+          group.items.forEach((item, subIdx) => {
+            const isOff = Boolean(item.status && item.status !== 'WORK');
+            const isFirstInDay = subIdx === 0;
+            const isLastInDay = subIdx === group.items.length - 1;
 
-          return {
-            isOff,
-            dateMain: txt(dateDisplay),
-            dateSub: txt(weekdayStr),
-            hoursMain: txt(hoursMain),
-            hoursSub: txt(hoursSub),
-            row: [
-              txt(dateDisplay + (weekdayStr ? `\n${weekdayStr}` : '')),
-              txt(hoursMain + (hoursSub ? `\n${hoursSub}` : '')),
-              txt(teamStr),
-              txt(workStr)
-            ]
-          };
+            let hoursMain = '';
+            let hoursSub = '';
+            if (isOff) {
+              const offMeta = OFF_TYPES.find((o) => o.code === item.status);
+              const code = offMeta ? offMeta.short : item.status;
+              hoursMain = code;
+              offCounts[code] = (offCounts[code] || 0) + 1;
+            } else {
+              const h = typeof item.hours === 'number' ? item.hours : calcHours(item.start, item.end);
+              totalHours += h;
+              if (item.date) workDatesSet.add(item.date);
+              hoursMain = `${stripLeadingZeroHour(item.start)} – ${stripLeadingZeroHour(item.end)}`;
+              hoursSub = formatHoursPL(h);
+            }
+
+            const teamStr = isOff ? '—' : (Array.isArray(item.team) && item.team.length ? item.team.join('\n') : '—');
+            const workStr = item.work || '—';
+
+            rowMeta.push({
+              isOff,
+              isEvenGroup,
+              isMulti,
+              isFirstInDay,
+              isLastInDay,
+              dayTotalLabel: (isMulti && dayWorkHours > 0) ? txt(`razem ${formatHoursPL(dayWorkHours)}`) : '',
+              dateMain: txt(dateDisplay),
+              dateSub: txt(weekdayStr),
+              hoursMain: txt(hoursMain),
+              hoursSub: txt(hoursSub)
+            });
+
+            const hoursCellText = txt(hoursMain + (hoursSub ? `\n${hoursSub}` : ''));
+            if (isFirstInDay) {
+              const dateCellObj = {
+                content: txt(dateDisplay + (weekdayStr ? `\n${weekdayStr}` : '')),
+                rowSpan: group.items.length
+              };
+              tableBody.push([dateCellObj, hoursCellText, txt(teamStr), txt(workStr)]);
+            } else {
+              // Kolumna 0 jest scalona (rowSpan), wiec podajemy kolumny 1, 2, 3
+              tableBody.push([hoursCellText, txt(teamStr), txt(workStr)]);
+            }
+          });
         });
 
         doc.autoTable({
           startY: headerY + 6.5,
           margin: { left: marginX, right: marginX, top: 14, bottom: 14 },
           head: [[txt('Data'), txt('Godziny pracy'), txt('Skład osobowy'), txt('Wykonane prace')]],
-          body: bodyRows.map((b) => b.row),
+          body: tableBody,
           theme: 'grid',
           styles: {
             font: fontName,
             fontSize: 9,
-            cellPadding: { top: 2.5, right: 2.8, bottom: 2.5, left: 2.8 },
-            lineColor: [185, 194, 204],
+            minCellHeight: 10.5,
+            cellPadding: { top: 2.4, right: 2.8, bottom: 2.4, left: 2.8 },
+            lineColor: [176, 186, 198],
             lineWidth: 0.25,
             textColor: [20, 26, 33],
             valign: 'top',
@@ -1862,15 +1968,13 @@
             textColor: [22, 30, 40],
             fontStyle: 'bold',
             fontSize: 9,
+            minCellHeight: 8,
             halign: 'left',
             lineColor: [130, 142, 156],
             lineWidth: 0.3
           },
-          alternateRowStyles: {
-            fillColor: [250, 251, 253]
-          },
           columnStyles: {
-            0: { cellWidth: 25, halign: 'center' },
+            0: { cellWidth: 25, halign: 'center', valign: 'middle' },
             1: { cellWidth: 28, halign: 'center' },
             2: { cellWidth: 32, fontSize: 8.3, textColor: [55, 65, 78] },
             3: { cellWidth: 'auto', fontSize: 9.2 }
@@ -1880,44 +1984,85 @@
               data.cell.styles.halign = 'center';
             }
             if (data.section === 'body') {
-              const meta = bodyRows[data.row.index];
-              if (meta && meta.isOff) {
-                data.cell.styles.fillColor = [245, 244, 247];
-                if (data.column.index === 1) {
-                  data.cell.styles.fontStyle = 'bold';
-                  data.cell.styles.textColor = [70, 50, 60];
-                }
+              const meta = rowMeta[data.row.index];
+              if (!meta) return;
+
+              // Wspolny kolor tla dla calego dnia
+              if (meta.isOff) {
+                data.cell.styles.fillColor = [245, 243, 247];
+              } else {
+                data.cell.styles.fillColor = meta.isEvenGroup ? [255, 255, 255] : [245, 248, 251];
               }
+
+              // Brak stalej linii miedzy segmentami tego samego dnia (rysujemy przerywana w didDrawCell)
+              if (data.column.index >= 1 && meta.isMulti) {
+                data.cell.styles.lineWidth = {
+                  top: meta.isFirstInDay ? 0.25 : 0,
+                  right: 0.25,
+                  bottom: meta.isLastInDay ? 0.25 : 0,
+                  left: 0.25
+                };
+              }
+
+              // Tekst w kolumnach 0 i 1 rysujemy recznie z rozna gruboscia czcionki
               if (data.column.index === 0 || data.column.index === 1) {
-                // Wyczysc tekst, narysujemy recznie z rozna czcionka (Bold + mniejszy podtytul)
                 data.cell.text = [''];
               }
             }
           },
           didDrawCell: (data) => {
             if (data.section !== 'body') return;
-            const meta = bodyRows[data.row.index];
+            const meta = rowMeta[data.row.index];
             if (!meta) return;
+
             const cx = data.cell.x + data.cell.width / 2;
-            const topY = data.cell.y + 5.1;
+
+            // Przerywana kreska oddzielajaca pozycje w tym samym dniu
+            if (data.column.index >= 1 && meta.isMulti && !meta.isLastInDay) {
+              doc.saveGraphicsState();
+              doc.setDrawColor(140, 154, 170);
+              doc.setLineWidth(0.25);
+              doc.setLineDashPattern([1.6, 1.3], 0);
+              doc.line(
+                data.cell.x,
+                data.cell.y + data.cell.height,
+                data.cell.x + data.cell.width,
+                data.cell.y + data.cell.height
+              );
+              doc.setLineDashPattern([], 0);
+              doc.restoreGraphicsState();
+            }
 
             if (data.column.index === 0) {
+              // Pionowe wycentrowanie daty w scalonej komorce
+              const hasSum = Boolean(meta.dayTotalLabel);
+              const blockH = hasSum ? 9.6 : (meta.dateSub ? 6.2 : 3);
+              const startY = data.cell.y + (data.cell.height - blockH) / 2 + 2.4;
+
               doc.setFont(fontName, 'bold');
               doc.setFontSize(8.8);
               doc.setTextColor(20, 26, 33);
-              doc.text(meta.dateMain, cx, topY, { align: 'center' });
+              doc.text(meta.dateMain, cx, startY, { align: 'center' });
+
               if (meta.dateSub) {
                 doc.setFont(fontName, 'normal');
                 doc.setFontSize(7.4);
                 doc.setTextColor(100, 112, 124);
-                doc.text(meta.dateSub, cx, topY + 3.6, { align: 'center' });
+                doc.text(meta.dateSub, cx, startY + 3.5, { align: 'center' });
+              }
+              if (hasSum) {
+                doc.setFont(fontName, 'bold');
+                doc.setFontSize(7.0);
+                doc.setTextColor(65, 85, 100);
+                doc.text(meta.dayTotalLabel, cx, startY + 6.9, { align: 'center' });
               }
             } else if (data.column.index === 1) {
+              const topY = data.cell.y + 4.9;
               if (meta.isOff) {
                 doc.setFont(fontName, 'bold');
                 doc.setFontSize(9.2);
                 doc.setTextColor(65, 45, 55);
-                doc.text(meta.hoursMain, cx, topY + 1.2, { align: 'center' });
+                doc.text(meta.hoursMain, cx, topY + 1.1, { align: 'center' });
               } else {
                 doc.setFont(fontName, 'bold');
                 doc.setFontSize(8.6);
@@ -1949,7 +2094,7 @@
         doc.roundedRect(marginX, finalY, pageW - marginX * 2, barH, 1.5, 1.5, 'FD');
 
         const offSummaryParts = Object.entries(offCounts).map(([k, v]) => `${k}: ${v}`);
-        const leftSummary = `Dni robocze: ${workDays}` + (offSummaryParts.length ? `   |   Wolne: ${offSummaryParts.join(', ')}` : '');
+        const leftSummary = `Dni robocze: ${workDatesSet.size}` + (offSummaryParts.length ? `   |   Wolne: ${offSummaryParts.join(', ')}` : '');
 
         doc.setFont(fontName, 'normal');
         doc.setFontSize(9);
@@ -2099,7 +2244,6 @@
               await page.render({ canvasContext: ctx, viewport }).promise;
             }
           } else {
-            // Fallback gdy pdf.js niedostepny offline
             area.innerHTML = `<iframe src="${activePdfUrl}" style="width:100%;max-width:860px;height:82vh;border:0;background:#fff;border-radius:6px;"></iframe>`;
           }
         } catch (err) {
