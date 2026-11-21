@@ -47,6 +47,13 @@
       --badge-h-text: #166534;
       --badge-off-bg: #fee2e2;
       --badge-off-text: #991b1b;
+
+      --off-L4-main: #dc2626; --off-L4-bg: #fee2e2; --off-L4-text: #991b1b; --off-L4-row: #fff5f5;
+      --off-UW-main: #0284c7; --off-UW-bg: #e0f2fe; --off-UW-text: #075985; --off-UW-row: #f0f9ff;
+      --off-UO-main: #d97706; --off-UO-bg: #fef3c7; --off-UO-text: #92400e; --off-UO-row: #fffbeb;
+      --off-UB-main: #475569; --off-UB-bg: #e2e8f0; --off-UB-text: #334155; --off-UB-row: #f1f5f9;
+      --off-UOp-main: #7c3aed; --off-UOp-bg: #ede9fe; --off-UOp-text: #5b21b6; --off-UOp-row: #f5f3ff;
+      --off-INNE-main: #db2777; --off-INNE-bg: #fce7f3; --off-INNE-text: #9d174d; --off-INNE-row: #fdf2f8;
     }
 
     [data-theme="dark"] {
@@ -80,6 +87,13 @@
       --badge-h-text: #6ee7b7;
       --badge-off-bg: #451c25;
       --badge-off-text: #fda4af;
+
+      --off-L4-main: #ef4444; --off-L4-bg: #451a1a; --off-L4-text: #fca5a5; --off-L4-row: #2a181a;
+      --off-UW-main: #0ea5e9; --off-UW-bg: #13344a; --off-UW-text: #7dd3fc; --off-UW-row: #142532;
+      --off-UO-main: #f59e0b; --off-UO-bg: #452c10; --off-UO-text: #fcd34d; --off-UO-row: #292116;
+      --off-UB-main: #64748b; --off-UB-bg: #273240; --off-UB-text: #cbd5e1; --off-UB-row: #1d2630;
+      --off-UOp-main: #8b5cf6; --off-UOp-bg: #311f54; --off-UOp-text: #c4b5fd; --off-UOp-row: #221c33;
+      --off-INNE-main: #ec4899; --off-INNE-bg: #4a1936; --off-INNE-text: #f9a8d4; --off-INNE-row: #2c1826;
     }
 
     * {
@@ -370,36 +384,7 @@
       min-width: 58px;
     }
 
-    /* Quick End grid (12 tiles: 14:30 - 20:00) */
-    .quick-end-grid {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 5px;
-      margin-top: 6px;
-    }
-    @media (max-width: 390px) {
-      .quick-end-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-    }
 
-    .tile-btn {
-      height: 30px;
-      border-radius: 9px;
-      border: 1px solid var(--border);
-      background: var(--chip-bg);
-      color: var(--chip-text);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 0;
-    }
-    .tile-btn.active {
-      background: var(--btn-preview);
-      color: #ffffff;
-      border-color: transparent;
-      box-shadow: var(--shadow-btn);
-    }
 
     /* Team / Skład */
     .team-add-row {
@@ -501,24 +486,35 @@
       min-height: 40px;
       padding: 6px 8px;
       border-radius: 11px;
-      border: 1px solid var(--border);
-      background: var(--chip-bg);
-      color: var(--chip-text);
+      border: 1.5px solid var(--off-main, var(--border));
+      background: var(--off-bg, var(--chip-bg));
+      color: var(--off-text, var(--chip-text));
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       text-align: center;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       line-height: 1.2;
+      transition: transform 0.08s ease, background 0.12s ease, color 0.12s ease;
+    }
+    .off-btn:active {
+      transform: scale(0.97);
     }
     .off-btn.active {
-      background: var(--btn-off);
+      background: var(--off-main, var(--btn-off));
       color: #ffffff;
       border-color: transparent;
       box-shadow: var(--shadow-btn);
     }
+
+    .off-c-L4   { --off-main: var(--off-L4-main);   --off-bg: var(--off-L4-bg);   --off-text: var(--off-L4-text);   --off-row: var(--off-L4-row); }
+    .off-c-UW   { --off-main: var(--off-UW-main);   --off-bg: var(--off-UW-bg);   --off-text: var(--off-UW-text);   --off-row: var(--off-UW-row); }
+    .off-c-UO   { --off-main: var(--off-UO-main);   --off-bg: var(--off-UO-bg);   --off-text: var(--off-UO-text);   --off-row: var(--off-UO-row); }
+    .off-c-UB   { --off-main: var(--off-UB-main);   --off-bg: var(--off-UB-bg);   --off-text: var(--off-UB-text);   --off-row: var(--off-UB-row); }
+    .off-c-UOp  { --off-main: var(--off-UOp-main);  --off-bg: var(--off-UOp-bg);  --off-text: var(--off-UOp-text);  --off-row: var(--off-UOp-row); }
+    .off-c-INNE { --off-main: var(--off-INNE-main); --off-bg: var(--off-INNE-bg); --off-text: var(--off-INNE-text); --off-row: var(--off-INNE-row); }
 
     .form-actions {
       display: flex;
@@ -581,7 +577,7 @@
       background: var(--row-alt);
     }
     .entries-table tbody tr.is-off {
-      background: var(--row-off);
+      background: var(--off-row, var(--row-off));
     }
 
     /* Przerywana kreska miedzy pozycjami w ramach tego samego dnia */
@@ -640,8 +636,8 @@
       display: inline-block;
       padding: 3px 6px;
       border-radius: 7px;
-      background: var(--badge-off-bg);
-      color: var(--badge-off-text);
+      background: var(--off-bg, var(--badge-off-bg));
+      color: var(--off-text, var(--badge-off-text));
       font-size: 11px;
       font-weight: 800;
     }
@@ -728,8 +724,8 @@
       border-color: transparent;
     }
     .sum-pill.off {
-      background: var(--badge-off-bg);
-      color: var(--badge-off-text);
+      background: var(--off-bg, var(--badge-off-bg));
+      color: var(--off-text, var(--badge-off-text));
       border-color: transparent;
     }
 
@@ -925,7 +921,6 @@
             </div>
             <div class="duration-pill" id="durationPreview">8h</div>
           </div>
-          <div class="quick-end-grid" id="quickEndGrid"></div>
         </div>
 
         <div class="form-section">
@@ -1057,11 +1052,6 @@
         { code: 'UB', label: 'Urlop bezpłatny', short: 'UB' },
         { code: 'UOp', label: 'Urlop opiekuńczy', short: 'UOp' },
         { code: 'INNE', label: 'Inne', short: 'Inne' }
-      ];
-
-      const QUICK_ENDS = [
-        '14:30', '15:00', '15:30', '16:00', '16:30', '17:00',
-        '17:30', '18:00', '18:30', '19:00', '19:30', '20:00'
       ];
 
       const MONTHS_PL = [
@@ -1199,24 +1189,6 @@
         eSel.value = '15:00';
       }
 
-      function renderQuickEndGrid() {
-        const grid = $('quickEndGrid');
-        grid.innerHTML = '';
-        const currentEnd = $('endTime').value;
-        QUICK_ENDS.forEach((t) => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'tile-btn' + (currentEnd === t ? ' active' : '');
-          btn.textContent = t;
-          btn.addEventListener('click', () => {
-            $('endTime').value = t;
-            updateDurationUI();
-            renderQuickEndGrid();
-          });
-          grid.appendChild(btn);
-        });
-      }
-
       function updateDurationUI() {
         const h = calcHours($('startTime').value, $('endTime').value);
         $('durationPreview').textContent = formatHoursShort(h);
@@ -1228,7 +1200,7 @@
         OFF_TYPES.forEach((ot) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'off-btn' + (selectedOffCode === ot.code ? ' active' : '');
+          btn.className = `off-btn off-c-${ot.code}` + (selectedOffCode === ot.code ? ' active' : '');
           btn.textContent = ot.label;
           btn.addEventListener('click', () => {
             selectedOffCode = ot.code;
@@ -1315,7 +1287,6 @@
         $('startTime').value = '07:00';
         $('endTime').value = '15:00';
         updateDurationUI();
-        renderQuickEndGrid();
         $('workDesc').value = '';
         $('offOtherDesc').value = '';
         selectedOffCode = 'UW';
@@ -1412,8 +1383,7 @@
           $('startTime').value = item.start || '07:00';
           $('endTime').value = item.end || '15:00';
           updateDurationUI();
-          renderQuickEndGrid();
-          selectedPeople = Array.isArray(item.team) ? [...item.team] : [];
+            selectedPeople = Array.isArray(item.team) ? [...item.team] : [];
           selectedPeople.forEach((p) => {
             if (p && !people.includes(p)) people.push(p);
           });
@@ -1454,8 +1424,7 @@
           $('startTime').value = last.start || '07:00';
           $('endTime').value = last.end || '15:00';
           updateDurationUI();
-          renderQuickEndGrid();
-          selectedPeople = Array.isArray(last.team) ? [...last.team] : [];
+            selectedPeople = Array.isArray(last.team) ? [...last.team] : [];
           selectedPeople.forEach((p) => {
             if (p && !people.includes(p)) people.push(p);
           });
@@ -1496,8 +1465,10 @@
             const isLastInDay = subIdx === group.items.length - 1;
 
             const tr = document.createElement('tr');
+            const offMetaRow = isOff ? OFF_TYPES.find((o) => o.code === item.status) : null;
+            const offCodeClass = offMetaRow ? `off-c-${offMetaRow.code}` : (isOff ? 'off-c-INNE' : '');
             const classes = [dayToneClass];
-            if (isOff) classes.push('is-off');
+            if (isOff) classes.push('is-off', offCodeClass);
             if (isMulti && !isLastInDay) classes.push('same-day-mid');
             tr.className = classes.join(' ');
 
@@ -1528,8 +1499,9 @@
             if (isOff) {
               const offMeta = OFF_TYPES.find((o) => o.code === item.status);
               const shortCode = offMeta ? offMeta.short : item.status;
-              tdHours.innerHTML = `<span class="cell-off-badge">${escapeHtml(shortCode)}</span>`;
-              offCounts[shortCode] = (offCounts[shortCode] || 0) + 1;
+              const codeKey = offMeta ? offMeta.code : 'INNE';
+              tdHours.innerHTML = `<span class="cell-off-badge off-c-${codeKey}">${escapeHtml(shortCode)}</span>`;
+              offCounts[codeKey] = (offCounts[codeKey] || 0) + 1;
             } else {
               const h = typeof item.hours === 'number' ? item.hours : calcHours(item.start, item.end);
               totalHours += h;
@@ -1598,10 +1570,12 @@
         daysPill.textContent = `Dni: ${workDatesSet.size}`;
         badges.appendChild(daysPill);
 
-        Object.entries(offCounts).forEach(([code, cnt]) => {
+        Object.entries(offCounts).forEach(([codeKey, cnt]) => {
+          const offMeta = OFF_TYPES.find((o) => o.code === codeKey);
+          const label = offMeta ? offMeta.short : codeKey;
           const p = document.createElement('span');
-          p.className = 'sum-pill off';
-          p.textContent = `${code}: ${cnt}`;
+          p.className = `sum-pill off off-c-${codeKey}`;
+          p.textContent = `${label}: ${cnt}`;
           badges.appendChild(p);
         });
       }
@@ -2275,7 +2249,6 @@
 
         populateTimeSelects();
         updateDurationUI();
-        renderQuickEndGrid();
         renderOffGrid();
         renderTeamChips();
         renderEntries();
@@ -2296,8 +2269,7 @@
         $('startTime').addEventListener('change', updateDurationUI);
         $('endTime').addEventListener('change', () => {
           updateDurationUI();
-          renderQuickEndGrid();
-        });
+          });
 
         $('btnAddPerson').addEventListener('click', addPerson);
         $('newPersonInput').addEventListener('keydown', (e) => {
