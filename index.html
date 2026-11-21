@@ -1954,9 +1954,9 @@
           theme: 'grid',
           styles: {
             font: fontName,
-            fontSize: 9,
-            minCellHeight: 10.5,
-            cellPadding: { top: 2.4, right: 2.8, bottom: 2.4, left: 2.8 },
+            fontSize: 11,
+            minCellHeight: 13,
+            cellPadding: { top: 2.6, right: 2.8, bottom: 2.6, left: 2.8 },
             lineColor: [176, 186, 198],
             lineWidth: 0.25,
             textColor: [20, 26, 33],
@@ -1967,17 +1967,17 @@
             fillColor: [236, 240, 245],
             textColor: [22, 30, 40],
             fontStyle: 'bold',
-            fontSize: 9,
-            minCellHeight: 8,
+            fontSize: 11,
+            minCellHeight: 9,
             halign: 'left',
             lineColor: [130, 142, 156],
             lineWidth: 0.3
           },
           columnStyles: {
-            0: { cellWidth: 25, halign: 'center', valign: 'middle' },
-            1: { cellWidth: 28, halign: 'center' },
-            2: { cellWidth: 32, fontSize: 8.3, textColor: [55, 65, 78] },
-            3: { cellWidth: 'auto', fontSize: 9.2 }
+            0: { cellWidth: 28, halign: 'center', valign: 'middle' },
+            1: { cellWidth: 32, halign: 'center' },
+            2: { cellWidth: 34, fontSize: 10.3, textColor: [55, 65, 78] },
+            3: { cellWidth: 'auto', fontSize: 11.2 }
           },
           didParseCell: (data) => {
             if (data.section === 'head' && (data.column.index === 0 || data.column.index === 1)) {
@@ -2036,43 +2036,43 @@
             if (data.column.index === 0) {
               // Pionowe wycentrowanie daty w scalonej komorce
               const hasSum = Boolean(meta.dayTotalLabel);
-              const blockH = hasSum ? 9.6 : (meta.dateSub ? 6.2 : 3);
-              const startY = data.cell.y + (data.cell.height - blockH) / 2 + 2.4;
+              const blockH = hasSum ? 12.2 : (meta.dateSub ? 7.8 : 3.8);
+              const startY = data.cell.y + (data.cell.height - blockH) / 2 + 3.0;
 
               doc.setFont(fontName, 'bold');
-              doc.setFontSize(8.8);
+              doc.setFontSize(10.8);
               doc.setTextColor(20, 26, 33);
               doc.text(meta.dateMain, cx, startY, { align: 'center' });
 
               if (meta.dateSub) {
                 doc.setFont(fontName, 'normal');
-                doc.setFontSize(7.4);
+                doc.setFontSize(9.4);
                 doc.setTextColor(100, 112, 124);
-                doc.text(meta.dateSub, cx, startY + 3.5, { align: 'center' });
+                doc.text(meta.dateSub, cx, startY + 4.3, { align: 'center' });
               }
               if (hasSum) {
                 doc.setFont(fontName, 'bold');
-                doc.setFontSize(7.0);
+                doc.setFontSize(9.0);
                 doc.setTextColor(65, 85, 100);
-                doc.text(meta.dayTotalLabel, cx, startY + 6.9, { align: 'center' });
+                doc.text(meta.dayTotalLabel, cx, startY + 8.5, { align: 'center' });
               }
             } else if (data.column.index === 1) {
-              const topY = data.cell.y + 4.9;
+              const topY = data.cell.y + 5.8;
               if (meta.isOff) {
                 doc.setFont(fontName, 'bold');
-                doc.setFontSize(9.2);
+                doc.setFontSize(11.2);
                 doc.setTextColor(65, 45, 55);
-                doc.text(meta.hoursMain, cx, topY + 1.1, { align: 'center' });
+                doc.text(meta.hoursMain, cx, topY + 1.2, { align: 'center' });
               } else {
                 doc.setFont(fontName, 'bold');
-                doc.setFontSize(8.6);
+                doc.setFontSize(10.6);
                 doc.setTextColor(20, 26, 33);
                 doc.text(meta.hoursMain, cx, topY, { align: 'center' });
                 if (meta.hoursSub) {
                   doc.setFont(fontName, 'normal');
-                  doc.setFontSize(7.6);
+                  doc.setFontSize(9.6);
                   doc.setTextColor(80, 92, 106);
-                  doc.text(meta.hoursSub, cx, topY + 3.7, { align: 'center' });
+                  doc.text(meta.hoursSub, cx, topY + 4.5, { align: 'center' });
                 }
               }
             }
